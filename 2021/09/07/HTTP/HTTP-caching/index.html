@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="可以通過重複使用以前就獲得過的數據提高網站和應用程序的效能，Web 的緩存減少了延遲和使用的網路流量從而減少了顯示資源所需要的時間，通過使用 HTTP caching 可以使 Web 的響應速度更快。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP caching">
+<meta property="og:url" content="https://fandix.github.io/2021/09/07/HTTP/HTTP-caching/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="可以通過重複使用以前就獲得過的數據提高網站和應用程序的效能，Web 的緩存減少了延遲和使用的網路流量從而減少了顯示資源所需要的時間，通過使用 HTTP caching 可以使 Web 的響應速度更快。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210907/201247676eY4c85dMP.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210907/201247678RxmFwWBAv.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210907/20124767xl14QOBbKK.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210907/20124767ZSFgaEJQU3.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210907/20124767NYixMWdA63.png">
+<meta property="article:published_time" content="2021-09-07T07:38:32.000Z">
+<meta property="article:modified_time" content="2021-09-07T09:22:06.421Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="HTTP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210907/201247676eY4c85dMP.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/07/HTTP/HTTP-caching/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>HTTP caching | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/07/HTTP/HTTP-caching/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          HTTP caching
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-07 15:38:32 / Modified: 17:22:06" itemprop="dateCreated datePublished" datetime="2021-09-07T15:38:32+08:00">2021-09-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Network/" itemprop="url" rel="index"><span itemprop="name">Network</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>可以通過重複使用以前就獲得過的數據提高網站和應用程序的效能，Web 的緩存減少了延遲和使用的網路流量從而減少了顯示資源所需要的時間，通過使用 HTTP caching 可以使 Web 的響應速度更快。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210907/201247676eY4c85dMP.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210907/201247676eY4c85dMP.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Different-kinds-of-caches"><a href="#Different-kinds-of-caches" class="headerlink" title="Different kinds of caches"></a>Different kinds of caches</h1><p>caching 使一種可以儲存給定資源副本並在 request 時將其提供回來的技術，當 Web 發送了一個 request 但這個 request 存在於緩存中時，他會<code>攔截</code>這個 request 並返回緩存中的數據而不是再次向 server 請求新的數據，由於不需要每一個 request 都像 server 端請求新的數據從而減輕了 server 負載，而不是所有的 request 都需要重新請求所以傳輸數據的時間更少了。</p>
+<p>caching 主要分為兩大類，分別是 <code>private cache</code> 和 <code>public cache</code>， public cache 用於儲存提供多個使用者重複使用的數據，private cache 則是專門提供給單個使用者使用的。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210907/201247678RxmFwWBAv.png" alt="https://ithelp.ithome.com.tw/upload/images/20210907/201247678RxmFwWBAv.png"></p>
+<h3 id="Private-browser-caches"><a href="#Private-browser-caches" class="headerlink" title="Private browser caches"></a>Private browser caches</h3><p>private cache 提供單個使用者使用，可以在瀏覽器的設置中看到 <code>caching</code> 這個選項，他會保存使用者通過 HTTP 下載的所有文檔，這些儲存的檔案可以用於上一頁、下一頁、保存等這些操作無需再次請求新數據，同樣也可以達到離線瀏覽功能。</p>
+<h3 id="Shared-proxy-caches"><a href="#Shared-proxy-caches" class="headerlink" title="Shared proxy caches"></a>Shared proxy caches</h3><p>shared cache 是一種可以提供多個使用者重新使用 responses 的 cache，比如公司的電腦已將 Web proxy 本地網路基礎架構的一部分從而減少網路流量與延遲。</p>
+<hr>
+<h1 id="Targets-of-caching-operations"><a href="#Targets-of-caching-operations" class="headerlink" title="Targets of caching operations"></a>Targets of caching operations</h1><p>HTTP 的 cache 通常僅限於 <code>get</code> method 的 response，所以會拒絕其他的 method，<code>primary cache key</code> 是由 <code>request method</code> 和 <code>url</code> 所組成的，常見的 cache 形式有：</p>
+<ul>
+<li><strong>Successful results of a retrieval request</strong>：包含對 HTML 文檔、圖像或文件等資源的 GET 請求 200 (OK) responses。</li>
+<li><strong>Permanent redirects</strong>：301（永久移動）的 responses。</li>
+<li><strong>Error responses</strong>：404（未找到）結果頁面。</li>
+<li><strong>Incomplete results</strong>：206（獲取不完整內容）的 response。</li>
+</ul>
+<hr>
+<h1 id="Controlling-caching"><a href="#Controlling-caching" class="headerlink" title="Controlling caching"></a>Controlling caching</h1><p>可以在 general-header 中添加 <code>Cache-Control</code> 用來對 cache 進行設置，他有以下幾種設置模式</p>
+<h3 id="No-caching"><a href="#No-caching" class="headerlink" title="No caching"></a>No caching</h3><p>不會緩存所有 Client 的 request 或 Server 端的 responses，這意味著所有 request 都會被發送到 server 中，且每一次都會下載一份新的且完成的 response。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cache-Control: no-store</span><br></pre></td></tr></table></figure>
+
+<h3 id="Cache-but-revalidate"><a href="#Cache-but-revalidate" class="headerlink" title="Cache but revalidate"></a>Cache but revalidate</h3><p>在回傳 cache 的數據時會先將 request 發送到 server 端進行驗證，當驗證完成後會從 cache 中發送緩存的數據而不是從新下載一份新的 response。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cache-Control: no-cache</span><br></pre></td></tr></table></figure>
+
+<h3 id="Private-and-public-caches"><a href="#Private-and-public-caches" class="headerlink" title="Private and public caches"></a>Private and public caches</h3><p>將 cache 設定為 <code>public</code> 表示 response 可以被任何 cache 給 cache，相反的如果設置為 <code>private</code> 代表 response 只能提供給單個用戶使用，不得由 public cache 提供。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Cache-Control: private</span><br><span class="line">Cache-Control: public </span><br></pre></td></tr></table></figure>
+
+<h3 id="Expiration"><a href="#Expiration" class="headerlink" title="Expiration"></a>Expiration</h3><p>可以將 cache 設定 <code>max-age=&lt;seconds&gt;</code> 這是緩存的資源會被視為是新鮮的最長時間，當緩存的其中一個資源超過這個設定的時間時，就算 request 可以從 cache 中獲得緩存的資源，但是由於他以經過時了，所以必須再次向 server 端請求最新的數據，而最新的數據也會更新 cache 中的內容。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cache-Control: max-age=31536000</span><br></pre></td></tr></table></figure>
+
+<h3 id="Validation"><a href="#Validation" class="headerlink" title="Validation"></a>Validation</h3><p>如果使用 <code>must-revalidate</code> 設置 cache 時，緩存必須在使用之前驗證過時資源的狀態，不應使用過期的資源，詳細的內容在後面會介紹</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cache-Control: must-revalidate</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="Freshness"><a href="#Freshness" class="headerlink" title="Freshness"></a>Freshness</h1><p>一但資源儲存在 cache 中理論上他可以永遠提供緩存資源，但由於 cache 具有有限的儲存空間，因此會定期從儲存中刪除緩存數據，這個過程稱為 <code>cache eviction</code>，而當 Server 端的 response 發生變化時也會更新 cache，由於 HTTP 是一種 client 端與 server 端的通訊協議，所以當資源發生變化時，server 會無法聯繫到 cache 和 client 端，所以當 responses 更新時代表之前存在 cache 中的數據已經<code>過時了</code>，這 驅逐除演算法會優先選擇比較<code>新的數據</code>而不是過時的數據，不過要注意的是過時的數據並不會被驅逐或忽略，當 cache 收到對過時數據的 request 時，他會使用 <code>If-None-Match</code> 轉發這個 request 以檢查數據實際上是否還是新鮮的，如果是的話 server 就會發出 <code>304（未修改）</code>代表這個數據還是新鮮的，從而不從 server 端發送 response 而是由 cache 發出這個尚未過時的數據。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210907/20124767xl14QOBbKK.png" alt="https://ithelp.ithome.com.tw/upload/images/20210907/20124767xl14QOBbKK.png"></p>
+<ul>
+<li>當 Client 1 發送了一個 request 時，由於 cache 中是空的所會將 request 發送給 server 端，由他來傳遞 response，而在回傳給 client 端時也會將這個 response 緩存起來。</li>
+<li>當 Client 2 發送了一個一樣的 request 時，由於 cache 中已經有這個數據了，所以就會由 cache 回傳 response 而不是從 server 端發送，從而減輕 server 端的負載。</li>
+<li>當 Client 3 也發送了一個一樣的 request 時，由於已經經過了一段時間了，所以當 cache 收到這個 request 時，雖然有對應的緩存數據但他不確定這個緩存數據是否已經過時了，所以將這個使用 <code>If-None-Match</code> 轉發這個 request 給 server，而 server 收到這個 request 後發現他尚未過時所以回傳一個 <code>304（尚未更改）</code>給 cache 通知他這個數據還是新鮮的，於是將緩存數據回傳給 client 端。</li>
+</ul>
+<p>新鮮度的週期是由 headers 計算的，如果在 header 中設置了 <code>Cache-Control: max-age=N</code>，這 N 代表新鮮度的生命週期，而如果沒設置（常見情況），則會檢查 header 中是否存在 <code>Expires</code>，如果存在的話則其值減去 <code>Date</code> 的值就是新鮮度週期時間。</p>
+<h3 id="Heuristic-freshness-checking"><a href="#Heuristic-freshness-checking" class="headerlink" title="Heuristic freshness checking"></a>Heuristic freshness checking</h3><p>如果沒有明確指定新鮮度週期的話（沒有使用 <code>Cache-Control</code> 或 <code>Expires</code>）則可以使用 <code>heuristic approach</code>。</p>
+<p>在這種情況下如果 <code>Last-Modified</code> header 存在的話，新鮮度週期等於 <code>Date</code> header 的值減去 <code>Last-Modified</code> header 的值再<code>除以 10</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">expirationTime = responseTime + freshnessLifetime - currentAge</span><br></pre></td></tr></table></figure>
+
+<h3 id="Revved-resources"><a href="#Revved-resources" class="headerlink" title="Revved resources"></a>Revved resources</h3><p>使用越多的 cache 資源那麼網頁的響應能力和性能就會越好，為了優化這一點良好的實踐良好的實踐所以需要定期或經常的更新 cache 的資源，但對於很少或不經常更新的資源來說是有問題的，比如 Javascript 或 CSS 文件很少會被更改，但當他們發生更改時卻希望他可以快速地被更新。</p>
+<p>為了應對這種情況可以使用一種技術 <code>Steve Souders</code> 稱之為 <code>revving</code>，不常更新的文件會以<code>特定的方式命名</code>：在他們的 url 中通常在文件名稱中添加修訂（或版本）號，這樣的話每個新修訂的版本都會被視為是一種資源，由於他本身永遠不會改變新鮮度週期非常的長，而當不常變化的資源發生變化時，他們會引起<code>經常變化的資源的額外變化</code>，所以不常變化的資源會跟著常變化的資源一起被閱讀到。</p>
+<p>由於是同時更新兩個緩存資源（不常更改的與常更改的），所以不會導致一個過時版本的資源與另一個新版本的資源結合使用的情況。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210907/20124767ZSFgaEJQU3.png" alt="https://ithelp.ithome.com.tw/upload/images/20210907/20124767ZSFgaEJQU3.png"></p>
+<ul>
+<li>當 server 端的數據沒有變化時會傳送 304（未修改）給 cache 由他回傳緩存的 responses</li>
+<li>當 server 端的 CSS 發生更改了，所以 HTML 變為 HTML*，但是由於 cache 中的 HTML 檔還是新鮮的就不會發生任何事，依然是由 cache 負責提供 response</li>
+<li>當 cache 要重新驗證 HTML 檔案時就會發現 server 中的 HTML 已經更改了，所以就會更新 cache 中的數據並將新的 response 傳遞給 client 端</li>
+<li>由於 cache 中的緩存資源發生更改（ CSSv1 → CSSv2 ），於是驅逐演算法就會刪除無用的資源（ CSSv1 ）</li>
+</ul>
+<hr>
+<h1 id="Varying-responses"><a href="#Varying-responses" class="headerlink" title="Varying responses"></a>Varying responses</h1><p>Vary HTTP response header 將確定如何匹配未來的 request header 以決定是否可以使用緩存的 response，或著是否必須要向 Server 端重新請求新的 response。</p>
+<p>當 cache 收到具有 Vary header 的 request 時，默認情況下他不得使用緩存的 response，除非 Vary header 中指定所有標頭字段在 cache request 和新的 request 中平均分配。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210907/20124767NYixMWdA63.png" alt="https://ithelp.ithome.com.tw/upload/images/20210907/20124767NYixMWdA63.png"></p>
+<ul>
+<li>(1): 當 Client 1 發出了一個 header 包含 <code>Accept-Encoding: *</code> 的 request，由於 cache 中目前沒有任何資料，所以會向 Server 端請求新的 responses，而 cache 會儲存這個新的 response 並設定 <code>Content-Encoded: gzip</code> 和 <code>Vary: Content-Encoding</code></li>
+<li>(2): 而當 Clinent 2 發出了一個 header 包含 <code>Accept-Encoding: br</code> 的 request 時，雖然 cache 中有緩存的數據但是因為 cache 中的設定與 request 的不一樣，所以對這個 request 來說需要向 Server 端請求新的 response，而這個獲得的數據也會存入緩存中，並將 cache 的設定更改為<code>Content-Encoded: br</code>。</li>
+<li>(3): 這時當 Client 3 發出了一個 header 包含 <code>Accept-Encoding: br</code> 的 request 時，由於他的設定與 cache 相同所以 response 會由 cache 提供，而不是向 Server 端請求新數據。</li>
+</ul>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#last-modified">HTTP caching</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/HTTP/" rel="tag"># HTTP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/07/Angular/Day1-%E8%AA%8D%E8%AD%98Angular/" rel="prev" title="Day1. 認識 Angular">
+      <i class="fa fa-chevron-left"></i> Day1. 認識 Angular
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/07/Angular/Day2-Angular-CLI/" rel="next" title="Day2. Angular CLI">
+      Day2. Angular CLI <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Different-kinds-of-caches"><span class="nav-number">1.</span> <span class="nav-text">Different kinds of caches</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Private-browser-caches"><span class="nav-number">1.0.1.</span> <span class="nav-text">Private browser caches</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Shared-proxy-caches"><span class="nav-number">1.0.2.</span> <span class="nav-text">Shared proxy caches</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Targets-of-caching-operations"><span class="nav-number">2.</span> <span class="nav-text">Targets of caching operations</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Controlling-caching"><span class="nav-number">3.</span> <span class="nav-text">Controlling caching</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#No-caching"><span class="nav-number">3.0.1.</span> <span class="nav-text">No caching</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cache-but-revalidate"><span class="nav-number">3.0.2.</span> <span class="nav-text">Cache but revalidate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Private-and-public-caches"><span class="nav-number">3.0.3.</span> <span class="nav-text">Private and public caches</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Expiration"><span class="nav-number">3.0.4.</span> <span class="nav-text">Expiration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Validation"><span class="nav-number">3.0.5.</span> <span class="nav-text">Validation</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Freshness"><span class="nav-number">4.</span> <span class="nav-text">Freshness</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Heuristic-freshness-checking"><span class="nav-number">4.0.1.</span> <span class="nav-text">Heuristic freshness checking</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Revved-resources"><span class="nav-number">4.0.2.</span> <span class="nav-text">Revved resources</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Varying-responses"><span class="nav-number">5.</span> <span class="nav-text">Varying responses</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

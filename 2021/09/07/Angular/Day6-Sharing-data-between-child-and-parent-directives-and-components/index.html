@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="我們了解到 Angular app 是由無數個大大小小的 Component 所組成的，所以就會常常需要使用將 Component 嵌套，一個大個 Component 中包含了 10 個小的 Component 之類的，那麼讓資料在父子層 Component 之間傳遞就非常重要，要實現這個功能就需要使用到 Angular 中的 @Input() 和 @Output()。 @Input() 是讓父層">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day6. Sharing data between child and parent directives and components">
+<meta property="og:url" content="https://fandix.github.io/2021/09/07/Angular/Day6-Sharing-data-between-child-and-parent-directives-and-components/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="我們了解到 Angular app 是由無數個大大小小的 Component 所組成的，所以就會常常需要使用將 Component 嵌套，一個大個 Component 中包含了 10 個小的 Component 之類的，那麼讓資料在父子層 Component 之間傳遞就非常重要，要實現這個功能就需要使用到 Angular 中的 @Input() 和 @Output()。 @Input() 是讓父層">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210731/201247672eB7GrD26l.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210731/20124767ChY81vvKyk.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210731/20124767b4TcSxH9Bf.png">
+<meta property="og:image" content="https://fandix.github.io/images/emoticon/emoticon01.gif">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210731/201247671HPuawu3l0.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210731/20124767EYEXWLzvqp.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210731/20124767HMoK6bEpxI.png">
+<meta property="og:image" content="https://i.imgur.com/X4Eucbv.gif">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210731/201247676t6UI5GFIe.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210731/20124767SgNEkRZBMp.png">
+<meta property="article:published_time" content="2021-09-07T08:09:14.000Z">
+<meta property="article:modified_time" content="2021-09-07T08:34:56.131Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210731/201247672eB7GrD26l.png">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/07/Angular/Day6-Sharing-data-between-child-and-parent-directives-and-components/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day6. Sharing data between child and parent directives and components | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/07/Angular/Day6-Sharing-data-between-child-and-parent-directives-and-components/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day6. Sharing data between child and parent directives and components
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-07 16:09:14 / Modified: 16:34:56" itemprop="dateCreated datePublished" datetime="2021-09-07T16:09:14+08:00">2021-09-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-end/" itemprop="url" rel="index"><span itemprop="name">Front-end</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>我們了解到 Angular app 是由無數個大大小小的 Component 所組成的，所以就會常常需要使用將 Component 嵌套，一個大個 Component 中包含了 10 個小的 Component 之類的，那麼讓資料在父子層 Component 之間傳遞就非常重要，要實現這個功能就需要使用到 Angular 中的 @Input() 和 @Output()。</p>
+<p>@Input() 是讓父層更新子層 Component 中的數據，相反的 @Output() 是為讓子層向父層 Component 發送數據的。</p>
+<p>下面我們會做一個簡單的例子來實際使用與講解如使用 @Input() 與 @Output()。<br><img src="https://ithelp.ithome.com.tw/upload/images/20210731/201247672eB7GrD26l.png" alt="https://ithelp.ithome.com.tw/upload/images/20210731/201247672eB7GrD26l.png"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Sending-data-to-a-child-component"><a href="#Sending-data-to-a-child-component" class="headerlink" title="Sending data to a child component"></a>Sending data to a child component</h1><p>大概知道了 Angular 是如何讓父子層 Component  之間傳遞數據的，接下來我們使用一個小小的例子來講解與操作這個功能吧。</p>
+<h3 id="Create-child-and-parent-components"><a href="#Create-child-and-parent-components" class="headerlink" title="Create child and parent components"></a>Create child and parent components</h3><p>首先我們先透過 Angular CLI 建立兩個父子層關係的 Component。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ng generate component parent</span><br><span class="line">ng generate component child</span><br></pre></td></tr></table></figure>
+<p>創建完後，我們將在 parent.component.html 中加入 child.component .ts 中的 selector，建立兩個 Component 的父子層關係。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- parent.component.html --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>parent component works!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">app-child-component</span>&gt;</span><span class="tag">&lt;/<span class="name">app-child-component</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我們打開網頁的開發模式，來確認一下 DOM 是不是確實有將兩個 Component 建立為父子層關係。<br><img src="https://ithelp.ithome.com.tw/upload/images/20210731/20124767ChY81vvKyk.png" alt="https://ithelp.ithome.com.tw/upload/images/20210731/20124767ChY81vvKyk.png"></p>
+<h3 id="Configuring-the-child-component"><a href="#Configuring-the-child-component" class="headerlink" title="Configuring the child component"></a>Configuring the child component</h3><p>首先第一步我們要在 child.component.ts 中使用 <code>@Input()</code> 裝飾器，先把他透過 import 從 <code>@angular/core</code> 中引用進來然後使用它。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Input &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;  <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-child-component&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./child.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ChildComponent</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Input</span>() item = <span class="string">&#x27;&#x27;</span>; <span class="comment">// (2)</span></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 使用 import 將 @Input 引入</li>
+<li>(2): 使用 @Input( ) 裝飾 property “item”</li>
+</ul>
+<p>可以看到我們使用了 @Input() 裝飾了 ChildComponent 中的 item 這個 property， 雖然在上面的例子中是將他初始化為 string，但是<code>不代表使用 @Input() 裝飾的 property 只能是字串型態</code>，他可以是任一種資料型態，代表著這個 property 來自父層。</p>
+<p>接下來我們將這個 property 放在 child.component.html 中讓我們可以觀察他的變化。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- child.component.html  --&gt;</span><br><span class="line">&lt;p&gt;child component works!&lt;/p&gt;</span><br><span class="line"></span><br><span class="line">&lt;div&gt;Today&#x27;s item: &#123;&#123; item &#125;&#125;&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210731/20124767b4TcSxH9Bf.png" alt="https://ithelp.ithome.com.tw/upload/images/20210731/20124767b4TcSxH9Bf.png"><br>在畫面中我們會看到我們打上的 Today’s item 後面並沒有東西（因為父層還沒傳資料下來啊～<img src="/images/emoticon/emoticon01.gif" alt="/images/emoticon/emoticon01.gif"></p>
+<h3 id="Configuring-the-parent-component"><a href="#Configuring-the-parent-component" class="headerlink" title="Configuring the parent component"></a>Configuring the parent component</h3><p>接下來我們來在父層的 HTML 中綁定屬性：</p>
+<ol>
+<li>先 parent.component.ts 中定義一個 property 並將他賦值<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-parent-component&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./parent.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ParentComponent</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">  currentItem = <span class="string">&#x27;Television&#x27;</span>;  <span class="comment">// defind a property</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>在 parent.component.html 中使用 property binding 將父層的 currentItem property 綁定給子層<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">app-child-component</span> [<span class="attr">item</span>]=<span class="string">&quot;currentItem&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-child-component</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<img src="https://ithelp.ithome.com.tw/upload/images/20210731/201247671HPuawu3l0.png" alt="https://ithelp.ithome.com.tw/upload/images/20210731/201247671HPuawu3l0.png"></li>
+</ol>
+<p>在畫面中可以看到原本 Today’s item 後面什麼都沒有的卻顯示了來自 parent.component.ts 中的 property 內容，這就是透過 @Input( ) 將父層的資料傳遞給子層。<br><img src="https://ithelp.ithome.com.tw/upload/images/20210731/20124767EYEXWLzvqp.png" alt="https://ithelp.ithome.com.tw/upload/images/20210731/20124767EYEXWLzvqp.png"><br>上面的圖已看到，[ ] 中的目標是你在子層使用 @Input() 裝飾的 property，而 source (等好右邊的部分) 是父層要提供給子層數據的名稱，也就是在父層中為了要傳遞給子層數值所定義的 property。</p>
+<p>我們在 Lifecycle 中有提到，ngOnChange() 被調用的條件，除了 Component 剛被創建出來的第一次調用之外，其他的每一次都是在當有 input binding 發生改變時會被調用，這代表著如果父層要向下傳遞的 property 發生改變時，就會觸發子層的 ngOnChange()。</p>
+<hr>
+<h1 id="Sending-data-to-a-parent-component"><a href="#Sending-data-to-a-parent-component" class="headerlink" title="Sending data to a parent component"></a>Sending data to a parent component</h1><p>講解完如何透過 @Input() 將父層的數據傳給子層後，接下來介紹如何透過 @Output() 讓子層的數據傳遞給父層。</p>
+<p>首先 @Output() 裝飾器它可以讓子層的 property 標記成為數據可以傳遞給父層的入口，子層透過使用被 @Output() 裝飾的 property 觸發 event 來通知父層數據已經被更改了，要觸發事件這個子層的 property 必須是 “EventEmitter” 型別，他可以從 ‘@angular/core’ 中引入，下面我們一樣會用一個小例子舉例並講解。</p>
+<h3 id="Configuring-the-child-component-1"><a href="#Configuring-the-child-component-1" class="headerlink" title="Configuring the child component"></a>Configuring the child component</h3><p>我們在 child 中設置一個可以點擊一個 <code>&lt;button&gt;</code> 來觸發 EventEmitter，並將數據傳遞給父層。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Output, EventEmitter &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;  <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-child-component&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./child.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./child.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ChildComponent</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Output</span>() newItemEvent = <span class="keyword">new</span> EventEmitter&lt;<span class="built_in">boolean</span>&gt;();  <span class="comment">// (2)</span></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">parentValueChange</span>(<span class="params">value: <span class="built_in">boolean</span></span>)</span> &#123;  <span class="comment">// (3)</span></span><br><span class="line">    <span class="built_in">this</span>.newItemEvent.emit(value);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 使用 import 將 @Output 與 @EventEmitter 引入</li>
+<li>(2): 使用 @Output( ) 裝飾一個 property，上面的例子中是 newItemEvent 是一個 EventEmitter 的類型，代表他是一個 event 並會傳遞一個型別為字串的數值</li>
+<li>(3): 新增一個 method 當使用者點擊畫面的 button 後會觸發此 method 讓子層的數值傳遞給父層</li>
+</ul>
+<h3 id="Configuring-the-child’s-template"><a href="#Configuring-the-child’s-template" class="headerlink" title="Configuring the child’s template"></a>Configuring the child’s template</h3><p>接著我們來更改 child.component.html 的內容，我們新增兩個 <code>&lt;button&gt;</code> 讓使用者可以對這兩個物件進行操作</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- child.component.html  --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>child component works!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;button&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;parentValueChange(true)&quot;</span>&gt;</span>+<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;parentValueChange(false)&quot;</span>&gt;</span>-<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>我們將畫面中的兩個 button 都綁定一個 click event，當點擊 + 這個按鍵就會觸發並將 true 做為參數傳給 parentValueChange，反之傳 false。<br><img src="https://ithelp.ithome.com.tw/upload/images/20210731/20124767HMoK6bEpxI.png" alt="https://ithelp.ithome.com.tw/upload/images/20210731/20124767HMoK6bEpxI.png"></p>
+<h3 id="Configuring-the-parent-component-1"><a href="#Configuring-the-parent-component-1" class="headerlink" title="Configuring the parent component"></a>Configuring the parent component</h3><p>接著我們在父層中添加一個 property 讓我們可以透過子層操控這個屬性。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-parent-component&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./parent.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ParentComponent</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">  counterValue = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">addOrSub</span>(<span class="params">event: <span class="built_in">boolean</span></span>)</span> &#123;       <span class="comment">// (1)</span></span><br><span class="line">    <span class="keyword">if</span> (event) &#123;</span><br><span class="line">      <span class="built_in">this</span>.counterValue++;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.counterValue--;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(1): 在 parent.component.ts 中新增一個 method，當接收到子層傳遞上來的數值時，判斷要將 counterValue 增加或減少。</li>
+</ul>
+<h3 id="Configuring-the-parent’s-template"><a href="#Configuring-the-parent’s-template" class="headerlink" title="Configuring the parent’s template"></a>Configuring the parent’s template</h3><p>接著在 parent.component.html 中將 method 綁定到 child’s event 上，讓子層的事件可以觸發到父層的 method。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- parent.component.html --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>parent component works!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span>parent component property counter: &#123;&#123;counterValue&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">app-child-component</span> (<span class="attr">newItemEvent</span>)=<span class="string">&quot;addOrSub($event)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-child-component</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://i.imgur.com/X4Eucbv.gif" alt="img"></p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210731/201247676t6UI5GFIe.png" alt="https://ithelp.ithome.com.tw/upload/images/20210731/201247676t6UI5GFIe.png"></p>
+<p>如同 @Input() 一樣，在 () 內的是在子層利用 @Output() 裝飾的 property，因為他是一個 event，所以當子層觸發 event 後會將子層更改的值透過 event 傳遞給父層的 method，而 source( 等號右邊 ) 是父層定義用來接子層傳上來數值的 method。</p>
+<p>當你要對同一個子層同時使用 @Input() 和 @Output() 時，可以使用 Tow-way Binding [()]，就可以不用像上面一樣寫得這麼長了，這個方法會在之後詳細講解。</p>
+<hr>
+<h1 id="Parent-calls-an-ViewChild"><a href="#Parent-calls-an-ViewChild" class="headerlink" title="Parent calls an @ViewChild()"></a>Parent calls an @ViewChild()</h1><p>介紹完 @Input() 與 @Output() 後，接著要來介紹 @ViewChild() 這個東西，他的存在是因為在 Angular 中父層 Component 無法訪問到子層的 Component，因為<code>每個 Component 都是一個個獨立的 Class instance，所以在沒有互相連接的情況下是不能訪問到子層的 property 和 method</code>，所以當開發時遇到這類型的狀況時，需要將子層 Component 作為 ViewChild inject 給父層，在下面舉一個簡單的例子。</p>
+<h3 id="Configuring-the-child-component-2"><a href="#Configuring-the-child-component-2" class="headerlink" title="Configuring the child component"></a>Configuring the child component</h3><p>首先先在 child.component.ts 新增一個 property 與 method，讓使用者點擊畫面的 button 時可以加減這個值。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-child-component&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./child.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./child.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ChildComponent</span> </span>&#123;</span><br><span class="line">  childCounter = <span class="number">0</span>;       <span class="comment">// (1)</span></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">parentValueChange</span>(<span class="params">value: <span class="built_in">boolean</span></span>)</span> &#123;     <span class="comment">// (2)</span></span><br><span class="line">    <span class="keyword">if</span> (value) &#123;</span><br><span class="line">      <span class="built_in">this</span>.childCounter++;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.childCounter--;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">childCounterValue</span>(<span class="params"></span>)</span> &#123;                   <span class="comment">// (3)</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.childCounter;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(1): 新增一個 property 讓他可以被增加或減少</li>
+<li>(2): 新增一個 method，當使用者點擊畫面按鈕時觸發</li>
+<li>(3): 新增一個 method，他將回傳子層的 property</li>
+</ul>
+<h3 id="Configuring-the-child’s-template-1"><a href="#Configuring-the-child’s-template-1" class="headerlink" title="Configuring the child’s template"></a>Configuring the child’s template</h3><p>接著我們在 child.component.html 中新增兩個 <code>&lt;button&gt;</code> 並將我們的 childCounter 顯示出來。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- child.component.html  --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>child component works!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Child component counter value: &#123;&#123;childCounter&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;button&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;parentValueChange(true)&quot;</span>&gt;</span>+<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;parentValueChange(false)&quot;</span>&gt;</span>-<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210731/20124767SgNEkRZBMp.png" alt="https://ithelp.ithome.com.tw/upload/images/20210731/20124767SgNEkRZBMp.png"></p>
+<h3 id="Configuring-the-parent-component-2"><a href="#Configuring-the-parent-component-2" class="headerlink" title="Configuring the parent component"></a>Configuring the parent component</h3><p>接著我們在父層在 ‘@angular/core’ 中引入 ViewChild 並將他綁定在子層上</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, AfterViewInit, ViewChild &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;  <span class="comment">// (1)</span></span><br><span class="line"><span class="keyword">import</span> &#123; ChildComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;../child/child.component&#x27;</span>;            <span class="comment">// (2)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-parent-component&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./parent.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ParentComponent</span> <span class="title">implements</span> <span class="title">AfterViewInit</span> </span>&#123;</span><br><span class="line">  <span class="meta">@ViewChild</span>(<span class="string">&#x27;childComponent&#x27;</span>)                                        <span class="comment">// (3)</span></span><br><span class="line">  childComponent!: ChildComponent;                                   </span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">  counterValue = <span class="number">0</span>;                                                  </span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">ngAfterViewInit</span>(<span class="params"></span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">getChildCounterValue</span>(<span class="params"></span>)</span> &#123;                                            <span class="comment">// (4)</span></span><br><span class="line">    <span class="built_in">this</span>.counterValue = <span class="built_in">this</span>.childComponent.childCounterValue();      <span class="comment">// (5)</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(1): 透過 import 將 ViewChild 引入</li>
+<li>(2): 透過 import 將 sub-component 引入</li>
+<li>(3): 使用 @ViewChild 將 childComponent  property 裝飾為可以獲得子層內容，並將這個 property 的型態設定為 ChildComponent</li>
+<li>(4): 新增一個 method，當使用者點擊畫面按鈕時觸發</li>
+<li>(5): 將子層的 property 賦予給父層的 property</li>
+</ul>
+<h3 id="Configuring-the-parent’s-template-1"><a href="#Configuring-the-parent’s-template-1" class="headerlink" title="Configuring the parent’s template"></a>Configuring the parent’s template</h3><p>接著我們在 parent.component.html 中新增一個 <code>&lt;button&gt;</code>，當使用這點擊時觸發將子層的 property 賦值給父層的 property 並將他顯示出來。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- parent.component.html --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>parent component works!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span>Get child component counter value: &#123;&#123;counterValue&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;getChildCounterValue()&quot;</span>&gt;</span>Get child value<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">app-child-component</span> #<span class="attr">childComponent</span>&gt;</span><span class="tag">&lt;/<span class="name">app-child-component</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到當我們更改了子層的 property 後， 我們點擊了父層的 button 後，父層的 component 透過利用 ViewChild inject 到 parent.component.ts 的方法直接獲得了子層中的 method，並將內容賦予在父層的 property 上。</p>
+<p>要注意的是，當要用這個方法獲得子層的 property 或 method 時，需要在 ngAfterViewInit( ) 結束之後才拿得到，因為需要 Angular 需要完整的初始化完自身 Component 和 sub-component 的 view 之後才能拿到  sub-component 的內容，這點要非常注意。</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>在本篇章中介紹了如何透過 @Input( ) 進行從父層傳遞資料給子層的動作，也介紹了如何使用 @Output( ) 將子層的事件向上傳遞給父層， Component 之間的溝通再開發 Angular app 之間是非常重要的，所以一定要知道該如何使用，最後也介紹了如何將 sub-component inject 給父層，讓父層可以直接調用到 sub-component 的 property 和 method，下一篇要來介紹 ng-content，就是將一個 component 投影到另一個 component 上，那我們就下一篇再見吧。</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/inputs-outputs">Angular.io</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/07/Angular/Day5-Lifecycle-hooks/" rel="prev" title="Day5. Lifecycle-hooks">
+      <i class="fa fa-chevron-left"></i> Day5. Lifecycle-hooks
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/07/Angular/Day7-Content-projection/" rel="next" title="Day7. Content projection">
+      Day7. Content projection <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Sending-data-to-a-child-component"><span class="nav-number">1.</span> <span class="nav-text">Sending data to a child component</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-child-and-parent-components"><span class="nav-number">1.0.1.</span> <span class="nav-text">Create child and parent components</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-child-component"><span class="nav-number">1.0.2.</span> <span class="nav-text">Configuring the child component</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-parent-component"><span class="nav-number">1.0.3.</span> <span class="nav-text">Configuring the parent component</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sending-data-to-a-parent-component"><span class="nav-number">2.</span> <span class="nav-text">Sending data to a parent component</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-child-component-1"><span class="nav-number">2.0.1.</span> <span class="nav-text">Configuring the child component</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-child%E2%80%99s-template"><span class="nav-number">2.0.2.</span> <span class="nav-text">Configuring the child’s template</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-parent-component-1"><span class="nav-number">2.0.3.</span> <span class="nav-text">Configuring the parent component</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-parent%E2%80%99s-template"><span class="nav-number">2.0.4.</span> <span class="nav-text">Configuring the parent’s template</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Parent-calls-an-ViewChild"><span class="nav-number">3.</span> <span class="nav-text">Parent calls an @ViewChild()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-child-component-2"><span class="nav-number">3.0.1.</span> <span class="nav-text">Configuring the child component</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-child%E2%80%99s-template-1"><span class="nav-number">3.0.2.</span> <span class="nav-text">Configuring the child’s template</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-parent-component-2"><span class="nav-number">3.0.3.</span> <span class="nav-text">Configuring the parent component</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-parent%E2%80%99s-template-1"><span class="nav-number">3.0.4.</span> <span class="nav-text">Configuring the parent’s template</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

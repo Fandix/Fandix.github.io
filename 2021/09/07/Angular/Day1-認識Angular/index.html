@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在2020年9月，我正式的從韌體工程師轉職成為一位前端工程師，在自學前端的時候我是選擇了 React 這個 Javascript 框架，做了幾個作品後投履歷面試最後找到目前任職的公司，一路上跌跌撞撞但也算順利，不過唯一不太順了就是目前任職的這間公司是使用 Angular ，當初剛進到這間公司時也是從頭開始 K Angular 官方文檔，看得真的是無煞煞，現在也進到這間公司快一年了，也使用過 Ang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day1. 認識 Angular">
+<meta property="og:url" content="https://fandix.github.io/2021/09/07/Angular/Day1-%E8%AA%8D%E8%AD%98Angular/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在2020年9月，我正式的從韌體工程師轉職成為一位前端工程師，在自學前端的時候我是選擇了 React 這個 Javascript 框架，做了幾個作品後投履歷面試最後找到目前任職的公司，一路上跌跌撞撞但也算順利，不過唯一不太順了就是目前任職的這間公司是使用 Angular ，當初剛進到這間公司時也是從頭開始 K Angular 官方文檔，看得真的是無煞煞，現在也進到這間公司快一年了，也使用過 Ang">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210907/20124767yplho5jgGn.png">
+<meta property="article:published_time" content="2021-09-07T07:37:10.000Z">
+<meta property="article:modified_time" content="2021-09-07T08:34:40.477Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210907/20124767yplho5jgGn.png">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/07/Angular/Day1-%E8%AA%8D%E8%AD%98Angular/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day1. 認識 Angular | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/07/Angular/Day1-%E8%AA%8D%E8%AD%98Angular/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day1. 認識 Angular
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-07 15:37:10 / Modified: 16:34:40" itemprop="dateCreated datePublished" datetime="2021-09-07T15:37:10+08:00">2021-09-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-end/" itemprop="url" rel="index"><span itemprop="name">Front-end</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在2020年9月，我正式的從韌體工程師轉職成為一位前端工程師，在自學前端的時候我是選擇了 React 這個 Javascript 框架，做了幾個作品後投履歷面試最後找到目前任職的公司，一路上跌跌撞撞但也算順利，不過唯一不太順了就是目前任職的這間公司是使用 Angular ，當初剛進到這間公司時也是從頭開始 K Angular 官方文檔，看得真的是無煞煞，現在也進到這間公司快一年了，也使用過 Angular 做了幾個專案與處理了幾個問題，想說再次挑戰自己從頭開始認真看 Angular 官方文檔並用自己的理解整理成筆記，希望能對新進的 Angular 開發者有些幫助。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210907/20124767yplho5jgGn.png" alt="https://ithelp.ithome.com.tw/upload/images/20210907/20124767yplho5jgGn.png"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="What-is-Angular"><a href="#What-is-Angular" class="headerlink" title="What is Angular ?"></a>What is Angular ?</h1><p>開門見山的說 Angular 是一個 Javascript 的框架，他是基於 TypeScript 進行開發的，它包括了：</p>
+<ul>
+<li>基於 Component 且用於構建 Web App 的框架</li>
+<li>他集成了許多 Library 涵蓋了多種功能，包括 Router, forms, client-server…</li>
+<li>一套開發人員工具，提供開發者開發、構建、測試與更新程式碼</li>
+</ul>
+<p>記得當初主管跟我分享 Angualr 的好處，因為 Angular 擁有非常完整的功能，可以透過它提供的功能建立一個完整且大型的 Web App，而且就如他有非常完整的功能，當在面對多個開發者同時開發專案時，就會遵守共同的開發原則以減少多人開發的問題。</p>
+<hr>
+<h1 id="Angular-applications-The-essentials"><a href="#Angular-applications-The-essentials" class="headerlink" title="Angular applications: The essentials"></a>Angular applications: The essentials</h1><p>Angular 中有許多核心思想，了解這些核心思想對於之後的開發有非常好的幫助。</p>
+<h3 id="Components"><a href="#Components" class="headerlink" title="Components"></a>Components</h3><p>Component 是構建一個 Web App 的最基本方塊，每一個 Web App 都是由一個又一個大大小小的 Component 所組成的，在之前學習 React 的時候也是這個概念，但是 Angular 的 Component 跟 React 非常不一樣，他是一個帶有 @Component() 裝飾器的 TypeScript Class、HTML template, Style ，這邊你可能聽不懂，但沒關係現階段只要簡單記住他是一個有 TypeScript、HTML、CSS 的小方塊就好。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;hello-world&#x27;</span>,</span><br><span class="line">  <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;h2&gt;Hello World&lt;/h2&gt;</span></span><br><span class="line"><span class="string">    &lt;p&gt;This is my first component!&lt;/p&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorldComponent</span> </span>&#123;</span><br><span class="line">  <span class="comment">// The code in this class drives the component&#x27;s behavior.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>當你要使用這個 Component 時，只需要在 HTML 中將你要用的 selector 當作 tag 使用就好</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">hello-world</span>&gt;</span><span class="tag">&lt;/<span class="name">hello-world</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Templates"><a href="#Templates" class="headerlink" title="Templates"></a>Templates</h3><p>每一個 Component 都擁有自己的 HTML template，它用於在畫面中呈現你這個 Component，當你的 Component 發生改變時 Angular 會自動更新並且重新渲染 DOM，他有許多非常好用的功能，比如說動態插入、事件綁定等等的，不過這個我們之後會專門講解，在這裡只要記得 Template 是用來在 UI 上顯示 Component 內容的就可以了。</p>
+<h3 id="Dependency-injection"><a href="#Dependency-injection" class="headerlink" title="Dependency injection"></a>Dependency injection</h3><p>Dependency injection 在 Angular 中是一個非常重要的觀念，簡單來說當你在寫一般的 JavaScript 時，你可能寫了一個 Class 裡面存放了許多邏輯，當你在使用的時候你可能會需要使用 new 將這個Class 實例化成一個 Object，然後才能使用裡面的 method 或 property，而當遇到需要使用 static method 時又可以不用實例化 class 就可以使用，需要考慮的事情就比較多一點。</p>
+<p>而 Angular 提供了 Dependency injection 讓你再遇到上面的情況時可以無須理會是否需要將 Class 實例化，Angular 會自動幫你處理這個過程，這樣的方式可以讓你編寫可測試性高且更靈活的程式。</p>
+<p>我舉個簡單的例子說明一下 Dependency injection 有多好用，我們先以一般 Javascript 的模式</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Create class</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="title">construct</span>(<span class="params"></span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">sayHello</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">&#x27;hello world&#x27;</span>);  </span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">static</span> <span class="function"><span class="title">sayGoodBye</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">&#x27;good bye&#x27;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// use Class</span></span><br><span class="line"><span class="keyword">const</span> helloService = <span class="keyword">new</span> HelloService();</span><br><span class="line"></span><br><span class="line">helloService.sayHello(); <span class="comment">// hello world</span></span><br><span class="line">HelloService.sayGoodBye(); <span class="comment">// good bye -&gt; static method need call class</span></span><br></pre></td></tr></table></figure>
+<p>上面的例子可以看到，當我們需要使用 Class 裡面的 method 時需要先將它實例化才能使用內部的 method，而如果要使用 static method 則需要呼叫 Class 本體，那我們接著看 Angular 的操作。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Create Class</span></span><br><span class="line"><span class="keyword">import</span> &#123; Injectable &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Injectable</span>(&#123;<span class="attr">providedIn</span>: <span class="string">&#x27;root&#x27;</span>&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">sayHello</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">&#x27;hello world&#x27;</span>);  </span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="title">sayGoodBye</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">&#x27;good bye&#x27;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// user Class</span></span><br><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HelloService &#125; <span class="keyword">from</span> <span class="string">&#x27;./helloService.ts&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;hello-world&#x27;</span>,</span><br><span class="line">  <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;h2&gt;Hello World&lt;/h2&gt;</span></span><br><span class="line"><span class="string">    &lt;p&gt;This is my first component!&lt;/p&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorldComponent</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> helloServer: HelloService</span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="title">sayHi</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.helloServer(); <span class="comment">// &#x27;hello world&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="title">sayBye</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.sayGoodBye(); <span class="comment">// &#x27;good bye&#x27;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面可以看到我們在 Component 的 constructor 中注入了 helloServer，所以我們可以不需要實例化就可以使用 HelloService 內部的 method，如果這邊看不懂沒關係，這邊只是大概介紹一個概念，之後也會詳細說明。</p>
+<hr>
+<h1 id="Angular-CLI"><a href="#Angular-CLI" class="headerlink" title="Angular CLI"></a>Angular CLI</h1><p>Angular CLI 是開發 Angular 應用程序的最快、直接且推薦的方式，就像 React 的 create-react-app 一樣，可以透過指令快速建立出基本的 Angular app，除了建立模板之外還有非常多好用的功能，我會在下一章節中仔細講解 Angular CLI 是什麼。</p>
+<hr>
+<h1 id="First-party-libraries"><a href="#First-party-libraries" class="headerlink" title="First-party libraries"></a>First-party libraries</h1><p>就如上面所提到 Angular 擁有非常多非常完善的資源提供你創建你的 Web App，所以當你在開發過程中遇到需要添加功能時，就可以添加相對應的模組來達成你的目的。</p>
+<p>這邊簡單介紹幾個 first party libraries</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Angular Router</td>
+<td>基於 Component 的客戶端導航與 Router，支援延遲載入、嵌套 Router、自定義路徑匹配等等</td>
+</tr>
+<tr>
+<td>Angular Forms</td>
+<td>表單輸入與表單內容驗證</td>
+</tr>
+<tr>
+<td>Angular HttpClient</td>
+<td>可支援 client 端與 server 端的溝通</td>
+</tr>
+<tr>
+<td>Angular Animations</td>
+<td>驅動 app 動畫</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本篇章大概介紹了什麼是 Angular 與使用它的好處，有提到許多比較難的觀念，template 的操作與<br>Dependency injection 等等，現在可能看不太懂不過沒關係，我們後面會詳細講解這些是幹什麼的，當初我也是花了很多時間才大概了解他在幹嘛的 ( 苦笑。</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/what-is-angular">Angular.io</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/07/HTTP/HTTP-caching/" rel="next" title="HTTP caching">
+      HTTP caching <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-Angular"><span class="nav-number">1.</span> <span class="nav-text">What is Angular ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Angular-applications-The-essentials"><span class="nav-number">2.</span> <span class="nav-text">Angular applications: The essentials</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Components"><span class="nav-number">2.0.1.</span> <span class="nav-text">Components</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Templates"><span class="nav-number">2.0.2.</span> <span class="nav-text">Templates</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dependency-injection"><span class="nav-number">2.0.3.</span> <span class="nav-text">Dependency injection</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Angular-CLI"><span class="nav-number">3.</span> <span class="nav-text">Angular CLI</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#First-party-libraries"><span class="nav-number">4.</span> <span class="nav-text">First-party libraries</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">5.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

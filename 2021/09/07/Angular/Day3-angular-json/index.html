@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在上一篇中介紹了什麼是 Angular CLI 與他可以提供許多方便功能，不過只是大概介紹他的用法與他是什麼，要實際暸解到他背後的運行邏輯其實是滿複雜的，這邊就不詳細的講解（因為我也不太了解…)。 不過說到 Angular CLI 就避免不了要介紹一下 Angular CLI 的控制塔 “ angular.json “， angular.json 是位於 Angular workspace roo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day3. angular.json">
+<meta property="og:url" content="https://fandix.github.io/2021/09/07/Angular/Day3-angular-json/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在上一篇中介紹了什麼是 Angular CLI 與他可以提供許多方便功能，不過只是大概介紹他的用法與他是什麼，要實際暸解到他背後的運行邏輯其實是滿複雜的，這邊就不詳細的講解（因為我也不太了解…)。 不過說到 Angular CLI 就避免不了要介紹一下 Angular CLI 的控制塔 “ angular.json “， angular.json 是位於 Angular workspace roo">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767GwY7OIYgvq.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210729/20124767znwvhlEFXA.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210729/20124767ZvVJbw5arN.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210729/20124767Stj9kOMC1l.png">
+<meta property="article:published_time" content="2021-09-07T07:53:49.000Z">
+<meta property="article:modified_time" content="2021-09-07T08:34:46.884Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767GwY7OIYgvq.png">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/07/Angular/Day3-angular-json/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day3. angular.json | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/07/Angular/Day3-angular-json/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day3. angular.json
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-07 15:53:49 / Modified: 16:34:46" itemprop="dateCreated datePublished" datetime="2021-09-07T15:53:49+08:00">2021-09-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-end/" itemprop="url" rel="index"><span itemprop="name">Front-end</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在上一篇中介紹了什麼是 Angular CLI 與他可以提供許多方便功能，不過只是大概介紹他的用法與他是什麼，要實際暸解到他背後的運行邏輯其實是滿複雜的，這邊就不詳細的講解（因為我也不太了解…)。</p>
+<p>不過說到 Angular CLI 就避免不了要介紹一下 Angular CLI 的控制塔 “ angular.json “， angular.json 是位於 Angular workspace root level 的一個文件，主要是<code>提供 workspace 的配置與 project 的預設配置，供 Angular CLI 中 build 和 development tool 使用</code>。</p>
+<blockquote>
+<p>A file named angular.json at the root level of an Angular workspace provides workspace-wide and project-specific configuration defaults for build and development tools provided by the Angular CLI. Path values given in the configuration are relative to the root workspace folder.</p>
+</blockquote>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767GwY7OIYgvq.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767GwY7OIYgvq.png"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Overall-JSON-structure"><a href="#Overall-JSON-structure" class="headerlink" title="Overall JSON structure"></a>Overall JSON structure</h1><p>大概講完 angular.json 是幹嘛的後接下來要分析一下 angular.json 的結構。</p>
+<p>angular.json 主要分為兩個區域： root 和 project。</p>
+<p>root 的部分主要是關於 workspace 的一些信息，主要用於配置 workspace，你會在上面找到：</p>
+<ul>
+<li>version：你的 workspace 配置版本</li>
+<li>newProjectRoot：這是用於創建新項目的路徑，比如使用 ng generate application <name> 或 ng generate library <name>，那麼 Angular CLI 會藉由這個路徑知道要從哪裡生成 applicatioon 或 library。</li>
+<li>defaultProject：這是在你使用 ng new <name> 時所創建的屬性，他對應著你創建這個項目時給定的初始名稱，如果在使用 Angular CLI 時沒有填入項目名稱，則會直接將這個屬性帶入，比如說你要執行 app 時所使用的 ng server <name>，你可以直接執行 ng server 而不會出錯的原因就是它會自動將名稱帶入變成 ng server my-app。</li>
+<li>projects：這裡包含了你的 application 和 library 所有必要的訊息。</li>
+<li>schematics：用於客製化 ng generation 命令的預設選項。</li>
+</ul>
+<p>project 的部分包含 CLI 可以使用的特定訊息，你會在上面找到：</p>
+<ul>
+<li>root：這是 project 相對於 workspace 的路徑。</li>
+<li>sourceroot：這是包含當前項目 source file 的文件夾路徑。</li>
+<li>projectType：可以是 application 或 library，CLI 需要知道專案類型，因為每種類型都有對應的需求與限制，比如說 library 需要被打包才能分發並且不能在與 application 相反的瀏覽器中提供服務。</li>
+<li>prefix：這是當前項目 selectors 的前綴字串，當使用 ng generate component 時會將這個前綴字加在你的 component 前面，比如你的 prefix 這制為 gna，那麼使用 ng generate component hello-world 所創建出來的 component 的 selectors 就會是 “gna-hello-world”。</li>
+<li>schematics：用於這是當前 project 中某些 schematics 所使用到的默認選項，比如你要將你專案的樣是從 CSS 變為 SCSS，就可以在這個屬性中添加 “styleext”:“scss”。</li>
+<li>architect：為這個 project 各個 architect 提供預設值。</li>
+</ul>
+<p>下圖是一個簡單的 angular.json file，其中只有一個 build command。<br><img src="https://ithelp.ithome.com.tw/upload/images/20210729/20124767znwvhlEFXA.png" alt="https://ithelp.ithome.com.tw/upload/images/20210729/20124767znwvhlEFXA.png"></p>
+<hr>
+<h1 id="What-is-Architect"><a href="#What-is-Architect" class="headerlink" title="What is Architect ?"></a>What is Architect ?</h1><p>可能看到這邊很多人都會覺得還可以，畢竟這些 porperty 大概都能了解在幹嘛而且也可以在自己的 Angular app 中找到對應的位置，但是！ “Architect” 這個到底是什麼？，可能對很多新手來說相當的複雜（我現在也迷迷糊糊，有說錯的話歡迎指正），接下來我們就來看看 Angular 官網是怎麼描述這個東西的。</p>
+<blockquote>
+<p>Architect is the tool that the CLI uses to perform complex tasks, such as compilation and test running</p>
+</blockquote>
+<p>Architect 是 CLI 用來執行複雜任務的工具，例如 compilation 和 test running，而 Architect 是一個 shell，它根據 target configuration 執行指定的 Builder 來執行給定的任務</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210729/20124767ZvVJbw5arN.png" alt="https://ithelp.ithome.com.tw/upload/images/20210729/20124767ZvVJbw5arN.png"></p>
+<p>可以把它看作是 <code>Angular CLI 與 builder 之間的 &quot;中間人&quot;</code>，Architect 是可以訪問或修改特定 builder 選項或添加選項配置的地方，<code>當你輸入 command 後 Architect 會對 command 進行分析、解析最後對正確的 builder 執行請求操作</code>。</p>
+<hr>
+<h1 id="What-is-Builders"><a href="#What-is-Builders" class="headerlink" title="What is Builders ?"></a>What is Builders ?</h1><p>大概了解 Architect 是什麼並且他在做什麼之後，那麼什麼是 Builders？， Builders 是 Architect 要處理特定任務時所運行的工具，通常他會對應到 npm package，例如 packageing your libreay 或 building，和 serving application。</p>
+<p>通常 builders 會接收兩個參數，一組輸入 option ( a JSON object )，和一個 context ( a BuilderContext object )，option object 由 CLI 使用者提供，而 context 由 CLI Builder API 提供。</p>
+<p>Angular 提供了一些由 CLI 用於 ng build 和 ng test 等命令的 builders，這些內建的 CLI Builders 可以在 angular.json 的 “Architect” 部分找到，當然你也可以當然你也可以使用 ng run <targetName>來自定你想要的 builders，不過這有點過於深入不在本章節的討論範圍。</p>
+<hr>
+<h1 id="Understanding-the-command-mapping"><a href="#Understanding-the-command-mapping" class="headerlink" title="Understanding the command mapping"></a>Understanding the command mapping</h1><p><img src="https://ithelp.ithome.com.tw/upload/images/20210729/20124767Stj9kOMC1l.png" alt="https://ithelp.ithome.com.tw/upload/images/20210729/20124767Stj9kOMC1l.png"></p>
+<p>正如我們前面所說的，當你輸入 command 後 Architect 會對 command 進行分析、解析最後對正確的 builder 執行請求操作，所以當我們輸入了簡化的 command 後，實際上他會被 Architect 轉化成通用的 command : ng run projectName:architectTarget。</p>
+<p>Example: build: ng build… → ng run <projectName>:build</p>
+<p>知道了這一點後我們可以推敲一下這些命令在 Architect 轉換後會變成什麼：</p>
+<ul>
+<li>build: ng build … → ng run my-app:build;</li>
+<li>serve: ng serve … → ng run my-app:serve;</li>
+<li>e2e: ng e2e … → ng run my-app:e2e;</li>
+<li>test: ng test … → ng run my-app:test;</li>
+<li>lint: ng lint … → ng run my-app:lint;</li>
+<li>extract-i18n: ng xi18n … → ng run my-app:xi18n</li>
+</ul>
+<hr>
+<h1 id="Assets-configuration"><a href="#Assets-configuration" class="headerlink" title="Assets configuration"></a>Assets configuration</h1><p>在每一個 build target 中都可以有一個陣列，裡面可以放你想要的文件或文件夾，他會在你 build 專案的時候按照原樣複製一份，不會對他進行壓縮或打包，通常會把圖片放在這邊。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;assets&quot;</span>: [</span><br><span class="line">  <span class="string">&quot;src/assets&quot;</span>,</span><br><span class="line">  <span class="string">&quot;src/favicon.ico&quot;</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>你可以把 Assets 的內容變為一個一個的物件，這樣相較於只有填入檔案名稱或路徑會更清楚與更清晰，將 Assets 的內容變為物件可以具有以下個 key：</p>
+<ul>
+<li>glob：使用 node-glob 設置的基本目錄</li>
+<li>input：相對於 root 目錄的路徑</li>
+<li>output：相對於 outDir 的路徑，簡單來說就是 build 後存放的位置，預設是 dist / project-name</li>
+<li>ignore：要排除的 glob 列表</li>
+<li>followSymlinks：使否允許搜尋符號鏈接的子目錄，默認為 false</li>
+</ul>
+<p>舉個例子你可以使用這些 key 更詳細描述你的 asset 路徑：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;assets&quot;</span>: [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">&quot;glob&quot;</span>: <span class="string">&quot;**/*&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;input&quot;</span>: <span class="string">&quot;src/assets/&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;output&quot;</span>: <span class="string">&quot;/assets/&quot;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">&quot;glob&quot;</span>: <span class="string">&quot;favicon.ico&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;input&quot;</span>: <span class="string">&quot;src/&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;output&quot;</span>: <span class="string">&quot;/&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>在本篇文章中大概了解的 angular.json 是個什麼東西，了解他與 Angular CLI 之間的關係，也大概個介紹了什麼是 Architect 與 builders ，不過都只是稍微講解一下概念並沒有太過深入鑽研他背後的運作原理，不過還是大概總結一下：</p>
+<ul>
+<li>angular.json 是 Angular CLI 的控制塔，它提供了 Angular workspace 和 project 的預設配置。</li>
+<li>講解了一些 angular.json 的資料架構。</li>
+<li>什麼是 Architect 和 Builders 與他們之間的關係。</li>
+<li>Angular CLI 是如何透過 Architect 解析命令的。</li>
+<li>如何透過 assets 在打包專案時複製完整的資料。</li>
+</ul>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.nrwl.io/angular-cli-demystifying-the-workspace-7f59ffaab4cb">Angular CLI — Demystifying the workspace</a></li>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/workspace-config">Angular.io</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/07/Angular/Day2-Angular-CLI/" rel="prev" title="Day2. Angular CLI">
+      <i class="fa fa-chevron-left"></i> Day2. Angular CLI
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/07/Angular/Day4-Component/" rel="next" title="Day4. Component">
+      Day4. Component <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Overall-JSON-structure"><span class="nav-number">1.</span> <span class="nav-text">Overall JSON structure</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-Architect"><span class="nav-number">2.</span> <span class="nav-text">What is Architect ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-Builders"><span class="nav-number">3.</span> <span class="nav-text">What is Builders ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Understanding-the-command-mapping"><span class="nav-number">4.</span> <span class="nav-text">Understanding the command mapping</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Assets-configuration"><span class="nav-number">5.</span> <span class="nav-text">Assets configuration</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">6.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">7.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
