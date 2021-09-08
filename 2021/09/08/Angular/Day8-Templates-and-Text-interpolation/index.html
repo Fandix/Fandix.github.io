@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前幾天大概講完了 Angular 的 Component 的基本功能與介紹，在很多例子中可以看到在 component.html 中使用了滿多沒看過的語法，比如 &amp;#123;&amp;#123; value &amp;#125;&amp;#125; 或 (clicl)&#x3D;&quot;onClick()&quot; 等等的，在前幾天可能會對他覺得非常陌生，別擔心接下來我們會對這些語法有詳細的說明。 在 Angular 中，T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day8.Templates-and-Text-interpolation">
+<meta property="og:url" content="https://fandix.github.io/2021/09/08/Angular/Day8-Templates-and-Text-interpolation/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="前幾天大概講完了 Angular 的 Component 的基本功能與介紹，在很多例子中可以看到在 component.html 中使用了滿多沒看過的語法，比如 &amp;#123;&amp;#123; value &amp;#125;&amp;#125; 或 (clicl)&#x3D;&quot;onClick()&quot; 等等的，在前幾天可能會對他覺得非常陌生，別擔心接下來我們會對這些語法有詳細的說明。 在 Angular 中，T">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/201247672iUKFGyC6V.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/20124767SfgZjpfW0a.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/20124767zWCwZTqGtJ.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/20124767CF8r7xaM47.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/20124767dSHzApckq2.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Dasf05ADZV.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Gofwpc8OrA.png">
+<meta property="article:published_time" content="2021-09-08T02:47:09.000Z">
+<meta property="article:modified_time" content="2021-09-08T02:48:07.047Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/201247672iUKFGyC6V.png">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/08/Angular/Day8-Templates-and-Text-interpolation/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day8.Templates-and-Text-interpolation | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/08/Angular/Day8-Templates-and-Text-interpolation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day8.Templates-and-Text-interpolation
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-08 10:47:09 / Modified: 10:48:07" itemprop="dateCreated datePublished" datetime="2021-09-08T10:47:09+08:00">2021-09-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Front-end/" itemprop="url" rel="index"><span itemprop="name">Front-end</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前幾天大概講完了 Angular 的 Component 的基本功能與介紹，在很多例子中可以看到在 component.html 中使用了滿多沒看過的語法，比如 <code>&#123;&#123; value &#125;&#125;</code> 或 <code>(clicl)=&quot;onClick()&quot;</code> 等等的，在前幾天可能會對他覺得非常陌生，別擔心接下來我們會對這些語法有詳細的說明。</p>
+<p>在 Angular 中，Templates 是一段 HTML，可以在 Templates 中使用特殊的語法來構建 Angular app的畫面，那就讓我們繼續往下看吧。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210802/201247672iUKFGyC6V.png" alt="https://ithelp.ithome.com.tw/upload/images/20210802/201247672iUKFGyC6V.png"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Empower-your-HTML"><a href="#Empower-your-HTML" class="headerlink" title="Empower your HTML"></a>Empower your HTML</h1><p>在我們開發 Angular app 時，可以在 Templates 使用特殊的語法來擴展 HTML 的詞彙表，舉例來說可以在 Angular 通過內置模板函數、變量、event  和數據綁定，可以幫助你在開發過程中動態的獲得和設置 DOM 的值。</p>
+<p>雖然說 Angular 的 Template 是一段 HTML，但是所有的 templates 都只是整個網頁的一部分，而不是整個頁面，所以不需要在每一個 templates 中添加 <code>&lt;html&gt;</code>、<code>&lt;body&gt;</code> 或 <code>&lt;base&gt;</code> 之類的元素，而出於安全考量 Angular 也不允許在 templates 中加入 <code>&lt;script&gt;</code> 。</p>
+<hr>
+<h1 id="Text-interpolation"><a href="#Text-interpolation" class="headerlink" title="Text interpolation"></a>Text interpolation</h1><p>介紹完什麼是 Templates 後接著要來介紹一些 templates 的語法，首先我們要介紹的是 Text interpolation，顧名思義就是將 component.ts 中的變量插入到 templates 中，<code>當這個變量在 component.ts 中發生變化時，也會同步在 template 中發生變化</code>，意味著畫面也會跟著變化。</p>
+<p>在默認情況下，插值是使用雙花括號 <code>&#123;&#123;` 和 `&#125;&#125;</code> 將插值夾在其中，來舉個簡單的例子：</p>
+<ol>
+<li><p>首先先在 app.component.ts 中添加一個變量</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  currentCustomer = <span class="string">&#x27;Fandix&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.html 中將這個值插入到 template 中</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- app.component.html --&gt;</span><br><span class="line"></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">h3</span>&gt;</span>Current customer: &#123;&#123; currentCustomer &#125;&#125;<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210802/20124767SfgZjpfW0a.png" alt="https://ithelp.ithome.com.tw/upload/images/20210802/20124767SfgZjpfW0a.png"></p>
+</li>
+</ol>
+<p>在畫面可以看到確實有將 component.ts 當中的變量（currentCustomer）的內容呈現出來，那我們將變量的值更改一下</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">currentCustomer = <span class="string">&#x27;Tako&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210802/20124767zWCwZTqGtJ.png" alt="https://ithelp.ithome.com.tw/upload/images/20210802/20124767zWCwZTqGtJ.png"><br>當 component.ts 中的變量內容改變後會動態的顯示在畫面中，這就是 Text interpolation 的用途。</p>
+<hr>
+<h1 id="Template-expressions"><a href="#Template-expressions" class="headerlink" title="Template expressions"></a>Template expressions</h1><p>可以在 template expressions 在雙花括號中<code>&#123;&#123; &#125;&#125;</code>產生一個值，Angular 會自動解析表達式並將解析過後的內容分配給綁定目標的屬性，這個目標可以是 HTML Tag、Component selector 或 directive。</p>
+<h3 id="Resolving-expressions-with-interpolation"><a href="#Resolving-expressions-with-interpolation" class="headerlink" title="Resolving expressions with interpolation"></a>Resolving expressions with interpolation</h3><p>一般來說在雙花括號之間填入一個模板表達式的話，Angular 會先將他做計算，得到結果後將它轉成字串並顯示出來，舉個簡單的例子，透過差值將兩個數字相加並呈現出來：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h3</span>&gt;</span>The sum of 1 + 1 is &#123;&#123;1 + 1&#125;&#125;<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210802/20124767CF8r7xaM47.png" alt="https://ithelp.ithome.com.tw/upload/images/20210802/20124767CF8r7xaM47.png"></p>
+<p>Angular 在 templates 的雙花括號中收到了一個表達式，他會自動將這個表達式做計算，像上面的例子中的 <code>1 + 1</code>，得到結果後將它轉成字串並顯示出來，所以畫面中會顯示 1 + 1 = 2。</p>
+<p>而表達式也可以調用這個 component.ts 中的 method，比如說：</p>
+<ol>
+<li><p>在  app.component.ts 中新增一個 method</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">getValue</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Fandix&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.html 中將調用 method 的表達式填入到雙花括號中</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h3</span>&gt;</span>Hello &#123;&#123; getValue() &#125;&#125;<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210802/20124767dSHzApckq2.png" alt="https://ithelp.ithome.com.tw/upload/images/20210802/20124767dSHzApckq2.png"></p>
+<p>可以看到 Angular 在 template 調用了 component.ts 中的 method ，獲得到的值將他呈現在畫面中，而 Angular 在遇到差值時會執行以下的任務：</p>
+<ol>
+<li>計算雙花括號中的所有表達式</li>
+<li>將表達式的結果轉換為字串</li>
+<li>將結果鏈接到任何相鄰的文字字串</li>
+<li>將組合分配給element 或 directive 屬性</li>
+</ol>
+<h3 id="Syntas"><a href="#Syntas" class="headerlink" title="Syntas"></a>Syntas</h3><p>一樣的，要運用一個新的程式語言之前，需要先充分熟悉他的語法，不然會產生意料之外的錯誤喔，其實 templates expressions 的語法基本上都跟 Javascript expressions 一樣，但是有幾個特例：</p>
+<ul>
+<li>你不能使用有會產生 side effects 的 javascript expressions<ul>
+<li>賦值（=, +=, -=, …）</li>
+<li>運算符（new, typeof, instanceof）</li>
+<li>用分號（;）鏈結 expressions</li>
+<li>遞增或遞減運算符（++,  –）</li>
+<li>還有一些 ES6 的運算符</li>
+</ul>
+</li>
+<li>與 javascript 語法有明顯差異的：<ul>
+<li>不支援 bit 的運算符（|,  &amp;）</li>
+<li>新的 template expressions（|,  ?,  !, …）</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="Preventing-name-collisions"><a href="#Preventing-name-collisions" class="headerlink" title="Preventing name collisions"></a>Preventing name collisions</h1><p>介紹完如何將 component 中的變量插入 template 讓畫面隨著變量動態改變後，要注意的是在使用這個功能時要防止名稱衝突，因為當你使用了 Text interpolationt 插入變量後， Angular 對這個表達式的計算 context 是從 <code>template variable</code>、<code>directive</code> 和 <code>component member</code> 的聯合，所以當你插入了一個名稱到 template 但這個名稱在多個地方都有定義的話， Angular 會用以下的邏輯來確定 context：</p>
+<ol>
+<li>在 template 中的變量名稱 (ngFor 中的變量)</li>
+<li>在 directive 中的 context 名稱</li>
+<li>Component 中的變量名稱</li>
+</ol>
+<p>所以當你在使用 Text interpolationt  時盡量保持所有變量名稱唯一，不然可能會被 shadowing 掉你原本想要呈現內容，我們舉個例子：</p>
+<p>這邊先提早介紹 *ngFor，他也是使用在 template 當中，用法與 javascript 的 for loop 一樣，當你的 component 中的變量是一個 arr 時，想要把這個 arr 中的數值都呈現在畫面上就可以使用這個方法，一樣舉個簡單的例子吧：</p>
+<ol>
+<li><p>首先先在 app.component.ts 中宣告一個 arr 變數並將裡面填上要呈現的內容。</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  displayArray = [<span class="string">&#x27;Hello&#x27;</span>, <span class="string">&#x27;world&#x27;</span>, <span class="string">&#x27;Angular&#x27;</span>, <span class="string">&#x27;good&#x27;</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>接著在 app.component.html 中使用 *ngFor 將他們全部呈現在畫面上</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngFor</span>=<span class="string">&quot;let content of displayArray&quot;</span>&gt;</span></span><br><span class="line">    &#123;&#123;content&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Dasf05ADZV.png" alt="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Dasf05ADZV.png"></p>
+<p>在畫面中可以看到透過 *ngFor 不斷的遞迴將 displayArray 中的內容都顯示出來，這邊暫時介紹到這邊，之後會更詳細的介紹他的使用方法。</p>
+<p>大概了解的 *ngFor 的使用方法後，將畫面回到命名衝突，當你使用 *ngFor 命名迭代出來的每一個值得名稱時要注意這個名稱有沒有在其他地方被引用到，如果有則會將其他相同名稱的內容 shadowing 掉，舉個小例子吧。</p>
+<ol>
+<li><p>先在 app.component.ts 中定義兩個變量</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  customers = [ <span class="string">&#x27;Ebony&#x27;</span>, <span class="string">&#x27;Chiho&#x27;</span>];</span><br><span class="line">  customer = <span class="string">&#x27;Padma&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.html 中將這兩個變量呈現在畫面中</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> *<span class="attr">ngFor</span>=<span class="string">&quot;let customer of customers&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello, &#123;&#123; customer &#125;&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">			&#123;&#123; customer &#125;&#125;</span><br><span class="line">		<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Gofwpc8OrA.png" alt="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Gofwpc8OrA.png"><br>在畫面中可以看到，原本我們希望在每次迭代 customers 中的值時，都將 customer = ‘Padma’ 添加在上面，但是由於 *ngFor 中的變量 shadowing 了 customer 所以導致 ‘Padma’ 無法呈現出來，所以在使用 Text interpolationt 插入變量時要注意有沒有相同的名稱喔！</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本篇中介紹了如何在 template 中插入 component 的變量以及該注意的事情，最後介紹幾個在使用 Text interpolationt 時最好的設計規範以避免發生錯誤或是增加程式的可閱讀性：</p>
+<ul>
+<li><strong>使用簡短的表達</strong>：盡可能使用 component 中 property 的名稱或 method 調用。將應用程序和業務邏輯保留在 component 中而 template 只負責調用就可以，這樣以便進行開發和測試。</li>
+<li><strong>快速執行</strong>：Angular 會在在每個變更檢測週期後執行模板表達式，許多非同步的行為都會觸發變更檢測週期，比如 Promise、HTTP 的結果、timer events、按鍵與滑鼠的移動等等，expression 應該快速的完成不然會讓使用者體驗下降，所以當需要進行長時間計算的事情時，請考慮使用緩存值。</li>
+<li><strong>沒有明顯的 side effect</strong>：模板表達式不應該更改除了目標屬性值之外的任何應用程序狀態，讀取 component 的值時不應更改到其他的顯示值。</li>
+</ul>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/interpolation">Angular.io</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/07/Angular/Day7-Content-projection/" rel="prev" title="Day7. Content projection">
+      <i class="fa fa-chevron-left"></i> Day7. Content projection
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Empower-your-HTML"><span class="nav-number">1.</span> <span class="nav-text">Empower your HTML</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Text-interpolation"><span class="nav-number">2.</span> <span class="nav-text">Text interpolation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Template-expressions"><span class="nav-number">3.</span> <span class="nav-text">Template expressions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Resolving-expressions-with-interpolation"><span class="nav-number">3.0.1.</span> <span class="nav-text">Resolving expressions with interpolation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Syntas"><span class="nav-number">3.0.2.</span> <span class="nav-text">Syntas</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Preventing-name-collisions"><span class="nav-number">4.</span> <span class="nav-text">Preventing name collisions</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">5.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
