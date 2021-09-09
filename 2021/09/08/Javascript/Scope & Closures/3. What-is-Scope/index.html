@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言上面兩章節簡單的介紹了一下什麼是JS與特性，而本章節開始會正式進入到JS中，而一開始我們先從作用域開始介紹，什麼是作用域？作用域就是一個變數的生存範圍，一旦超出了這麼範圍就無法存取到這個變數，定義了變量在哪裡存活與我們能在哪裡找到他，這就是作用域。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="You Don&#39;t Know JavaScript [Scope &amp; Closures] - What is Scope?">
+<meta property="og:url" content="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/3.%20What-is-Scope/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="前言上面兩章節簡單的介紹了一下什麼是JS與特性，而本章節開始會正式進入到JS中，而一開始我們先從作用域開始介紹，什麼是作用域？作用域就是一個變數的生存範圍，一旦超出了這麼範圍就無法存取到這個變數，定義了變量在哪裡存活與我們能在哪裡找到他，這就是作用域。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210908/20124767LmvpB37ccP.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20201006/20124767pPkGK2hJNp.png">
+<meta property="article:published_time" content="2021-09-08T03:01:55.000Z">
+<meta property="article:modified_time" content="2021-09-09T02:53:13.701Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="You Don&#39;t Know JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210908/20124767LmvpB37ccP.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/3.%20What-is-Scope/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>You Don't Know JavaScript [Scope & Closures] - What is Scope? | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/3.%20What-is-Scope/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          You Don't Know JavaScript [Scope & Closures] - What is Scope?
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-09-08 11:01:55" itemprop="dateCreated datePublished" datetime="2021-09-08T11:01:55+08:00">2021-09-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-09 10:53:13" itemprop="dateModified" datetime="2021-09-09T10:53:13+08:00">2021-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Javascript/" itemprop="url" rel="index"><span itemprop="name">Javascript</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>上面兩章節簡單的介紹了一下什麼是JS與特性，而本章節開始會正式進入到JS中，而一開始我們先從作用域開始介紹，什麼是作用域？<code>作用域就是一個變數的生存範圍，一旦超出了這麼範圍就無法存取到這個變數</code>，定義了變量在哪裡存活與我們能在哪裡找到他，這就是作用域。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210908/20124767LmvpB37ccP.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210908/20124767LmvpB37ccP.jpg"></p>
+<span id="more"></span>
+
+<h1 id="Compiling-Code"><a href="#Compiling-Code" class="headerlink" title="Compiling Code"></a>Compiling Code</h1><p>作用域主要是在編譯的時候定義的，所以需要了解JS編譯與執行之間的關係。</p>
+<p>在一般的編譯器中，編譯一般分為三個階段 :<br>1.Tokenizing/Lexing : 將程式碼分解為對JS有意義的token，舉個例子，若有一段程式碼<code>var a = 2;</code>那們它將會被分解為<code>var</code>、<code>a</code>、<code>=</code>、<code>2</code>和<code>;</code>，至於空格則取決於是否有意義而選擇性的轉換。<br>2.Parsing : 獲取所有的token並將他們轉換為 AST( Abstract Syntax Tree )。舉例來若將<code>var a = 2;</code>轉換為 AST，可以從最頂端的節點 <code>VariableDeclaration</code> 開始，它底下有兩個子節點，一個是代表著變量a的 <code>identifier</code> 與代表擁有數值的<code>AssignmentExpression</code>，而代表有數值節點下有一個 <code>NumericLiteral</code> 的子節點代表數值(2)。<br><img src="https://ithelp.ithome.com.tw/upload/images/20201006/20124767pPkGK2hJNp.png" alt="https://ithelp.ithome.com.tw/upload/images/20201006/20124767pPkGK2hJNp.png"><br>3.Code Generation : 執行AST並將它轉換為可以執行得代碼，這個轉換會因為不同語言而有不同的結果，以JS來說它會對<code>var a = 2;</code>這個程式碼轉換成一組機械指令，將創建一個稱為a的變量並將2賦予給這個變量。</p>
+<p>由於JS與大部分語言一樣它不會再build的時期就提前編譯，而這個動作必須發收生在執行代碼前幾ms的時間，為了確保擁有最快的性能，JS引擎就使用了各種技巧(JIT,lazy compile…)這些就不再此處進行討論。</p>
+<hr>
+<p>為了簡單的描述JS對於程式的處理，可以簡單的分為解析/編譯然後是執行，雖然JS沒有明確的要求進行<code>編譯</code>，但是它對於程式實質上的行為卻是需要編譯後才能執行的。</p>
+<p>我們以下面三個例子來證明這點 : </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> greeting = <span class="string">&#x27;Hello&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(greeting);</span><br><span class="line">greeting = .<span class="string">&#x27;Hi&#x27;</span>; <span class="comment">//SyntaxError: unexpected token .</span></span><br></pre></td></tr></table></figure>
+<p>上面的程式中”Hello”並不會被輸出，它擲出了一個SymtaxError，因為在Hi前面有一個非預期的token，以上面的例子中，若JS是由上而下一行一行的編譯的話，那麼應該會先輸出”Hello”後才發生錯誤才對，但事實上JS引擎能夠知道在第三行中有一個syntaxError，所以JS引擎會在執行前先解析整個程式。</p>
+<hr>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">&quot;Howdy&quot;</span>);</span><br><span class="line"></span><br><span class="line">saySomething(<span class="string">&quot;Hello&quot;</span>,<span class="string">&quot;Hi&quot;</span>);</span><br><span class="line"><span class="comment">// Uncaught SyntaxError: Duplicate parameter name not</span></span><br><span class="line"><span class="comment">// allowed in this context</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">saySomething</span>(<span class="params">greeting,greeting</span>) </span>&#123;</span><br><span class="line"><span class="meta">    &quot;use strict&quot;</span>;</span><br><span class="line">    <span class="built_in">console</span>.log(greeting);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的例子中也會擲出一個 SyntaxError，因為我們在 saySomething 這個函數中使用了嚴格模式，而嚴格模式禁止 function 的參數使用一樣的名子，雖然拋出的錯誤並不是語法錯誤，但是在嚴格模式下這個錯誤會在執行前被擲出並被當成 <code>early error</code>。</p>
+<p>而這個例子再次證明了JS會在執行代碼前對程式完全的解析，因為不這麼做的話它就不會知道function中有兩個一樣名字的參數與function 中使用的是嚴格模式。</p>
+<hr>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">saySomething</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> greeting = <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line">    &#123;</span><br><span class="line">        greeting = <span class="string">&quot;Howdy&quot;</span>;  <span class="comment">// error comes from here</span></span><br><span class="line">        <span class="keyword">let</span> greeting = <span class="string">&quot;Hi&quot;</span>;</span><br><span class="line">        <span class="built_in">console</span>.log(greeting);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">saySomething();</span><br><span class="line"><span class="comment">// ReferenceError: Cannot access &#x27;greeting&#x27; before</span></span><br><span class="line"><span class="comment">// initialization</span></span><br></pre></td></tr></table></figure>
+<p>上面了例子中，因為在let宣告greeting之前就使用了這個變量( let 不會 hoisting )所以導致了 ReferenceError，這個例子也證明了JS是需要先將全部程式編譯後才會執行。</p>
+<hr>
+<h1 id="Compiler-Speak"><a href="#Compiler-Speak" class="headerlink" title="Compiler Speak"></a>Compiler Speak</h1><p>在了解了JS引擎處理程式的兩個階段後，我們再回到JS引擎是如何識別便量並確定它在程式中的使用範圍。</p>
+<p>為了更深入地理解需要了解更多的編譯器術語，這邊會介紹 <code>LHS查詢（Left-hand Side）</code> 和 <code>RHS查詢（Right-hand Side）</code>，簡單來說當一個變量出現在賦值的左邊時會進行LHS查詢，當一個變量出現在賦值操作的右手邊會進行RHS查詢，說得更準確一點：</p>
+<ul>
+<li>RHS(source)是簡單地查詢某個變量的值。</li>
+<li>LHS(target)是試著找到變量容器以便它可以賦值。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> students = [</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">14</span>, <span class="attr">name</span>: <span class="string">&quot;Kyle&quot;</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">73</span>, <span class="attr">name</span>: <span class="string">&quot;Suzy&quot;</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">112</span>, <span class="attr">name</span>: <span class="string">&quot;Frank&quot;</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">6</span>, <span class="attr">name</span>: <span class="string">&quot;Sarah&quot;</span> &#125;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getStudentName</span>(<span class="params">studentID</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> student <span class="keyword">of</span> students) &#123;</span><br><span class="line">        <span class="keyword">if</span> (student.id == studentID) &#123;</span><br><span class="line">            <span class="keyword">return</span> student.name;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> nextStudent = getStudentName(<span class="number">73</span>);</span><br><span class="line"><span class="built_in">console</span>.log(nextStudent); <span class="comment">//Suzy</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Targets"><a href="#Targets" class="headerlink" title="Targets"></a>Targets</h3><p>我們先找到上面例子中的Targets。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">students = [...]</span><br></pre></td></tr></table></figure>
+<p>這個很顯然是一個Target，因為students被<code>賦予</code>了一個陣列的值，它與 <code>nextStudent = getStudentName(73)</code> 一樣都是賦值操作。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> student <span class="keyword">of</span> students)</span><br></pre></td></tr></table></figure>
+<p>這裡是一個比較難發現的Target，這句程式的意思是將students這個陣列迭代給student這個變數，所以也是一個賦值(只是不太明顯)。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getStudentName(<span class="number">73</span>);</span><br></pre></td></tr></table></figure>
+<p>這裡也是一個隱性的Target，因為它將73這個數值賦予給getStudentName這個function的參數。</p>
+<h3 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> student <span class="keyword">of</span> students)</span><br></pre></td></tr></table></figure>
+<p>上面提到student是屬於被賦值的target，那麼students這個陣列便是<code>給予</code>數值的source</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(student.id == studentID)</span><br></pre></td></tr></table></figure>
+<p>在這邊的 student 與 studentID 都是屬於 source reference。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> student.name</span><br></pre></td></tr></table></figure>
+<p>這邊的 student 也是屬於 source，因為它提供了可以 return 的值。</p>
+<hr>
+<p>在舉個簡單的例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">a</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(a);</span><br><span class="line">&#125;</span><br><span class="line">foo(<span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+<p>上面的例子既有LHS也有RHS，我們仔細地對它進行分析 : </p>
+<ol>
+<li>當程式調用了foo(…)，代表著函數調用要求一個指向 <code>foo</code> 的 RHS，它代表著去查詢 foo 的值並將結果交給引擎。</li>
+<li>當值2做作為參數傳遞給foo時，2被賦予給了參數a，這邊使用了隱含的參數賦值，所以進行了一個LHS。</li>
+<li>而當結果被傳遞給 <code>console.log(...)</code> 時，它會對console這個物件進行一個RHS查詢，查詢是否有一個 log 的 method。</li>
+<li>最後當值2被傳入 <code>log(...)</code> 時，因為2被賦予給了log的參數，所以也進行了一次 LHS。</li>
+</ol>
+<hr>
+<h1 id="Nested-Scope"><a href="#Nested-Scope" class="headerlink" title="Nested Scope"></a>Nested Scope</h1><p>作用域是通過標示福明成查詢變量的規則，但是通常會有多餘一個作用域的問題需要考慮，就像一個程式嵌套在另一個程式碼區域或函數中，作用域也會被嵌套在其他作用域中，所以如果再直接作用域找不到需要的變量，則會<code>往外層作用域</code>尋找，如此繼續找到最外層作用域(全域作用域)。</p>
+<p>舉個例子 :</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">a</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(a + b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> b = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">foo(<span class="number">2</span>); <span class="comment">//4</span></span><br></pre></td></tr></table></figure>
+
+<p>以上面的例子來說，當JS引擎在直接作用域(函式foo中)找不到b這個變量，那麼它就會訪問外層的作用域(全域作用域)看是否有b這個變數可以讓它進行RHS。</p>
+<p>遍歷嵌套作用域的規則很簡單，JS引擎從當前執行的作用域開始查找變量，如果沒有找到就向上走一級繼續查找，如此類推。如果到了最外層(全局作用域)，<code>那麼查找就會停止無論它是否找到了變量。</code></p>
+<hr>
+<h1 id="Errors"><a href="#Errors" class="headerlink" title="Errors"></a>Errors</h1><p>為什麼需要了解LHS與RHS?<br>因為在一個變量還沒被宣告的情況下，這兩種類型的查詢做了完全不同的行為。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">a</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(a + b);</span><br><span class="line">    b = a;</span><br><span class="line">&#125;</span><br><span class="line">foo(<span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>當b的第一次RHS查詢發生時，因為它是一個沒有被宣告過的變量，所以在作用域中找不到它，因此如果在所有的作用域中都找不到b這個變量的時候，JS引擎會拋出一個 <code>ReferenceError</code>。</li>
+<li>相比之下若JS引擎在做LHS查詢，雖然達到了頂層作用域都沒有找到這個變量，若是沒有在嚴格模式(strict)下，那麼就會在全局作用域中創建一個同名的新變量。</li>
+</ul>
+<p>而若一個RHS查詢到了需要的變量，但是卻對這個變量做這個值不可能做到的事，比如將這個非函數的值當作函數執行，或是引用 <code>null</code> 或 <code>undefined</code>，那們JS引擎就會拋出種類錯誤 <code>TypeError</code>。</p>
+<p>所以 <code>ReferenceError</code> 是對於作用域解析失敗，而 <code>TypeError</code> 則是作用域解析成功了但是對對這個解析成功的變量做非法/不可能的操作。</p>
+<p>參考文獻 :<br><a target="_blank" rel="noopener" href="https://github.com/getify/You-Dont-Know-JS/blob/1st-ed/scope%20&%20closures/ch1.md">You Don’t Know JavaScript</a><br><a target="_blank" rel="noopener" href="https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/ch1.md">You Don’t Know JavaScript 2nd</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/You-Don-t-Know-JavaScript/" rel="tag"># You Don't Know JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/08/Javascript/Get%20Started/2.%20Into-Programming/" rel="prev" title="You Don't Know JavaScript[Get Started] - what is JavaScript ?">
+      <i class="fa fa-chevron-left"></i> You Don't Know JavaScript[Get Started] - what is JavaScript ?
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/08/Javascript/Scope%20&%20Closures/4.%20Lexical-Scope/" rel="next" title="You Don't Know JavaScript [Scope & Closures] - Lexical Scope">
+      You Don't Know JavaScript [Scope & Closures] - Lexical Scope <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Compiling-Code"><span class="nav-number">2.</span> <span class="nav-text">Compiling Code</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Compiler-Speak"><span class="nav-number">3.</span> <span class="nav-text">Compiler Speak</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Targets"><span class="nav-number">3.0.1.</span> <span class="nav-text">Targets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Source"><span class="nav-number">3.0.2.</span> <span class="nav-text">Source</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nested-Scope"><span class="nav-number">4.</span> <span class="nav-text">Nested Scope</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Errors"><span class="nav-number">5.</span> <span class="nav-text">Errors</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

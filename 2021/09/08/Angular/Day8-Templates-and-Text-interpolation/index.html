@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="前幾天大概講完了 Angular 的 Component 的基本功能與介紹，在很多例子中可以看到在 component.html 中使用了滿多沒看過的語法，比如 &amp;#123;&amp;#123; value &amp;#125;&amp;#125; 或 (clicl)&#x3D;&quot;onClick()&quot; 等等的，在前幾天可能會對他覺得非常陌生，別擔心接下來我們會對這些語法有詳細的說明。 在 Angular 中，T">
+  <meta name="description" content="前幾天大概講完了 Angular 的 Component 的基本功能與介紹，在很多例子中可以看到在 component.html 中使用了滿多沒看過的語法，比如 &amp;#123;&amp;#123; value &amp;#125;&amp;#125; 或 (click)&#x3D;&quot;onClick()&quot; 等等的，在前幾天可能會對他覺得非常陌生，別擔心接下來我們會對這些語法有詳細的說明。 在 Angular 中，T">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Day8.Templates-and-Text-interpolation">
+<meta property="og:title" content="Day8. Templates and Text interpolation">
 <meta property="og:url" content="https://fandix.github.io/2021/09/08/Angular/Day8-Templates-and-Text-interpolation/index.html">
 <meta property="og:site_name" content="Fandix Technology Blog">
-<meta property="og:description" content="前幾天大概講完了 Angular 的 Component 的基本功能與介紹，在很多例子中可以看到在 component.html 中使用了滿多沒看過的語法，比如 &amp;#123;&amp;#123; value &amp;#125;&amp;#125; 或 (clicl)&#x3D;&quot;onClick()&quot; 等等的，在前幾天可能會對他覺得非常陌生，別擔心接下來我們會對這些語法有詳細的說明。 在 Angular 中，T">
+<meta property="og:description" content="前幾天大概講完了 Angular 的 Component 的基本功能與介紹，在很多例子中可以看到在 component.html 中使用了滿多沒看過的語法，比如 &amp;#123;&amp;#123; value &amp;#125;&amp;#125; 或 (click)&#x3D;&quot;onClick()&quot; 等等的，在前幾天可能會對他覺得非常陌生，別擔心接下來我們會對這些語法有詳細的說明。 在 Angular 中，T">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/201247672iUKFGyC6V.png">
 <meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/20124767SfgZjpfW0a.png">
@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Dasf05ADZV.png">
 <meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Gofwpc8OrA.png">
 <meta property="article:published_time" content="2021-09-08T02:47:09.000Z">
-<meta property="article:modified_time" content="2021-09-08T02:48:07.047Z">
+<meta property="article:modified_time" content="2021-09-09T02:55:25.714Z">
 <meta property="article:author" content="Fandix Huang">
 <meta property="article:tag" content="Angular">
 <meta name="twitter:card" content="summary">
@@ -54,7 +54,7 @@
   };
 </script>
 
-  <title>Day8.Templates-and-Text-interpolation | Fandix Technology Blog</title>
+  <title>Day8. Templates and Text interpolation | Fandix Technology Blog</title>
   
 
 
@@ -173,7 +173,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Day8.Templates-and-Text-interpolation
+          Day8. Templates and Text interpolation
         </h1>
 
         <div class="post-meta">
@@ -182,17 +182,23 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-09-08 10:47:09 / Modified: 10:48:07" itemprop="dateCreated datePublished" datetime="2021-09-08T10:47:09+08:00">2021-09-08</time>
+              <time title="Created: 2021-09-08 10:47:09" itemprop="dateCreated datePublished" datetime="2021-09-08T10:47:09+08:00">2021-09-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-09 10:55:25" itemprop="dateModified" datetime="2021-09-09T10:55:25+08:00">2021-09-09</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Front-end/" itemprop="url" rel="index"><span itemprop="name">Front-end</span></a>
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
                 </span>
             </span>
 
@@ -207,7 +213,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>前幾天大概講完了 Angular 的 Component 的基本功能與介紹，在很多例子中可以看到在 component.html 中使用了滿多沒看過的語法，比如 <code>&#123;&#123; value &#125;&#125;</code> 或 <code>(clicl)=&quot;onClick()&quot;</code> 等等的，在前幾天可能會對他覺得非常陌生，別擔心接下來我們會對這些語法有詳細的說明。</p>
+        <p>前幾天大概講完了 Angular 的 Component 的基本功能與介紹，在很多例子中可以看到在 component.html 中使用了滿多沒看過的語法，比如 <code>&#123;&#123; value &#125;&#125;</code> 或 <code>(click)=&quot;onClick()&quot;</code> 等等的，在前幾天可能會對他覺得非常陌生，別擔心接下來我們會對這些語法有詳細的說明。</p>
 <p>在 Angular 中，Templates 是一段 HTML，可以在 Templates 中使用特殊的語法來構建 Angular app的畫面，那就讓我們繼續往下看吧。</p>
 <p><img src="https://ithelp.ithome.com.tw/upload/images/20210802/201247672iUKFGyC6V.png" alt="https://ithelp.ithome.com.tw/upload/images/20210802/201247672iUKFGyC6V.png"></p>
 <span id="more"></span>
@@ -269,13 +275,13 @@
 </li>
 </ul>
 <hr>
-<h1 id="Preventing-name-collisions"><a href="#Preventing-name-collisions" class="headerlink" title="Preventing name collisions"></a>Preventing name collisions</h1><p>介紹完如何將 component 中的變量插入 template 讓畫面隨著變量動態改變後，要注意的是在使用這個功能時要防止名稱衝突，因為當你使用了 Text interpolationt 插入變量後， Angular 對這個表達式的計算 context 是從 <code>template variable</code>、<code>directive</code> 和 <code>component member</code> 的聯合，所以當你插入了一個名稱到 template 但這個名稱在多個地方都有定義的話， Angular 會用以下的邏輯來確定 context：</p>
+<h1 id="Preventing-name-collisions"><a href="#Preventing-name-collisions" class="headerlink" title="Preventing name collisions"></a>Preventing name collisions</h1><p>介紹完如何將 component 中的變量插入 template 讓畫面隨著變量動態改變後，要注意的是在使用這個功能時要防止名稱衝突，因為當你使用了 Text interpolations 插入變量後， Angular 對這個表達式的計算 context 是從 <code>template variable</code>、<code>directive</code> 和 <code>component member</code> 的聯合，所以當你插入了一個名稱到 template 但這個名稱在多個地方都有定義的話， Angular 會用以下的邏輯來確定 context：</p>
 <ol>
 <li>在 template 中的變量名稱 (ngFor 中的變量)</li>
 <li>在 directive 中的 context 名稱</li>
 <li>Component 中的變量名稱</li>
 </ol>
-<p>所以當你在使用 Text interpolationt  時盡量保持所有變量名稱唯一，不然可能會被 shadowing 掉你原本想要呈現內容，我們舉個例子：</p>
+<p>所以當你在使用 Text interpolations  時盡量保持所有變量名稱唯一，不然可能會被 shadowing 掉你原本想要呈現內容，我們舉個例子：</p>
 <p>這邊先提早介紹 *ngFor，他也是使用在 template 當中，用法與 javascript 的 for loop 一樣，當你的 component 中的變量是一個 arr 時，想要把這個 arr 中的數值都呈現在畫面上就可以使用這個方法，一樣舉個簡單的例子吧：</p>
 <ol>
 <li><p>首先先在 app.component.ts 中宣告一個 arr 變數並將裡面填上要呈現的內容。</p>
@@ -292,9 +298,9 @@
 <li><p>在 app.component.html 中將這兩個變量呈現在畫面中</p>
  <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> *<span class="attr">ngFor</span>=<span class="string">&quot;let customer of customers&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello, &#123;&#123; customer &#125;&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">			&#123;&#123; customer &#125;&#125;</span><br><span class="line">		<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
 </ol>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Gofwpc8OrA.png" alt="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Gofwpc8OrA.png"><br>在畫面中可以看到，原本我們希望在每次迭代 customers 中的值時，都將 customer = ‘Padma’ 添加在上面，但是由於 *ngFor 中的變量 shadowing 了 customer 所以導致 ‘Padma’ 無法呈現出來，所以在使用 Text interpolationt 插入變量時要注意有沒有相同的名稱喔！</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Gofwpc8OrA.png" alt="https://ithelp.ithome.com.tw/upload/images/20210802/20124767Gofwpc8OrA.png"><br>在畫面中可以看到，原本我們希望在每次迭代 customers 中的值時，都將 customer = ‘Padma’ 添加在上面，但是由於 *ngFor 中的變量 shadowing 了 customer 所以導致 ‘Padma’ 無法呈現出來，所以在使用 Text interpolations 插入變量時要注意有沒有相同的名稱喔！</p>
 <hr>
-<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本篇中介紹了如何在 template 中插入 component 的變量以及該注意的事情，最後介紹幾個在使用 Text interpolationt 時最好的設計規範以避免發生錯誤或是增加程式的可閱讀性：</p>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本篇中介紹了如何在 template 中插入 component 的變量以及該注意的事情，最後介紹幾個在使用 Text interpolations 時最好的設計規範以避免發生錯誤或是增加程式的可閱讀性：</p>
 <ul>
 <li><strong>使用簡短的表達</strong>：盡可能使用 component 中 property 的名稱或 method 調用。將應用程序和業務邏輯保留在 component 中而 template 只負責調用就可以，這樣以便進行開發和測試。</li>
 <li><strong>快速執行</strong>：Angular 會在在每個變更檢測週期後執行模板表達式，許多非同步的行為都會觸發變更檢測週期，比如 Promise、HTTP 的結果、timer events、按鍵與滑鼠的移動等等，expression 應該快速的完成不然會讓使用者體驗下降，所以當需要進行長時間計算的事情時，請考慮使用緩存值。</li>
@@ -325,7 +331,10 @@
     <a href="/2021/09/07/Angular/Day7-Content-projection/" rel="prev" title="Day7. Content projection">
       <i class="fa fa-chevron-left"></i> Day7. Content projection
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/08/Javascript/Get%20Started/1.%20What-is-Javascript/" rel="next" title="You Don't Know JavaScript [Get Started] - what is JavaScript ?">
+      You Don't Know JavaScript [Get Started] - what is JavaScript ? <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -398,18 +407,18 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">20</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

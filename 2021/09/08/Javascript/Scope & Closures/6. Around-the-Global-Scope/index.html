@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言我們在 The Scope Chain 不斷地提到全域作用域，可能會疑問為什麼最外層的作用域是全域作用域？而為什麼對於JS來說會是最重要的？僅避免使用全域範圍就足夠了嗎？ 對於JS來說，全域是一個很複雜的環節，他非常的實用但細節也非常多，本章節將會對這些問題做一些解釋。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="You Don&#39;t Know JavaScript [Scope &amp; Closures] - Around the Global Scope ?">
+<meta property="og:url" content="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/6.%20Around-the-Global-Scope/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="前言我們在 The Scope Chain 不斷地提到全域作用域，可能會疑問為什麼最外層的作用域是全域作用域？而為什麼對於JS來說會是最重要的？僅避免使用全域範圍就足夠了嗎？ 對於JS來說，全域是一個很複雜的環節，他非常的實用但細節也非常多，本章節將會對這些問題做一些解釋。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210908/2012476754qJcPO76o.jpg">
+<meta property="article:published_time" content="2021-09-08T06:54:20.000Z">
+<meta property="article:modified_time" content="2021-09-09T02:53:14.902Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="You Don&#39;t Know JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210908/2012476754qJcPO76o.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/6.%20Around-the-Global-Scope/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>You Don't Know JavaScript [Scope & Closures] - Around the Global Scope ? | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/6.%20Around-the-Global-Scope/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          You Don't Know JavaScript [Scope & Closures] - Around the Global Scope ?
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-09-08 14:54:20" itemprop="dateCreated datePublished" datetime="2021-09-08T14:54:20+08:00">2021-09-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-09 10:53:14" itemprop="dateModified" datetime="2021-09-09T10:53:14+08:00">2021-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Javascript/" itemprop="url" rel="index"><span itemprop="name">Javascript</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我們在 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10250830">The Scope Chain</a> 不斷地提到<code>全域作用域</code>，可能會疑問為什麼最外層的作用域是全域作用域？而為什麼對於JS來說會是最重要的？僅<code>避免使用全域範圍</code>就足夠了嗎？</p>
+<p>對於JS來說，全域是一個很複雜的環節，他非常的實用但細節也非常多，本章節將會對這些問題做一些解釋。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210908/2012476754qJcPO76o.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210908/2012476754qJcPO76o.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Why-Global-Scope"><a href="#Why-Global-Scope" class="headerlink" title="Why Global Scope?"></a>Why Global Scope?</h1><p>對於我們在開發一個專案的時候，我們並不會把所有的程式都寫在同一個文件中，那麼JS是通過什麼方式讓不同文件中的程式在運行的時候上下組合再一起的？？</p>
+<p>對於瀏覽器來說主要有三種方式：</p>
+<ol>
+<li>如果使用的是 <code>ES Modules</code> ，那麼這些文件會被JS單獨加載，然後使用 <code>import</code> 將需要的 module 引入到需要的環境中，單獨的 module 通過這個方法互相引入與合作且不需要共享作用域。</li>
+<li>如果在建構的時期將程式捆綁在一起，則通常會將所有文件連接在一起然後再交給JS引擎和瀏覽器，然後他們都只處理連接在一起的這個大文件，雖然所有的程式都在一個文件中，但每個部分都需要有能夠讓其他部分呼叫的名字與功能;在某些設置中，文件中內容都包裝在一個封閉的作用域中（wrapper function..），每個功能都可以透過共享的作用域來讓其他功能呼叫。<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> <span class="title">wrappingOuterScope</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> moduleOne = (<span class="function"><span class="keyword">function</span> <span class="title">one</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="comment">// ..</span></span><br><span class="line">    &#125;)();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> moduleTwo = (<span class="function"><span class="keyword">function</span> <span class="title">two</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="comment">// ..</span></span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">callModuleOne</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            moduleOne.someMethod();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ..</span></span><br><span class="line">    &#125;)();</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+以上面的例子來說，由於 <code>moduleOne</code> 與 <code>moduleTwo</code> 都存在於 <code>wrappingOuterScope</code> 作用域中，所以可以所以可以互相訪問，而 wrappingOuterScope 只是一個 function 而不是一個真正的全域作用域，但是他儲存了所有的功能，所以他可以稱為是全域作用域的替身。</li>
+<li>如果都不是上面的兩種方式，那麼全域作用域就是聯繫不同功能的唯一方法。<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> moduleOne = (<span class="function"><span class="keyword">function</span> <span class="title">one</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// ..</span></span><br><span class="line">&#125;)();</span><br><span class="line"><span class="keyword">var</span> moduleTwo = (<span class="function"><span class="keyword">function</span> <span class="title">two</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// ..</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">callModuleOne</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        moduleOne.someMethod();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ..</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+由於沒有共同的 function scope，所以將 <code>moduleOne</code> 與 <code>moduleTwo</code> 宣告在全域中，而事實上JS是分別對兩個文件進行加載<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// module1.js</span></span><br><span class="line"><span class="keyword">var</span> moduleOne = (<span class="function"><span class="keyword">function</span> <span class="title">one</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// ..</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// module2.js</span></span><br><span class="line"><span class="keyword">var</span> moduleTwo = (<span class="function"><span class="keyword">function</span> <span class="title">two</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// ..</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">callModuleOne</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        moduleOne.someMethod();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ..</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>這兩個檔案在瀏覽器中分別被加載，每個文件中的頂部變量宣告都會成為全域變量，而全域作用域是這兩個文件溝通的唯一橋樑，所以對JS引擎來說這他們都是獨立的程式。</p>
+<p>全域作用域還包括：</p>
+<ul>
+<li>JS exposes its built-ins：<ul>
+<li>primitives: <code>undefined</code>,<code>null</code>,<code>Infinity</code>,<code>NaN</code>…</li>
+<li>natives: <code>Date()</code>,<code>Object()</code>,<code>String()</code>…</li>
+<li>global functions: <code>eval()</code>,<code>parseInt()</code>…</li>
+<li>namesoaces: <code>Math</code>.<code>Atinucs</code>.<code>JSON</code></li>
+<li>friends of JS: Intl, WebAssembly</li>
+</ul>
+</li>
+<li>The environment hosting the JS engine exposes its own built-ins:<ul>
+<li><code>console</code></li>
+<li><code>DOM</code>(window,document…)</li>
+<li><code>timer</code>(setTimeout(…)…)</li>
+<li><code>web platform APIs</code>(history,navigatot…)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="Where-Exactly-in-this-Global-Scope"><a href="#Where-Exactly-in-this-Global-Scope" class="headerlink" title="Where Exactly in this Global Scope"></a>Where Exactly in this Global Scope</h1><p>雖然說全域作用域就是文件的最外層，也就是說他不存在於任 function 或 block 中，但他的定義也不是這麼間單的，不同的JS環境對全域作用域的定義與處理方式都不一樣，如果沒有分辨的能力可能會有不能預期的錯誤出現。</p>
+<h3 id="Browser-“Window”"><a href="#Browser-“Window”" class="headerlink" title="Browser “Window”"></a>Browser “Window”</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> studentName = <span class="string">&quot;Kyle&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Hello, <span class="subst">$&#123; studentName &#125;</span>!`</span>);</span><br><span class="line">&#125;</span><br><span class="line">hello(); <span class="comment">//Hello, Kyle!</span></span><br></pre></td></tr></table></figure>
+<p>我們可以使用 <code>&lt;script&gt;</code> 標籤加入到瀏覽器的環境中，他會動態的建立一個DOM元素，上面的例子中我們將 <code>studentName</code> 和<code>hello(...)</code> 都宣告在全域作用中，這意味著我們可以在全域的物件（在瀏覽器中全域的物件是 <code>window</code> ）中找到與他們同名的屬性。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> studentName = <span class="string">&quot;Kyle&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Hello, <span class="subst">$&#123; <span class="built_in">window</span>.studentName &#125;</span>!`</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">window</span>.hello(); <span class="comment">// Hello, kyle!</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Globals-Shadowing-Globals"><a href="#Globals-Shadowing-Globals" class="headerlink" title="Globals Shadowing Globals"></a>Globals Shadowing Globals</h4><p>我們有在 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10250830">The Scope Chain</a> 介紹到什麼是 shadowing，內部作用域的宣告可以覆蓋外部作用域的宣告，讓其無法訪問到外部作用域的同名變量。</p>
+<p>而對於全域作用域來說，全域物件的屬性會被在全域宣告的變量shadowing。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.something = <span class="number">42</span>; <span class="comment">// property of object in global</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> something = <span class="string">&quot;Kyle&quot;</span>; <span class="comment">// decelerate global variable</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(something); <span class="comment">// Kyle -&gt; shadowing</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">window</span>.something); <span class="comment">//42</span></span><br></pre></td></tr></table></figure>
+<p>上面的程式碼中，對於全域的物件宣告一個 something 的屬性，但是也使用 <code>let</code> 宣告一個同名的變量，這樣的結果是 something 的詞法宣告會 shadowing 全域物件的屬性。</p>
+<h3 id="DOM-Globals"><a href="#DOM-Globals" class="headerlink" title="DOM Globals"></a>DOM Globals</h3><p>對於DOM來說有一個特別的現象，當你處於瀏覽器的環境下，若你有一個DOM元素它具有 <code>id Attribute</code>，那麼他就會自動創建一個引用他的全域變量。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span> <span class="attr">id</span>=<span class="string">&quot;my-todo-list&quot;</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">li</span> <span class="attr">id</span>=<span class="string">&quot;first&quot;</span>&gt;</span>Write a book<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">   ..</span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>對於上面的html會轉換為</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">first; </span><br><span class="line"><span class="comment">// &lt;li id=&quot;first&quot;&gt;..&lt;/li&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>[<span class="string">&quot;my-todo-list&quot;</span>]; </span><br><span class="line"><span class="comment">// &lt;ul id=&quot;my-todo-list&quot;&gt;..&lt;/ul&gt;</span></span><br></pre></td></tr></table></figure>
+<p>如果id的值對於 lexical 來說是合法的那麼這個id的值便會被建立，若不是則會在全域物件中建立（ window[…] ），雖然這種將所有id的值都建立為全域是舊版瀏覽器的行為，但是為了迎合一些舊版的網站只能暫時將他們保留，作為開發者能做的就是盡量不要去使用這些被自動創建出來的全域變量。</p>
+<h4 id="what’s-in-a-window-Name"><a href="#what’s-in-a-window-Name" class="headerlink" title="what’s in a(window) Name?"></a>what’s in a(window) Name?</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="number">42</span>;</span><br><span class="line"><span class="built_in">console</span>.log(name, <span class="keyword">typeof</span> name); <span class="comment">// &quot;42&quot;, string</span></span><br></pre></td></tr></table></figure>
+<p><code>window.name</code> 他是在瀏覽器中定義的全域，他是全域物件中的一個屬性（property），我們使用var宣告了 name，但是他卻沒有shadowing全域物件的 property，這代表著當全域物件中已經有這個名字的 property，那麼使用var宣告一個一樣名字的全域變數時<code>var的宣告會被忽略</code>，這與我們上面看得的使用let宣告的結果並不一樣。</p>
+<p>但是奇怪的是我們將這個全域的 <code>number</code>name console 出來後發現他雖然也是42但是他的資料結構變為 <code>string</code>，這是因為對於window物件來說，要取得這個name屬性他所使用的是 <code>getting/setting</code> 方法，這個方法要求他的值必須是字串。</p>
+<h3 id="Developer-Tools-Console-REPL"><a href="#Developer-Tools-Console-REPL" class="headerlink" title="Developer Tools Console/REPL"></a>Developer Tools Console/REPL</h3><p>對於開發者工具來說，雖然他們也確實的再處理JS程式，但是為了給使用者良好的使用體驗所以會額外做一些處理，在某些情況下開發者工具並不會處理JS程序的所有步驟，這個可能會造成程式與開發者工具之間的差異，舉例來說，<br>開發者工具在對於一些JS的錯誤相對放寬，所以當輸入一個程式到開發者工具中，有可能不會報錯。</p>
+<p>其中的差異有以下幾種：</p>
+<ul>
+<li>全域作用域行為</li>
+<li>Hoisting</li>
+<li>在全域作用域中使用塊狀作用域宣告關鍵字（let/const）</li>
+</ul>
+<p>所以雖然使用console/REPL在確實有在全域作用域中處理程序，但這並不是很準確，雖然這些開發者工具會在一定程度上<code>模仿</code>全域作用域的行為，但是他僅僅是模仿並不是嚴格遵守，開發者工具優先考量開發者使用的便利性，所以行為會與真正的JS規範有一定的差距。</p>
+<h3 id="ES-Modules-ESM"><a href="#ES-Modules-ESM" class="headerlink" title="ES Modules(ESM)"></a>ES Modules(ESM)</h3><p>在ES6中引入了對模塊的概念（ES Modules），他能夠修改文件中的全域作用域是他最為明顯的影響之一。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> studentName = <span class="string">&quot;Kyle&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Hello, <span class="subst">$&#123; studentName &#125;</span>!`</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">hello();  <span class="comment">// Hello, Kyle!</span></span><br><span class="line"><span class="keyword">export</span> hello;</span><br></pre></td></tr></table></figure>
+<p>若是使用ES Modules來加載那麼他的運行方式和一般程式運行的方式一樣，但是從應用程式的角度來說卻是不一樣的，儘管在模塊的頂層宣告，但是在全域作用域中 <code>studentName</code> 和 <code>hello(...)</code> 仍然不是全域變數，他們是屬於模塊作用域中（模塊中的全域）的。</p>
+<p>所以說他並不是被加入到全域物件中，但是這並不代表他不能夠在全域中被訪問到，只是不能通過在 module 中的全域來建立真正意義上的全域變數。</p>
+<p>module中的全域作用域是真正全域作用域的下一級，這代表全域作用域中的宣告可以提供給 module 使用。</p>
+<p>ESM的出現就是為了讓開發者減少對全域作用域的依賴，在全域作用域中可以 import 需要的 module，這樣可以減少對於全域或全域物件的用法。</p>
+<h3 id="Node"><a href="#Node" class="headerlink" title="Node"></a>Node</h3><p>Node會處理他加載的每一個.js文件包括啟動Node的主要module，而這樣的效果是Node程式的頂層並不是全域作用域。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> studentName = <span class="string">&quot;Kyle&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Hello, <span class="subst">$&#123; studentName &#125;</span>!`</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">hello(); <span class="comment">// Hello, Kyle!</span></span><br></pre></td></tr></table></figure>
+<p>在處理之前，Node會將程式碼包裝近一個function中，所以<code>var</code>和<code>function</code>會在一個function中被宣告而不是視為在全域作用中宣告，就像下面的程式碼。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Module</span>(<span class="params"><span class="built_in">module</span>,<span class="built_in">require</span>,__dirname,...</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> studentName = <span class="string">&quot;Kyle&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">`Hello, <span class="subst">$&#123; studentName &#125;</span>!`</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    hello(); <span class="comment">// Hello, Kyle!</span></span><br><span class="line">    <span class="built_in">module</span>.exports.hello = hello; <span class="comment">//export variables</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Node實際上會運行你調用的module，所以上面的程式碼中可以了解到為什麼<code>studentName</code>和<code>hello(...)</code>不是全域宣告而是module範圍的宣告。</p>
+<p>Node定義了一些如<code>require(...)</code>的全域變量，但他們實際上並不是真正定義在全域作用域中，他們只是被<code>注入</code>到每一個module中，所以要在Node中定義實際的全域變量需要將他加入到一個Node自動提供的<code>globals</code>屬性中，當然他也不是真正的<code>globals</code>，他只是實際<code>全域作用域的一個reference</code>，類似於瀏覽器中的<code>window</code>。</p>
+<hr>
+<h1 id="Global-This"><a href="#Global-This" class="headerlink" title="Global This"></a>Global This</h1><p>在ES2020中，JS終於定義了對全域物件標準化的引用 <code>globalThis</code>，所以理論上可以使用globalThis代替上面介紹的所有方法。</p>
+<p>參考文獻：<br><a target="_blank" rel="noopener" href="https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/ch4.md">You Don’t Know JavaScript 2nd</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/You-Don-t-Know-JavaScript/" rel="tag"># You Don't Know JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/08/Javascript/Scope%20&%20Closures/5.%20The-Scope-Chain/" rel="prev" title="You Don't Know JavaScript [Scope & Closures] - The Scope Chain">
+      <i class="fa fa-chevron-left"></i> You Don't Know JavaScript [Scope & Closures] - The Scope Chain
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/08/Javascript/Scope%20&%20Closures/7.%20The-Secret-Lifecycle-of-Variables/" rel="next" title="You Don't Know JavaScript [Scope & Closures] - The (Not So) Secret Lifecycle of Variables">
+      You Don't Know JavaScript [Scope & Closures] - The (Not So) Secret Lifecycle of Variables <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Why-Global-Scope"><span class="nav-number">2.</span> <span class="nav-text">Why Global Scope?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Where-Exactly-in-this-Global-Scope"><span class="nav-number">3.</span> <span class="nav-text">Where Exactly in this Global Scope</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Browser-%E2%80%9CWindow%E2%80%9D"><span class="nav-number">3.0.1.</span> <span class="nav-text">Browser “Window”</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Globals-Shadowing-Globals"><span class="nav-number">3.0.1.1.</span> <span class="nav-text">Globals Shadowing Globals</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DOM-Globals"><span class="nav-number">3.0.2.</span> <span class="nav-text">DOM Globals</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#what%E2%80%99s-in-a-window-Name"><span class="nav-number">3.0.2.1.</span> <span class="nav-text">what’s in a(window) Name?</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Developer-Tools-Console-REPL"><span class="nav-number">3.0.3.</span> <span class="nav-text">Developer Tools Console&#x2F;REPL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ES-Modules-ESM"><span class="nav-number">3.0.4.</span> <span class="nav-text">ES Modules(ESM)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Node"><span class="nav-number">3.0.5.</span> <span class="nav-text">Node</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Global-This"><span class="nav-number">4.</span> <span class="nav-text">Global This</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

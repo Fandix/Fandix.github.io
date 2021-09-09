@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在上一章中介紹了如何在 template 中插入 component 的變量，而本章節要介紹如何使用 angular 的 pipes 來轉換插入的值（字串、貨幣金額、日期或其他數據）， pipes 是在模板表達式中的簡單函數，用於接受輸入值並返迴轉換後的值，而 Angular 提供了幾個預設的 pipes 提供使用：  DatePipe：根據區域設置規則格式化日期值 UpperCasePipe：將">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day9. Transforming Data Using Pipes">
+<meta property="og:url" content="https://fandix.github.io/2021/09/09/Angular/Day9-Transforming-Data-Using-Pipes/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在上一章中介紹了如何在 template 中插入 component 的變量，而本章節要介紹如何使用 angular 的 pipes 來轉換插入的值（字串、貨幣金額、日期或其他數據）， pipes 是在模板表達式中的簡單函數，用於接受輸入值並返迴轉換後的值，而 Angular 提供了幾個預設的 pipes 提供使用：  DatePipe：根據區域設置規則格式化日期值 UpperCasePipe：將">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767iCR0nyUNiR.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210803/20124767GlSkfWn7Na.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210803/20124767cAsa3R4sC4.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210803/20124767RueRFUir7N.png">
+<meta property="og:image" content="https://i.imgur.com/Y92boUn.gif">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210803/201247677rVVugO8sm.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210803/20124767DNrdyLkdv3.png">
+<meta property="article:published_time" content="2021-09-09T02:56:06.000Z">
+<meta property="article:modified_time" content="2021-09-09T02:58:41.694Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767iCR0nyUNiR.png">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/09/Angular/Day9-Transforming-Data-Using-Pipes/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day9. Transforming Data Using Pipes | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/09/Angular/Day9-Transforming-Data-Using-Pipes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day9. Transforming Data Using Pipes
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-09 10:56:06 / Modified: 10:58:41" itemprop="dateCreated datePublished" datetime="2021-09-09T10:56:06+08:00">2021-09-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在上一章中介紹了如何在 template 中插入 component 的變量，而本章節要介紹如何使用 angular 的 pipes 來轉換插入的值（字串、貨幣金額、日期或其他數據）， pipes 是在模板表達式中的簡單函數，用於接受輸入值並返迴轉換後的值，而 Angular 提供了幾個預設的 pipes 提供使用：</p>
+<ul>
+<li><strong>DatePipe</strong>：根據區域設置規則格式化日期值</li>
+<li><strong>UpperCasePipe</strong>：將內容都變更為大寫</li>
+<li><strong>LowerCasePipe</strong>：將內容都變更為小寫</li>
+<li><strong>CurrencyPipe</strong>：將數字轉換為貨幣字串，根據區域設置規則進行格式化。</li>
+<li><strong>DecimalPipe</strong>：將數字轉換為帶小數點的字串，並根據區域設置規則進行格式化。</li>
+<li><strong>PercentPipe</strong>：將數字轉換為百分比字串，根據區域設置規則進行格式化。</li>
+</ul>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767iCR0nyUNiR.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767iCR0nyUNiR.png"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Using-a-pipe-in-a-template"><a href="#Using-a-pipe-in-a-template" class="headerlink" title="Using a pipe in a template"></a>Using a pipe in a template</h1><p>要在 template 中使用 pipes 功能請使用管道運算符 ( | )，一樣舉個例子吧：</p>
+<ol>
+<li><p>在 app.component.ts 中新增一個變數，賦予它 javascript 的 Date 型別資料</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  birthday = <span class="keyword">new</span> <span class="built_in">Date</span>(<span class="number">1995</span>, <span class="number">9</span>, <span class="number">25</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.html 中將 birthday 插入並將其中一個使用 pipes 改變他的型態</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>My birthday is &#123;&#123;birthday&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>My birthday is &#123;&#123;birthday | date &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210803/20124767GlSkfWn7Na.png" alt="https://ithelp.ithome.com.tw/upload/images/20210803/20124767GlSkfWn7Na.png"></p>
+<p>在畫面中可以看到，沒有使用 pipes 轉換過的數值就是 javascript Date 型態的內容，而使用了 pipes 轉換過的數值看起來就好看多了，而這就是 pipes 的用法。</p>
+<hr>
+<h1 id="Transforming-data-with-parameters-and-chained-pipes"><a href="#Transforming-data-with-parameters-and-chained-pipes" class="headerlink" title="Transforming data with parameters and chained pipes"></a>Transforming data with parameters and chained pipes</h1><p>在使用 pipes 改變呈現內容時，可以輸入可選的參數來微調 pipes 輸出的結果，比如說可以將國家單位（EUR）當作參數傳遞給 CurrencyPipe，將轉換過的貨幣單位以歐元顯示 <code>&#123;&#123; amount | currency:'EUR' &#125;&#125;</code>，如果要對一個 pipes 使用多個參數時請使用冒號分隔這些參數，比如 <code>&#123;&#123; amount | currency:'EUR':'Euros '&#125;&#125;</code>，也可以使用任何一個有效的模板表達式作為參數。</p>
+<p>有些 pipes 需要至少一個參數才可以使用，比如說 SlicePipe ，<code>&#123;&#123; slice:1:5 &#125;&#125;</code> 會創建一個新陣列或字串，其中包含從  element-1 開始到 element-5 結束的元素子集。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  sayHello = <span class="string">&#x27;Hello world&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h2</span>&gt;</span>&#123;&#123; sayHello | slice:1:5 &#125;&#125;<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210803/20124767cAsa3R4sC4.png" alt="https://ithelp.ithome.com.tw/upload/images/20210803/20124767cAsa3R4sC4.png"></p>
+<p>畫面中原本要呈現的 <code>Hello world</code>，變成了 ello ，是因為透過 slice 選擇了 index[1] ~ index[5] 的資料。</p>
+<hr>
+<h1 id="Creating-pipes-for-custom-data-transformations"><a href="#Creating-pipes-for-custom-data-transformations" class="headerlink" title="Creating pipes for custom data transformations"></a>Creating pipes for custom data transformations</h1><p>在開頭時提到了 Angular 有提供幾個預設的 pipes 可以使用，但這些不夠應付我們可能面面臨到的問題，這時候客製化 pipes 就很重要了，客製化的 pipes 也和預設的一樣，接收一個輸入將他轉換過後輸出，那麼就來看看該如何使用客製化 pipes 吧。</p>
+<h3 id="Marking-a-class-as-a-pipe"><a href="#Marking-a-class-as-a-pipe" class="headerlink" title="Marking a class as a pipe"></a>Marking a class as a pipe</h3><p>要建立一個客製化的 pipes，首先需要向建立 component 一樣先建立一個 typescript 的 class，但是不同的是，當我們創建 Component Class 時使用的裝飾器是 <code>@Component</code>，代表這個 Class 是屬於 Component 的，但是要建立 pipes class 則需要使用 <code>@Pipe</code> 這個裝飾器，而對這個 Class 的命名請使用 <code>駝峰命名法</code>，不要在名稱中間使用連字符號( - )，舉個例子吧，可以建立一個 pipes 接收一個數值作為輸入與一個參數，將輸入的數值做參數的次方，比如輸入 = 2 參數 = 10 那麼就會等於 2^10 = 1024。</p>
+<ol>
+<li><p>使用 Angular CLI 建立一個 pipes class</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate pipe exponential-strength</span><br></pre></td></tr></table></figure></li>
+<li><p>在 exponential-strength.pipe.ts 中添加轉換 method</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Pipe, PipeTransform &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Pipe</span>(&#123;<span class="attr">name</span>: <span class="string">&#x27;exponentialStrength&#x27;</span>&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ExponentialStrengthPipe</span> <span class="title">implements</span> <span class="title">PipeTransform</span> </span>&#123;</span><br><span class="line">  transform(value: <span class="built_in">number</span>, <span class="attr">exponent</span>: <span class="built_in">number</span> = <span class="number">1</span>): <span class="built_in">number</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Math</span>.pow(value, exponent);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>如果你是使用 Angular CLI 他會自動將這個 pipes class 放到 app.module.ts 的 declarations 中，如果你是手動建立的話要記得將它放到 app.module.ts 的 declarations 裡面喔！</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AppComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./app.component&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; ExponentialStrengthPipe &#125; <span class="keyword">from</span> <span class="string">&#x27;./exponential-strength.pipe&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    AppComponent,</span><br><span class="line">    ExponentialStrengthPipe,</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.html 中使用客製化的 pipe 轉換資料</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h2</span>&gt;</span>Power boost: &#123;&#123; 2 | exponentialStrength:10 &#125;&#125;<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210803/20124767RueRFUir7N.png" alt="https://ithelp.ithome.com.tw/upload/images/20210803/20124767RueRFUir7N.png"></p>
+<hr>
+<h1 id="Detecting-changes-with-data-binding-in-pipes"><a href="#Detecting-changes-with-data-binding-in-pipes" class="headerlink" title="Detecting changes with data binding in pipes"></a>Detecting changes with data binding in pipes</h1><p>還記得昨天提到的 Text interpolation 的特性嗎？他可以隨著 class 的 property 變化而動態的顯示，而這個動態變化也可以套用到 pipe 中，所以當客製化的 pipe 輸入是 <code>string</code> 或 <code>number</code> 時且發生改變時，會動態的作為輸入進到 pipe 中進行轉換，但如果是 <code>Date</code> 或 <code>Array</code> 類型時，Angular 會檢測到 reference 發生改變時才會觸發執行 pipe 的轉換，舉個例子吧</p>
+<ol>
+<li><p>在 app.component.ts 中定義兩個 property，一個代表要被轉換的值（輸入）另一個代表輸入要做幾次方</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styles</span>: [<span class="string">&#x27;input &#123;margin: .5rem 0;&#125;&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  power = <span class="number">2</span>;</span><br><span class="line">  factor = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.module.ts 的 imports 中加入 <code>FormsModule</code> ，這個是因為要在這個例子中使用到 form，所以要加入這個（之後會詳細的介紹 form）</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; BrowserModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/platform-browser&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; AppRoutingModule &#125; <span class="keyword">from</span> <span class="string">&#x27;./app-routing.module&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AppComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./app.component&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormsModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; ExponentialStrengthPipe &#125; <span class="keyword">from</span> <span class="string">&#x27;./exponential-strength.pipe&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    AppComponent,</span><br><span class="line">    ExponentialStrengthPipe,</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    AppRoutingModule,</span><br><span class="line">    FormsModule</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [],</span><br><span class="line">  <span class="attr">bootstrap</span>: [AppComponent]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.html 中使用 pipe</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h2</span>&gt;</span>Power Boost Calculator<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;power-input&quot;</span>&gt;</span>Normal power: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;power-input&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> [(<span class="attr">ngModel</span>)]=<span class="string">&quot;power&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;boost-input&quot;</span>&gt;</span>Boost factor: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;boost-input&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> [(<span class="attr">ngModel</span>)]=<span class="string">&quot;factor&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Super Hero Power: &#123;&#123; power | exponentialStrength: factor &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p> 這邊可能會有疑問，<code>[(ngModel)]</code> 這個是什麼？這邊大概介紹一下，如果將 component 中的 property 使用 <code>[(ngModel)]</code> 綁定，代表當 user 在畫面中的 <code>&lt;input&gt;</code> 中改變數值時，他會同步改變到 Component 中的 property，當然如果你改 Component 中的 property 的數值一樣會同步更改到畫面 <code>&lt;input&gt;</code> 中的值，這稱為 <code>雙向綁定</code>，之後會詳細講解，這邊先有大概的概念就好。</p>
+</li>
+</ol>
+<p><img src="https://i.imgur.com/Y92boUn.gif" alt="img"></p>
+<p>在畫面中可以看到，當我們每次更改 factor 的值時，pipe 都會自動重新計算結果。</p>
+<hr>
+<h1 id="Detecting-pure-changes-to-primitives-and-object-references"><a href="#Detecting-pure-changes-to-primitives-and-object-references" class="headerlink" title="Detecting pure changes to primitives and object references"></a>Detecting pure changes to primitives and object references</h1><p>在上面提到 <code>如果是 </code>Date<code>或</code>Array<code> 類型時，Angular 會檢測到 reference 發生改變時才會觸發執行 pipe 的轉換</code> 這邊要來詳細的說明一下。</p>
+<p>在默認情況下 pipe 要被定義成 pure 的，以便 Angular 只有在檢測到輸入值變化時才執行 pipe ，所以必須要是沒有 side effect 的 pure function，而如果是將複合對象當作輸入送進 pipe （現有的 arr 添加新元素）時，因為檢查他的 reference 比深入到 arr 中遞迴的檢查每個元素快得多，所以 Angular 會通過檢查他的 reference 來判定是否發生改變，所以當你將一個 arr 作為輸入送進一個 pipe 時，可能會發生意料之外的錯誤，下面來句個例子：</p>
+<p>對了！如果是新手對 javascript 的 object reference 不熟悉的話，建議先去了解一下為什麼對 arr 使用 push 時不算對 reference 的改變，這也是為什麼使用 const 宣告 arr 卻可以對他新增內容的原因</p>
+<p>，我在 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10231666">ES6 學習筆記_01(let &amp; const)</a>  中提到 const 的本質是什麼，有興趣可以去看一下。</p>
+<ol>
+<li><p>首先一樣先創建一個 pipe </p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Pipe, PipeTransform &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Pipe</span>(&#123;<span class="attr">name</span>: <span class="string">&#x27;flyingHeros&#x27;</span>&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">FlyingHerosPipe</span> <span class="title">implements</span> <span class="title">PipeTransform</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">transform</span>(<span class="params">allHeroes: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> allHeroes.filter(<span class="function">(<span class="params">hero: <span class="built_in">any</span></span>) =&gt;</span> hero.caFly);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.ts 中定義 Hero list</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  Hero = [</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">11</span>, <span class="attr">name</span>: <span class="string">&#x27;Dr Nice&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">12</span>, <span class="attr">name</span>: <span class="string">&#x27;Narco&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">false</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">13</span>, <span class="attr">name</span>: <span class="string">&#x27;Bombasto&#x27;</span>,  <span class="attr">canFly</span>: <span class="literal">false</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">14</span>, <span class="attr">name</span>: <span class="string">&#x27;Celeritas&#x27;</span>,  <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">15</span>, <span class="attr">name</span>: <span class="string">&#x27;Magneta&#x27;</span>,  <span class="attr">canFly</span>: <span class="literal">false</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">16</span>, <span class="attr">name</span>: <span class="string">&#x27;RubberMan&#x27;</span>,  <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">17</span>, <span class="attr">name</span>: <span class="string">&#x27;Dynama&#x27;</span>,  <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">18</span>, <span class="attr">name</span>: <span class="string">&#x27;Dr IQ&#x27;</span>,  <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">19</span>, <span class="attr">name</span>: <span class="string">&#x27;Magma&#x27;</span>,  <span class="attr">canFly</span>: <span class="literal">false</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">20</span>, <span class="attr">name</span>: <span class="string">&#x27;Tornado&#x27;</span>,  <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">  ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.html 中使用 pipe 將可以飛的英雄顯示出來</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngFor</span>=<span class="string">&quot;let hero of ( heros | flyingHeros )&quot;</span>&gt;</span></span><br><span class="line">    &#123;&#123;hero.name&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210803/201247677rVVugO8sm.png" alt="https://ithelp.ithome.com.tw/upload/images/20210803/201247677rVVugO8sm.png"></p>
+<p>在畫面中可以看到只有會飛的英雄顯示出來，這時我們在 heros 中使用 push 新增英雄。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">onAddHero</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>.heros.push(&#123; <span class="attr">id</span>: <span class="number">1</span>, <span class="attr">name</span>: <span class="string">&#x27;Fandix&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>當我將新的英雄 push 近 heros 中，卻發現畫面沒有更改，是壞掉了嗎？ 讓我們將 heros console 出來確認是否真的有將他 push 進去。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">onAddHero</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>.heros.push(&#123; <span class="attr">id</span>: <span class="number">1</span>, <span class="attr">name</span>: <span class="string">&#x27;Fandix&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="built_in">this</span>.heros);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210803/20124767DNrdyLkdv3.png" alt="https://ithelp.ithome.com.tw/upload/images/20210803/20124767DNrdyLkdv3.png"></p>
+<p>在 console 中可以看到我們確實有將新英雄 push 進 heros 中，這就是剛剛提到的 Angular 在面對 arr 時，只有在他的 reference 發生改變時才會觸發 pipe，有興趣的可以自己嘗試一下，把 <code>onAddHero()</code> 變成</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">onAddHero</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>.heros = [</span><br><span class="line">      &#123; <span class="attr">id</span>: <span class="number">11</span>, <span class="attr">name</span>: <span class="string">&#x27;Dr Nice&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">id</span>: <span class="number">12</span>, <span class="attr">name</span>: <span class="string">&#x27;Narco&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">false</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">id</span>: <span class="number">13</span>, <span class="attr">name</span>: <span class="string">&#x27;Bombasto&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">false</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">id</span>: <span class="number">14</span>, <span class="attr">name</span>: <span class="string">&#x27;Celeritas&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">id</span>: <span class="number">15</span>, <span class="attr">name</span>: <span class="string">&#x27;Magneta&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">false</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">id</span>: <span class="number">16</span>, <span class="attr">name</span>: <span class="string">&#x27;RubberMan&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">id</span>: <span class="number">17</span>, <span class="attr">name</span>: <span class="string">&#x27;Dynama&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">id</span>: <span class="number">18</span>, <span class="attr">name</span>: <span class="string">&#x27;Dr IQ&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">id</span>: <span class="number">19</span>, <span class="attr">name</span>: <span class="string">&#x27;Magma&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">false</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">id</span>: <span class="number">20</span>, <span class="attr">name</span>: <span class="string">&#x27;Tornado&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">      &#123; <span class="attr">id</span>: <span class="number">1</span>, <span class="attr">name</span>: <span class="string">&#x27;Fandix&#x27;</span>, <span class="attr">canFly</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>會發生什麼事。</p>
+<p>所以在使用者種複合型的資料時，需要特別注意<code>只有當輸入的 Reference 發生改變時，才會觸發 pipe </code>。</p>
+<hr>
+<h1 id="Detecting-impure-changes-within-composite-objects"><a href="#Detecting-impure-changes-within-composite-objects" class="headerlink" title="Detecting impure changes within composite objects"></a>Detecting impure changes within composite objects</h1><p>那你可能想說，我不要啊我天生反骨我就是想要使用 push 就可以觸發 pipe 可不可以？!</p>
+<p>當然可以，Angular 提供了當複合數據內發生改變時也可以觸發 pipe 的方法，首先你<code>需要將這個 pipe 變得 impure</code>，這樣才可以檢測到 impure 的變化，所以 Angular 只要檢測到每次按鍵或滑鼠的變化時都會觸發一個 impure 的 pipe，要做的很簡單，只要在 pipe.ts 中增加一個屬性就可以了</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Pipe</span>(&#123;<span class="attr">name</span>: <span class="string">&#x27;flyingHeros&#x27;</span>, <span class="attr">pure</span>: <span class="literal">false</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>一樣有興趣的可以拿上面的例子直接將他變成 impure 試試看，這邊就不再做一次了。</p>
+<hr>
+<h1 id="Pipes-and-precedence"><a href="#Pipes-and-precedence" class="headerlink" title="Pipes and precedence"></a>Pipes and precedence</h1><p>介紹了這麼多的 pipe 用法，可能有人會問：既然 pipe 是透過 ｜ 加在數值後面的，那如果這個數值在進行其他的 Javascript expressions 怎麼辦？</p>
+<p>其實在 Angular 中 pipe 運算符的優先級是高於三元運算子（: ?），這意味著如果你有一個 Text interpolation 長這樣 <code>&#123;&#123; a ? b : c | x &#125;&#125;</code> ，那麼他會被解析成 <code>&#123;&#123; a ? b : (c | x) &#125;&#125;</code> 而這個結果可能不是你所希望的，如果你希望達到 <code>&#123;&#123; a ? b : c | x &#125;&#125;</code> 這個結果，請使用括號將前面的三元運算子括起來 <code>&#123;&#123; (a ? b : c) | x &#125;&#125;</code></p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本篇章中介紹了什麼是 pipe、該怎麼使用它以及客製化自己的 pipe，了解 pipe 對於開發專案是有幫助的，也要特別注意在預設情況下 pipe 是 pure 的，當傳入的輸入是複合型資料時，只有在他的 reference 發生改變時才會觸發，如果想要避免這個問題可以將 pipe 更改為 impure 就可以了。</p>
+<p>在官方文檔中還有介紹 <code>observable</code> 與 <code>HTTP</code> 的 pipe，但是因為牽扯到太多其他的技巧不太符合我們新手入門的領域，所以不在這邊介紹，不過了解了pipe 的基本原理之後，當遇到類似問題再去看就會比較容易看懂，所以就允許我偷懶一下吧</p>
+<p>下一篇會介紹 template 的 property binding，它的作用是可以讓你設置 HTML Tag 或 directive 的屬性質，詳細的介紹就期待明天吧。</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/pipes">Angular.io</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/09/Javascript/Scope%20&%20Closures/10-The-Module-Pattern/" rel="prev" title="You Don't Know JavaScript [Scope & Closures] - The Module Pattern">
+      <i class="fa fa-chevron-left"></i> You Don't Know JavaScript [Scope & Closures] - The Module Pattern
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Using-a-pipe-in-a-template"><span class="nav-number">1.</span> <span class="nav-text">Using a pipe in a template</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Transforming-data-with-parameters-and-chained-pipes"><span class="nav-number">2.</span> <span class="nav-text">Transforming data with parameters and chained pipes</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Creating-pipes-for-custom-data-transformations"><span class="nav-number">3.</span> <span class="nav-text">Creating pipes for custom data transformations</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Marking-a-class-as-a-pipe"><span class="nav-number">3.0.1.</span> <span class="nav-text">Marking a class as a pipe</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Detecting-changes-with-data-binding-in-pipes"><span class="nav-number">4.</span> <span class="nav-text">Detecting changes with data binding in pipes</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Detecting-pure-changes-to-primitives-and-object-references"><span class="nav-number">5.</span> <span class="nav-text">Detecting pure changes to primitives and object references</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Detecting-impure-changes-within-composite-objects"><span class="nav-number">6.</span> <span class="nav-text">Detecting impure changes within composite objects</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pipes-and-precedence"><span class="nav-number">7.</span> <span class="nav-text">Pipes and precedence</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">8.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">9.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

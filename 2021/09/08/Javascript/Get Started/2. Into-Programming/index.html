@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言在上一章中大概介紹了什麼是JavaScript，而本篇章會介紹什麼是編成。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="You Don&#39;t Know JavaScript[Get Started] - what is JavaScript ?">
+<meta property="og:url" content="https://fandix.github.io/2021/09/08/Javascript/Get%20Started/2.%20Into-Programming/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="前言在上一章中大概介紹了什麼是JavaScript，而本篇章會介紹什麼是編成。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210908/20124767PU0jHSZgeF.jpg">
+<meta property="article:published_time" content="2021-09-08T02:56:43.000Z">
+<meta property="article:modified_time" content="2021-09-09T02:52:55.976Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="You Don&#39;t Know JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210908/20124767PU0jHSZgeF.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/08/Javascript/Get%20Started/2.%20Into-Programming/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>You Don't Know JavaScript[Get Started] - what is JavaScript ? | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/08/Javascript/Get%20Started/2.%20Into-Programming/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          You Don't Know JavaScript[Get Started] - what is JavaScript ?
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-09-08 10:56:43" itemprop="dateCreated datePublished" datetime="2021-09-08T10:56:43+08:00">2021-09-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-09 10:52:55" itemprop="dateModified" datetime="2021-09-09T10:52:55+08:00">2021-09-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Javascript/" itemprop="url" rel="index"><span itemprop="name">Javascript</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在<a href="https://fandix.github.io/2021/09/08/Javascript/What-is-Javascript/">上一章</a>中大概介紹了什麼是JavaScript，而本篇章會介紹什麼是編成。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210908/20124767PU0jHSZgeF.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210908/20124767PU0jHSZgeF.jpg"></p>
+<span id="more"></span>
+
+<h1 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h1><p>代碼是一組告訴計算機要執行什麼任務的特殊指令，通常被保存在文本文件中，合法的格式與指令的組成被稱為一種<code>程式語言</code></p>
+<h3 id="語句"><a href="#語句" class="headerlink" title="語句"></a>語句</h3><p>在JS中一個合法的語句看起來像下面這樣 : </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a = b * <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+<p>字符<code>a</code>與<code>b</code>被稱為<code>變量</code>，可以把它當作可儲存任何東西的盒子，而<code>=</code>與<code>*</code>是<code>操作符</code>他們對值實施動作，比如賦值或數學運算，而在JS中大多語句都以<code>分號(;)</code>代表結束。</p>
+<p>而上面代碼的意思變可以解釋為 : </p>
+<ol>
+<li>取得變量b中所儲存的數。</li>
+<li>將取得的數 * 2。</li>
+<li>將結果賦予給另一個變量a。</li>
+</ol>
+<h3 id="表達式"><a href="#表達式" class="headerlink" title="表達式"></a>表達式</h3><p>語句是由一個或多個<code>表達式</code>組成的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a = b * 2;</span><br></pre></td></tr></table></figure>
+<p>在上面的語句中有四個表達式 : </p>
+<ol>
+<li><code>2</code>是一個<code>字面表達式</code>。</li>
+<li><code>b</code>是一個<code>變量表達式</code>，代表著將取出b所存放的數。</li>
+<li><code>b * 2</code>是一個<code>算數表達式</code>，代表著進行數學運算(乘法)。</li>
+<li><code>a = b * 2</code>是一個賦值表達式，代表將運算過後的結果賦予給變量a。</li>
+</ol>
+<p>除了上述這些表達式之外，還有一種更常被使用的表達式，那便是<code>調用表達式(函式)</code>。</p>
+<hr>
+<h1 id="Values-amp-Types"><a href="#Values-amp-Types" class="headerlink" title="Values &amp; Types"></a>Values &amp; Types</h1><p>在一個程序中會根據開發者打算對這些值做什麼來選擇不同的表達形式，再編成終將這些不同的表達形式稱為<code>類型</code>。</p>
+<p>JS中有六種資料型別 : </p>
+<ol>
+<li>Boolean</li>
+<li>Null</li>
+<li>Undefined</li>
+<li>Number </li>
+<li>String</li>
+<li>BitInt</li>
+<li>Symbol</li>
+</ol>
+<hr>
+<h1 id="Variables"><a href="#Variables" class="headerlink" title="Variables"></a>Variables</h1><p>將一個值賦予給一個符號容器，那他就被稱為一個變量，而JS屬於弱型別語言，代表著你宣告的變量可以存取任何類型的數據，並不會被類型進行約束。</p>
+<hr>
+<h1 id="Blocks"><a href="#Blocks" class="headerlink" title="Blocks"></a>Blocks</h1><p>在開發的時候，我們常需要將一個系列的語句分組再一起，這就稱為模塊化，在JS中模塊被定為在一個<code>大括號內&#123;...&#125;</code>中的一個或多個語句。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> amount = <span class="number">99.99</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Blocks</span></span><br><span class="line">&#123;</span><br><span class="line">    amount = amount * <span class="number">2</span>;</span><br><span class="line">    <span class="built_in">console</span>.log(amount); <span class="comment">// 199.98</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="Scope"><a href="#Scope" class="headerlink" title="Scope"></a>Scope</h1><p>作用域的在JS中的概念，每一個函數都有自己的作用域代表著訪問變量的規則，也就是說只有自己函數內部的帶把才能訪問到這個函數作用域的變量，值得注意的是，在同一個作用域內只能存在唯一的變量名稱，但是在不同作用域中可以有兩個一模一樣名子變量，因為它們存在於不同作用域所以互不相干擾。</p>
+<p>另外作用愈也可以嵌套在另一個作用域中，那們內部作用域變可以訪問到外部作用愈的變數，但是<code>外部作用域無法訪問內部作用域</code>。</p>
+<p>參考文獻 :<br><a target="_blank" rel="noopener" href="https://github.com/getify/You-Dont-Know-JS/blob/1ed-zh-CN/up%20%26%20going/ch1.md">You Don’t Know JavaScript</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/You-Don-t-Know-JavaScript/" rel="tag"># You Don't Know JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/08/Javascript/Get%20Started/1.%20What-is-Javascript/" rel="prev" title="You Don't Know JavaScript [Get Started] - what is JavaScript ?">
+      <i class="fa fa-chevron-left"></i> You Don't Know JavaScript [Get Started] - what is JavaScript ?
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/08/Javascript/Scope%20&%20Closures/3.%20What-is-Scope/" rel="next" title="You Don't Know JavaScript [Scope & Closures] - What is Scope?">
+      You Don't Know JavaScript [Scope & Closures] - What is Scope? <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Code"><span class="nav-number">2.</span> <span class="nav-text">Code</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AA%9E%E5%8F%A5"><span class="nav-number">2.0.1.</span> <span class="nav-text">語句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E9%81%94%E5%BC%8F"><span class="nav-number">2.0.2.</span> <span class="nav-text">表達式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Values-amp-Types"><span class="nav-number">3.</span> <span class="nav-text">Values &amp; Types</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Variables"><span class="nav-number">4.</span> <span class="nav-text">Variables</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Blocks"><span class="nav-number">5.</span> <span class="nav-text">Blocks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Scope"><span class="nav-number">6.</span> <span class="nav-text">Scope</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

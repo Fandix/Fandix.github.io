@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言目前為止我們都專注在解釋辭法範圍，以及他會對程式中的變量與使用產生什麼影響，本章節會將角度轉移到 closure，回顧一下Limiting Scope Exposure ? 中所提到的POLE原則，我們應該使用塊狀作用域（或函式作用域）來減少變量的洩露，這有助於程式的安全性與可維護性並可以避免命名衝突等等的錯誤，而closure就是建立在這個觀念之上，可以將變量封裝不讓他們洩露到外部／全域中，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="You Don&#39;t Know JavaScript [Scope &amp; Closures] - Using Closures?">
+<meta property="og:url" content="https://fandix.github.io/2021/09/09/Javascript/Scope%20&%20Closures/9.%20Using-Closures/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="前言目前為止我們都專注在解釋辭法範圍，以及他會對程式中的變量與使用產生什麼影響，本章節會將角度轉移到 closure，回顧一下Limiting Scope Exposure ? 中所提到的POLE原則，我們應該使用塊狀作用域（或函式作用域）來減少變量的洩露，這有助於程式的安全性與可維護性並可以避免命名衝突等等的錯誤，而closure就是建立在這個觀念之上，可以將變量封裝不讓他們洩露到外部／全域中，">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210909/20124767uZezgUx6mE.jpg">
+<meta property="article:published_time" content="2021-09-09T02:21:41.000Z">
+<meta property="article:modified_time" content="2021-09-09T02:53:15.355Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="You Don&#39;t Know JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210909/20124767uZezgUx6mE.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/09/Javascript/Scope%20&%20Closures/9.%20Using-Closures/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>You Don't Know JavaScript [Scope & Closures] - Using Closures? | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/09/Javascript/Scope%20&%20Closures/9.%20Using-Closures/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          You Don't Know JavaScript [Scope & Closures] - Using Closures?
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-09 10:21:41 / Modified: 10:53:15" itemprop="dateCreated datePublished" datetime="2021-09-09T10:21:41+08:00">2021-09-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Javascript/" itemprop="url" rel="index"><span itemprop="name">Javascript</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前為止我們都專注在解釋辭法範圍，以及他會對程式中的變量與使用產生什麼影響，本章節會將角度轉移到 <code>closure</code>，回顧一下<a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10252422">Limiting Scope Exposure ?</a> 中所提到的POLE原則，我們應該使用塊狀作用域（或函式作用域）來減少變量的洩露，這有助於程式的安全性與可維護性並可以避免命名衝突等等的錯誤，而closure就是建立在這個觀念之上，可以將變量<code>封裝不讓他們洩露到外部／全域中，並且保留內部函式的訪問權限</code>，函式會通過closure記住引用的作用域變量。</p>
+<p>而在 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10252422">Limiting Scope Exposure ?</a> 提到的範例中（factorial(…)），我們嘗試了在自身作用域中訪問了外部的 callback function這 就是 closure，closure 是對於編成發明中重要的特徵之一，他是主要編成範例的基礎，它包含 <code>function programming(FP)</code> , <code>module</code> , <code>class-oriented design</code></p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210909/20124767uZezgUx6mE.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210909/20124767uZezgUx6mE.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="See-the-Closure"><a href="#See-the-Closure" class="headerlink" title="See the Closure"></a>See the Closure</h1><p>closure是<code>function的行為</code>，object與class都不具有closure只有function才有。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// outer/global scope: RED(1)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">lookupStudent</span>(<span class="params">studentID</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// function scope: BLUE(2)</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> students = [</span><br><span class="line">        &#123; <span class="attr">id</span>: <span class="number">14</span>, <span class="attr">name</span>: <span class="string">&quot;Kyle&quot;</span> &#125;,</span><br><span class="line">        &#123; <span class="attr">id</span>: <span class="number">73</span>, <span class="attr">name</span>: <span class="string">&quot;Suzy&quot;</span> &#125;,</span><br><span class="line">        &#123; <span class="attr">id</span>: <span class="number">112</span>, <span class="attr">name</span>: <span class="string">&quot;Frank&quot;</span> &#125;,</span><br><span class="line">        &#123; <span class="attr">id</span>: <span class="number">6</span>, <span class="attr">name</span>: <span class="string">&quot;Sarah&quot;</span> &#125;</span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">greetStudent</span>(<span class="params">greeting</span>)</span>&#123;</span><br><span class="line">        <span class="comment">// function scope: GREEN(3)</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> student = students.find(</span><br><span class="line">            <span class="function"><span class="params">student</span> =&gt;</span> student.id == studentID</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123; greeting &#125;</span>, <span class="subst">$&#123; student.name &#125;</span>!`</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> chosenStudents = [</span><br><span class="line">    lookupStudent(<span class="number">6</span>),</span><br><span class="line">    lookupStudent(<span class="number">112</span>)</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="comment">// accessing the function&#x27;s name:</span></span><br><span class="line">chosenStudents[<span class="number">0</span>].name; <span class="comment">// greetStudent</span></span><br><span class="line">chosenStudents[<span class="number">0</span>](<span class="string">&quot;Hello&quot;</span>); <span class="comment">// Hello, Sarah!</span></span><br><span class="line">chosenStudents[<span class="number">1</span>](<span class="string">&quot;Howdy&quot;</span>); <span class="comment">// Howdy, Frank!</span></span><br></pre></td></tr></table></figure>
+<p>上面的程式中，在最外層定義了一個lookupStudent(…)並且在他的內部return了greetStudent(…);呼叫了lookupStudent(…)兩次並將他的結果都存放在<code>chosenStudents</code>陣列中。</p>
+<p>通過使用 <code>.name</code> 發現其實 lookupStudent(… )返回的是一個 greetStudents(…) 的實例，正常來說對於一個 function 的呼叫結束後，會將此 function 中的內部的變量都丟棄（garbage collected）;但是對於這裡來說有些不同，greetStudent 他內部中有使用到了外部（lookupStudent(…)）的變量（studentID,students），對於這個<code>內部函式引用到外部函式變量</code>的行為就稱為closure。</p>
+<p>closure允許greetStudent(…)繼續訪問外部函式作用域的變量，儘管他已經被完成呼叫（garbage collected）students和studentID的實例不會進到GC’d而是被<code>保留在記憶體中</code>，所以在greetStudent(…)在調用這些變量實體的時候他們都仍然存在，所以說如果JS中沒有 closure 那們在 lookupStudent(…) 執行完成後會立即會立即清除他的作用域並將 <code>studentID</code> 與<code>students</code> 收近GC，就因為這個特性才能讓我們在呼叫 <code>choseStudents[1](&quot;Hello&quot;)</code> 的時候不會因為 <code>studentID</code> 與<code>students</code> 不存在而導致ReferenceError。</p>
+<h3 id="Adding-Up-Closrues"><a href="#Adding-Up-Closrues" class="headerlink" title="Adding Up Closrues"></a>Adding Up Closrues</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">adder</span>(<span class="params">num1</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">addTo</span>(<span class="params">num2</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> num1 + num2;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> add10To = adder(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">var</span> add42To = adder(<span class="number">42</span>);</span><br><span class="line"></span><br><span class="line">add10To(<span class="number">15</span>);    <span class="comment">// 25</span></span><br><span class="line">add42To(<span class="number">9</span>);     <span class="comment">// 51</span></span><br></pre></td></tr></table></figure>
+<p>內部的addTo(…) closing 外部(adder(…))的num1，所以在adder(…)執行結束後 訪問得到num1的值，所以 <code>add10To</code> 會保留著<code>num1 = 10;</code>讓 <code>add10To(15);</code> 可以調用到存在在記憶體中的 <code>num1 = 10;</code>，讓結果可以輸出10+15 = 25。</p>
+<p>對於每一個 adder(…) 來說他內部都各自定義了自己內部的 addTo(…)，因此每一個都是各自獨立的 closure，所以上面程式中的add10To(..) 和 add42To(..) 他們其實都有各自獨立的 closure，即使 closure 是基於編譯時期處理的 lexical scope 但是他仍被視為函數實例運行的特徵。</p>
+<h3 id="Live-Link-Not-a-Snapshot"><a href="#Live-Link-Not-a-Snapshot" class="headerlink" title="Live Link,Not a Snapshot"></a>Live Link,Not a Snapshot</h3><p>很多人認為 closure 的這個可以讀取到保留變量的行為，是讀取到這個保留值的參照，但這其實是錯誤的，因為 closure 的這個行為是是確實是<code>保留對這個變量的訪問</code>，除此之外不限於只讀取這個值，還可以對這個值進行操作，對於 closure 的 function 我們可以任意的使用這個變量(讀/寫)並且在整個函數中都可以使用，這就是 closure 強大的地方。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">makeCounter</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">getCurrent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        count = count + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> hits = makeCounter();</span><br><span class="line"></span><br><span class="line">hits();     <span class="comment">// 1</span></span><br><span class="line">hits();     <span class="comment">// 2</span></span><br><span class="line">hits();     <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p><code>const</code> closed over 內部的getCurrent(…)這樣他可以被保存在記憶體中不會被GC，所以當調用 <code>hits</code> 的時候會不斷返回更新後的count值（遞加）。</p>
+<p>雖然closure通常都來自於函式，但是實際上是不一定需要的，只要<code>外部作用域中有一個內部函式就可以</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> hits;</span><br><span class="line">&#123;   <span class="comment">// an outer scope (but not a function)</span></span><br><span class="line">    <span class="keyword">let</span> count = <span class="number">0</span>;</span><br><span class="line">    hits = <span class="function"><span class="keyword">function</span> <span class="title">getCurrent</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        count = count + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">hits();     <span class="comment">// 1</span></span><br><span class="line">hits();     <span class="comment">// 2</span></span><br><span class="line">hits();     <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p>在一個塊狀作用域中宣告一個function，這樣就可以形成一個closure，但是由於 <code>FiB</code> 的關係，所以使用 function expression而不是 function declaration。</p>
+<p>對於closure還有一個令人誤會的地方，closure他保存的是<code>變量</code>而不是<code>變數</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> studentName = <span class="string">&quot;Frank&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> greeting = <span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// we are closing over `studentName`,</span></span><br><span class="line">    <span class="comment">// not &quot;Frank&quot;</span></span><br><span class="line">    <span class="built_in">console</span>.log(</span><br><span class="line">        <span class="string">`Hello, <span class="subst">$&#123; studentName &#125;</span>!`</span></span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line">studentName = <span class="string">&quot;Suzy&quot;</span>;</span><br><span class="line"></span><br><span class="line">greeting(); <span class="comment">// Hello, Suzy!</span></span><br></pre></td></tr></table></figure>
+<p>上面的程式中，很多人會以為closure保存的事studentName的值（Frank），但實際是他保留的是<code>studentName這個變量</code>，所以當後面重新assignment給studentName的時候值就會發生變化，除了這個之外還有一個經典的錯誤，for loop。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> keeps = [];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">    keeps[i] = <span class="function"><span class="keyword">function</span> <span class="title">keepI</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="comment">// closure over `i`</span></span><br><span class="line">        <span class="keyword">return</span> i;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">keeps[<span class="number">0</span>]();   <span class="comment">// 3 -- WHY!?</span></span><br><span class="line">keeps[<span class="number">1</span>]();   <span class="comment">// 3</span></span><br><span class="line">keeps[<span class="number">2</span>]();   <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p>你可能會認為<code>keeps[0]();</code>應該要return 0因為他是在i = 0的時候賦予給他的，但是這要是不對的，記住<code>closure保存的是變量而不是變量裡面的值</code>，由於for loop的結構會讓我們誤以為他的每次迭代都會宣告一個新的i，但由於i是由var宣告的所以整個迴圈中都只會有一個var（參考<a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10250873">The (Not So) Secret Lifecycle of Variables</a>），雖然三個<code>keeps(...)</code>都有各自的closures，但是本質上他們共享一個i，所以當迴圈結束時三個function才都return 3，所以每一個變量都只能存取一個值，所以我們可以嘗試在每個迴圈中都新增一個各自的變量。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> keeps = [];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">    <span class="comment">// new `j` created each iteration, which gets</span></span><br><span class="line">    <span class="comment">// a copy of the value of `i` at this moment</span></span><br><span class="line">    <span class="keyword">let</span> j = i;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// the `i` here isn&#x27;t being closed over, so</span></span><br><span class="line">    <span class="comment">// it&#x27;s fine to immediately use its current</span></span><br><span class="line">    <span class="comment">// value in each loop iteration</span></span><br><span class="line">    keeps[i] = <span class="function"><span class="keyword">function</span> <span class="title">keepEachJ</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="comment">// close over `j`, not `i`!</span></span><br><span class="line">        <span class="keyword">return</span> j;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">keeps[<span class="number">0</span>]();   <span class="comment">// 0</span></span><br><span class="line">keeps[<span class="number">1</span>]();   <span class="comment">// 1</span></span><br><span class="line">keeps[<span class="number">2</span>]();   <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+<p>在每個迴圈中都宣告一個屬於自己的變量(let宣告)，然後賦予它當前i的值，因為j是定義在個迴圈中的變量所以所以不會被重新賦值，closure的對象就從i變為各自定義的j，所以輸出的值就會是預期的。</p>
+<p>如果我們在迴圈中使用非同步的行為（setTimeout(…),keepEachJ(…)…）也會出現這個情況，在 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10250873">The (Not So) Secret Lifecycle of Variables</a> 中提到如果在 loop 中使用 let 宣告，他會在每一次的迭代中都創建一個新的變量，這正是我們希望它發生的。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> keeps = [];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">    <span class="comment">// the `let i` gives us a new `i` for</span></span><br><span class="line">    <span class="comment">// each iteration, automatically!</span></span><br><span class="line">    keeps[i] = <span class="function"><span class="keyword">function</span> <span class="title">keepEachI</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> i;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">keeps[<span class="number">0</span>]();   <span class="comment">// 0</span></span><br><span class="line">keeps[<span class="number">1</span>]();   <span class="comment">// 1</span></span><br><span class="line">keeps[<span class="number">2</span>]();   <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="What-If-I-Can’t-See-It"><a href="#What-If-I-Can’t-See-It" class="headerlink" title="What If I Can’t See It?"></a>What If I Can’t See It?</h3><p>如果我們在操作function的時候，我們需要產生一個closure，當我們確實產生了一個closure後他將需要的變量保存下來，但我們卻沒有去訪問過這麼變數，那麼這個closure就不會存在。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">lookupStudent</span>(<span class="params">studentID</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">nobody</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">var</span> msg = <span class="string">&quot;Nobody&#x27;s here yet.&quot;</span>;</span><br><span class="line">        <span class="built_in">console</span>.log(msg);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> student = lookupStudent(<span class="number">112</span>);</span><br><span class="line">student(); <span class="comment">// Nobody&#x27;s here yet.</span></span><br></pre></td></tr></table></figure>
+<p>雖然 closure 將 <code>studentID</code> 保存下來，但是在內部的 nobody(…) 卻只使用自身宣告的變數 <code>msg</code> 而沒有用到外部的<code>studentID</code>，這樣會讓JS引擎知道在lookupStudent(…)執行完之後沒有東西需要使用到 <code>studentID</code>，便會將它從記憶體中清除。</p>
+<p>如果沒有去呼叫內部的函式，那麼我們也無法觀測到closure的存在。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">greetStudent</span>(<span class="params">studentName</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">greeting</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(</span><br><span class="line">            <span class="string">`Hello, <span class="subst">$&#123; studentName &#125;</span>!`</span></span><br><span class="line">        );</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">greetStudent(<span class="string">&quot;Kyle&quot;</span>);</span><br><span class="line"><span class="comment">// nothing else happens</span></span><br></pre></td></tr></table></figure>
+<p>外部的function他確實被呼叫並且有 return 一個內部的 function，這雖然是一個會產生 closure 的行為，但是由於內部的function 並沒有被呼叫所以就算以技術上來說JS確實為她創造了一個 closure，但是無法觀察也沒以意義。</p>
+<h3 id="Observable-Definition"><a href="#Observable-Definition" class="headerlink" title="Observable Definition"></a>Observable Definition</h3><blockquote>
+<p>Closure is observed when a function uses variable(s) from outer scope(s) even while running in a scope where those variable(s) wouldn’t be accessible.</p>
+</blockquote>
+<p>對於closure定義而言有一些關鍵的部分：</p>
+<ul>
+<li>function必須要被呼叫</li>
+<li>必須引用一個外部作用域的變量</li>
+<li>Must be invoked in a different branch of the scope chain from the variable(s)</li>
+</ul>
+<hr>
+<h1 id="The-Closure-Lifecycle-and-Garbage-Collection-GC"><a href="#The-Closure-Lifecycle-and-Garbage-Collection-GC" class="headerlink" title="The Closure Lifecycle and Garbage Collection (GC)"></a>The Closure Lifecycle and Garbage Collection (GC)</h1><p>由於 closure 的本質與 function 息息相關，所以只要仍有對該 function 的引用，則 closure 則會持續存在，換句話說如果有10個 function 都 closure 同一個變量，隨著時間流逝其餘九個都不在使用這個變量，就算只剩下一個那麼這個 closure 依然會繼續存在，等到最後一個 function 都不在使用這個變量，那麼這個 closure 就會消失。</p>
+<p>如果沒有這個機制的話，若在記憶體中無論是否有用到都不斷保存著我們之前所使用過的變量，那麼總有一天會導致記憶體內存不足。</p>
+<h3 id="Per-Variable-or-Per-Scope"><a href="#Per-Variable-or-Per-Scope" class="headerlink" title="Per Variable or Per Scope?"></a>Per Variable or Per Scope?</h3><p>對於 closure 來說，他是保留引用的外部變量還是將整個作用域以及所有變量？以技術上來說 closure 保存的是變量而不是作用域，但實際的情況會更為複雜。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">manageStudentGrades</span>(<span class="params">studentRecords</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> grades = studentRecords.map(getGrade);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> addGrade;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ************************</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">getGrade</span>(<span class="params">record</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> record.grade;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">sortAndTrimGradesList</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">// sort by grades, descending</span></span><br><span class="line">        grades.sort(<span class="function"><span class="keyword">function</span> <span class="title">desc</span>(<span class="params">g1,g2</span>)</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> g2 - g1;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// only keep the top 10 grades</span></span><br><span class="line">        grades = grades.slice(<span class="number">0</span>,<span class="number">10</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">addGrade</span>(<span class="params">newGrade</span>) </span>&#123;</span><br><span class="line">        grades.push(newGrade);</span><br><span class="line">        sortAndTrimGradesList();</span><br><span class="line">        <span class="keyword">return</span> grades;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> addNextGrade = manageStudentGrades([</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">14</span>, <span class="attr">name</span>: <span class="string">&quot;Kyle&quot;</span>, <span class="attr">grade</span>: <span class="number">86</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">73</span>, <span class="attr">name</span>: <span class="string">&quot;Suzy&quot;</span>, <span class="attr">grade</span>: <span class="number">87</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">112</span>, <span class="attr">name</span>: <span class="string">&quot;Frank&quot;</span>, <span class="attr">grade</span>: <span class="number">75</span> &#125;,</span><br><span class="line">    <span class="comment">// ..many more records..</span></span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">6</span>, <span class="attr">name</span>: <span class="string">&quot;Sarah&quot;</span>, <span class="attr">grade</span>: <span class="number">91</span> &#125;</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line">addNextGrade(<span class="number">81</span>);</span><br><span class="line">addNextGrade(<span class="number">68</span>);</span><br><span class="line"><span class="comment">// [ .., .., ... ]</span></span><br></pre></td></tr></table></figure>
+<p>上面的程式中 <code>grades</code> 通過 closure 保留在 addGrade(…) 之中，所以在每次呼叫 addNextGrade(…) 時，都可以再次訪問到grades 並對他從新排列，但是記住，這個closure是對於 <code>grades</code> 這個變量而不是裡面的數值。</p>
+<p>除了 <code>grades</code> 被 closure 之外，由於 addGrade(…) 中呼叫的 sortAndTrimGradesList(…)，這代表就算manageStudentGrades(…) 已經結束了但sortAndTrimGradesList(…) 還是被 closure 給保留了下來以便 addGrade(…)可以持續調用，</p>
+<p>根據closure的定義，由於內部函數沒有使用到 <code>getGrade(...)</code> 與 <code>studentRecords</code> 所以不會對他們進行 closure，在manageStudentGrades(…) 結束後他們就會被清除。</p>
+<p>但是凡事都有例外</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">storeStudentInfo</span>(<span class="params">id,name,grade</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">getInfo</span>(<span class="params">whichValue</span>)</span>&#123;</span><br><span class="line">        <span class="comment">// warning:</span></span><br><span class="line">        <span class="comment">//   using `eval(..)` is a bad idea!</span></span><br><span class="line">        <span class="keyword">var</span> val = <span class="built_in">eval</span>(whichValue);</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> info = storeStudentInfo(<span class="number">73</span>,<span class="string">&quot;Suzy&quot;</span>,<span class="number">87</span>);</span><br><span class="line"></span><br><span class="line">info(<span class="string">&quot;name&quot;</span>); <span class="comment">// Suzy</span></span><br><span class="line">info(<span class="string">&quot;grade&quot;</span>); <span class="comment">// 87</span></span><br></pre></td></tr></table></figure>
+<p>上面的程式碼中，我們使用了 <code>eval</code> 做了一些小動作，就算在後面的 info(…) 中沒有使用到所有的變量，但是JS依然將所有的變量都保存起來。</p>
+<p>在與許多現在的JS引擎中，他們都對於<code>刪除從未明確引用的closure範圍中變量</code>這件事不斷的進行優化，但是正如我們上面所使用的方法(eval)，在某些情況下JS並不會如預期的那樣操作，因為會有這些意外事件發生，所以作者建議不應該隨便高估他的適用性，如果有一個較大的值被 closure 給保留在記憶體中但他卻是不被需要的(特殊狀況)，這樣會對整個程式產生記憶體不夠的威脅，所以作者認為手動丟棄這些大量且不被需要的值是比較安全的。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">manageStudentGrades</span>(<span class="params">studentRecords</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> grades = studentRecords.map(getGrade);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// unset `studentRecords` to prevent unwanted</span></span><br><span class="line">    <span class="comment">// memory retention in the closure</span></span><br><span class="line">    studentRecords = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> addGrade;</span><br><span class="line">    <span class="comment">// ..</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>雖然在我們分析 closure 的時候，我們知道因為studentRecords沒有被調用到，所以JS<code>自動</code>的將它清除（不產生closure），但是作者希望如果開發者知道這個變量不會再被使用，那麼可以手動的將它的值清除以降低錯誤的發生，雖然技術上來說 <code>getGrade(...)</code> 也是不會再被使用到的，如果這個 function 也會消耗大量內存那麼也建議手動將它清除，但是在上面的例子中 <code>getGrade(...)</code> 並不需要做這樣的處理。</p>
+<p>所以了解 closure 在程式中出現的位置以及他保存了哪些變量是很重要的，應該仔細管理這些保存的值以便讓他使用最低限度的需求而不浪費內存。</p>
+<hr>
+<h1 id="Why-Closure"><a href="#Why-Closure" class="headerlink" title="Why Closure?"></a>Why Closure?</h1><p>若我們不使用closure的情況下建立一個按鈕，在點擊他後透過AJAX發送一些數據。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> APIendpoints = &#123;</span><br><span class="line">    <span class="attr">studentIDs</span>:</span><br><span class="line">        <span class="string">&quot;https://some.api/register-students&quot;</span>,</span><br><span class="line">    <span class="comment">// ..</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> data = &#123;</span><br><span class="line">    <span class="attr">studentIDs</span>: [ <span class="number">14</span>, <span class="number">73</span>, <span class="number">112</span>, <span class="number">6</span> ],</span><br><span class="line">    <span class="comment">// ..</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">makeRequest</span>(<span class="params">evt</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> btn = evt.target;</span><br><span class="line">    <span class="keyword">var</span> recordKind = btn.dataset.kind;</span><br><span class="line">    ajax(</span><br><span class="line">        APIendpoints[recordKind],</span><br><span class="line">        data[recordKind]</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// &lt;button data-kind=&quot;studentIDs&quot;&gt;</span></span><br><span class="line"><span class="comment">//    Register Students</span></span><br><span class="line"><span class="comment">// &lt;/button&gt;</span></span><br><span class="line">btn.addEventListener(<span class="string">&quot;click&quot;</span>,makeRequest);</span><br></pre></td></tr></table></figure>
+<p><code>makeRequest(...)</code> 接收一個來自 click 事件的 <code>evt</code> 物件，他需要從目標按鈕中檢索 data-kind attribute 並使用用這個值去決定AJAX需要請求哪些數據，雖然這麼做事可以的，但是由於每一次都需要去讀取DOM的 attribute，所以會導致效率低下，所以我們可以試著使用c losure 的方式改寫。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> APIendpoints = &#123;</span><br><span class="line">    <span class="attr">studentIDs</span>:</span><br><span class="line">        <span class="string">&quot;https://some.api/register-students&quot;</span>,</span><br><span class="line">    <span class="comment">// ..</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> data = &#123;</span><br><span class="line">    <span class="attr">studentIDs</span>: [ <span class="number">14</span>, <span class="number">73</span>, <span class="number">112</span>, <span class="number">6</span> ],</span><br><span class="line">    <span class="comment">// ..</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">setupButtonHandler</span>(<span class="params">btn</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> recordKind = btn.dataset.kind;</span><br><span class="line"></span><br><span class="line">    btn.addEventListener(</span><br><span class="line">        <span class="string">&quot;click&quot;</span>,</span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">makeRequest</span>(<span class="params">evt</span>)</span>&#123;</span><br><span class="line">            ajax(</span><br><span class="line">                APIendpoints[recordKind],</span><br><span class="line">                data[recordKind]</span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// &lt;button data-kind=&quot;studentIDs&quot;&gt;</span></span><br><span class="line"><span class="comment">//    Register Students</span></span><br><span class="line"><span class="comment">// &lt;/button&gt;</span></span><br><span class="line"></span><br><span class="line">setupButtonHandler(btn);</span><br></pre></td></tr></table></figure>
+<p>在呼叫setupButtonHandler的時候就檢索了data-kind attribute 並將他賦予給 recordKind，然後由內部的 makeRequest(…)使用其值來發送將對應的 Request，通過 closure 我們將 recordKind 儲存讓內部的 makeRequest(…) 可以隨時使用它，我們也可以將 request 的值利用 closure 保存下來。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">setupButtonHandler</span>(<span class="params">btn</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> recordKind = btn.dataset.kind;</span><br><span class="line">    <span class="keyword">var</span> requestURL = APIendpoints[recordKind];</span><br><span class="line">    <span class="keyword">var</span> requestData = data[recordKind];</span><br><span class="line"></span><br><span class="line">    btn.addEventListener(</span><br><span class="line">        <span class="string">&quot;click&quot;</span>,</span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">makeRequest</span>(<span class="params">evt</span>)</span>&#123;</span><br><span class="line">            ajax(requestURL,requestData);</span><br><span class="line">        &#125;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>將 requestURL 與 requestData 透過 closure 保存起來，這樣更容易理解而且效率也更好。</p>
+<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><p>本章節中介紹了什麼事closure，他的定義與他所帶來的好處。</p>
+<p>Closure的精神：</p>
+<ul>
+<li>Observational:closure 是一個函數實例，即使將這個函數傳遞給其他作用域並且在其他作用域中調用，他也會記住其外部的變量(儲存至記憶體中)。</li>
+<li>implementation: closure is a function instance and its scope environment preserved in-place while any references to it are passed around and invoked from other scopes.</li>
+</ul>
+<p>Closure的好處：</p>
+<ul>
+<li>通過保存之前確定的數據而不必每次都重新計算，closure 可以提高效率。</li>
+<li>closure 可以通過將變量封裝還提高可讀性與限制作用域的暴露，也同時保障了這個變量可以在將來使用，由於不需要在每次調用都重新傳遞保留的信息，所以更有利於 function 之間的互動。</li>
+</ul>
+<p>參考文獻：<br><a target="_blank" rel="noopener" href="https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/ch7.md">You Don’t Know JavaScript -2nd</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/You-Don-t-Know-JavaScript/" rel="tag"># You Don't Know JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/08/Javascript/Scope%20&%20Closures/8.%20Limiting-Scope-Exposure/" rel="prev" title="You Don't Know JavaScript [Scope & Closures] - Limiting Scope Exposure ?">
+      <i class="fa fa-chevron-left"></i> You Don't Know JavaScript [Scope & Closures] - Limiting Scope Exposure ?
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/09/Javascript/Scope%20&%20Closures/10-The-Module-Pattern/" rel="next" title="You Don't Know JavaScript [Scope & Closures] - The Module Pattern">
+      You Don't Know JavaScript [Scope & Closures] - The Module Pattern <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#See-the-Closure"><span class="nav-number">2.</span> <span class="nav-text">See the Closure</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Adding-Up-Closrues"><span class="nav-number">2.0.1.</span> <span class="nav-text">Adding Up Closrues</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Live-Link-Not-a-Snapshot"><span class="nav-number">2.0.2.</span> <span class="nav-text">Live Link,Not a Snapshot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#What-If-I-Can%E2%80%99t-See-It"><span class="nav-number">2.0.3.</span> <span class="nav-text">What If I Can’t See It?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Observable-Definition"><span class="nav-number">2.0.4.</span> <span class="nav-text">Observable Definition</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-Closure-Lifecycle-and-Garbage-Collection-GC"><span class="nav-number">3.</span> <span class="nav-text">The Closure Lifecycle and Garbage Collection (GC)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Per-Variable-or-Per-Scope"><span class="nav-number">3.0.1.</span> <span class="nav-text">Per Variable or Per Scope?</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Why-Closure"><span class="nav-number">4.</span> <span class="nav-text">Why Closure?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Summary"><span class="nav-number">5.</span> <span class="nav-text">Summary</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
