@@ -29,7 +29,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210909/20124767HKbh1RgaIr.jpg">
 <meta property="article:published_time" content="2021-09-09T02:40:16.000Z">
-<meta property="article:modified_time" content="2021-09-09T02:53:15.504Z">
+<meta property="article:modified_time" content="2021-09-09T03:09:49.786Z">
 <meta property="article:author" content="Fandix Huang">
 <meta property="article:tag" content="You Don&#39;t Know JavaScript">
 <meta name="twitter:card" content="summary">
@@ -178,7 +178,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-09 10:40:16 / Modified: 10:53:15" itemprop="dateCreated datePublished" datetime="2021-09-09T10:40:16+08:00">2021-09-09</time>
+              <time title="Created: 2021-09-09 10:40:16 / Modified: 11:09:49" itemprop="dateCreated datePublished" datetime="2021-09-09T10:40:16+08:00">2021-09-09</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -208,7 +208,7 @@
 <hr>
 <h1 id="Encapsulation-and-Least-Exposure-POLE"><a href="#Encapsulation-and-Least-Exposure-POLE" class="headerlink" title="Encapsulation and Least Exposure (POLE)"></a>Encapsulation and Least Exposure (POLE)</h1><p>封裝個概念基礎且廣泛的被用在<code>物件導向(OO)</code>的程式中，封裝的目的是將信息(數據)與行為(功能)捆棒再一起，以發揮共同的作用，而封裝的精神可以透過簡單的方式實現，例如對於不同專案使用不同文件分別保存，以文件的形式封裝。</p>
 <p>現代的程式語言的組件體系結構近一步的推廣了封裝，可以很自然的將類似功能的內容合併到一個程式邏輯中，然後將這個集合定義為一個<code>component</code>。</p>
-<p>另一個主要目標是控制封裝數據和功能的隱藏性，回想在 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10252422">Limiting Scope Exposure ?</a> 中提到的<code>POLE原則</code>，我們應該盡可能地將不必要暴露的變量或功能隱藏起來以提高安全性，而在JS中我們經常通過 lexical scope來達到這個功能。</p>
+<p>另一個主要目標是控制封裝數據和功能的隱藏性，回想在 <a href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/8.%20Limiting-Scope-Exposure/">Limiting Scope Exposure ?</a> 中提到的<code>POLE原則</code>，我們應該盡可能地將不必要暴露的變量或功能隱藏起來以提高安全性，而在JS中我們經常通過 lexical scope來達到這個功能。</p>
 <p>將相同的程式組合在一起，並選擇性的限制訪問我們認為私有(private)的部分，將不被視為私有(private)的部分設定為公開(public)，這樣可以更好的組織我們的程式，了避免了過度暴露數據與功能，可以更好的維護。</p>
 <hr>
 <h1 id="What-is-a-Module"><a href="#What-is-a-Module" class="headerlink" title="What is a Module?"></a>What is a Module?</h1><p>Module相關數據和功能(method)的集合，他的特徵是他可以劃分為<code>需要隱藏的信息(private)</code>與<code>可以公開的信息(public)</code>，而公開的部分通常稱為 <code>public API</code>。</p>
@@ -234,7 +234,7 @@
 <li>module必須在public API上return一個對private數據引用的function。</li>
 </ul>
 <hr>
-<h1 id="Node-CommonJS-Modules"><a href="#Node-CommonJS-Modules" class="headerlink" title="Node CommonJS Modules"></a>Node CommonJS Modules</h1><p>在 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10251263">Around the Global Scope ?</a> 提到了 Node Common Module，與前面介紹的經典 module 不同，Node Module 可以將 module factory 或 IIFE 與其他程式碼(包括其他module)捆綁再一起，<code>CommonJS module以文件為基礎</code>，所以每個文件就是一個module。</p>
+<h1 id="Node-CommonJS-Modules"><a href="#Node-CommonJS-Modules" class="headerlink" title="Node CommonJS Modules"></a>Node CommonJS Modules</h1><p>在 <a href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/6.%20Around-the-Global-Scope/">Around the Global Scope ?</a> 提到了 Node Common Module，與前面介紹的經典 module 不同，Node Module 可以將 module factory 或 IIFE 與其他程式碼(包括其他module)捆綁再一起，<code>CommonJS module以文件為基礎</code>，所以每個文件就是一個module。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports.getName = getName;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ************************</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> records = [</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">14</span>, <span class="attr">name</span>: <span class="string">&quot;Kyle&quot;</span>, <span class="attr">grade</span>: <span class="number">86</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">73</span>, <span class="attr">name</span>: <span class="string">&quot;Suzy&quot;</span>, <span class="attr">grade</span>: <span class="number">87</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">112</span>, <span class="attr">name</span>: <span class="string">&quot;Frank&quot;</span>, <span class="attr">grade</span>: <span class="number">75</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">id</span>: <span class="number">6</span>, <span class="attr">name</span>: <span class="string">&quot;Sarah&quot;</span>, <span class="attr">grade</span>: <span class="number">91</span> &#125;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getName</span>(<span class="params">studentID</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> student = records.find(</span><br><span class="line">        <span class="function"><span class="params">student</span> =&gt;</span> student.id == studentID</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">return</span> student.name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>雖然 <code>records</code> 與 <code>getName(...)</code> 他們是處於這個文件中的最上層作用域，但他並不是<code>全域作用域</code>，在預設的情況下這個文件中的所有內容都是 <code>private</code>，若要在 CommonJS module 的 public API 上加入需要公開的內容，你可以將需要公開的內容加入到<code>module.exports</code> 作為他的屬性。</p>
 <p>若是要在引入其他 module 的實例，可以使用 Node 提供的 <code>require(...)</code>method</p>

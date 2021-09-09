@@ -29,7 +29,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210908/2012476754qJcPO76o.jpg">
 <meta property="article:published_time" content="2021-09-08T06:54:20.000Z">
-<meta property="article:modified_time" content="2021-09-09T02:53:14.902Z">
+<meta property="article:modified_time" content="2021-09-09T03:05:54.613Z">
 <meta property="article:author" content="Fandix Huang">
 <meta property="article:tag" content="You Don&#39;t Know JavaScript">
 <meta name="twitter:card" content="summary">
@@ -184,7 +184,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-09 10:53:14" itemprop="dateModified" datetime="2021-09-09T10:53:14+08:00">2021-09-09</time>
+                <time title="Modified: 2021-09-09 11:05:54" itemprop="dateModified" datetime="2021-09-09T11:05:54+08:00">2021-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -207,7 +207,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我們在 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10250830">The Scope Chain</a> 不斷地提到<code>全域作用域</code>，可能會疑問為什麼最外層的作用域是全域作用域？而為什麼對於JS來說會是最重要的？僅<code>避免使用全域範圍</code>就足夠了嗎？</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我們在 <a href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/5.%20The-Scope-Chain/">The Scope Chain</a> 不斷地提到<code>全域作用域</code>，可能會疑問為什麼最外層的作用域是全域作用域？而為什麼對於JS來說會是最重要的？僅<code>避免使用全域範圍</code>就足夠了嗎？</p>
 <p>對於JS來說，全域是一個很複雜的環節，他非常的實用但細節也非常多，本章節將會對這些問題做一些解釋。</p>
 <p><img src="https://ithelp.ithome.com.tw/upload/images/20210908/2012476754qJcPO76o.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210908/2012476754qJcPO76o.jpg"></p>
 <span id="more"></span>
@@ -239,7 +239,7 @@
 <li><code>console</code></li>
 <li><code>DOM</code>(window,document…)</li>
 <li><code>timer</code>(setTimeout(…)…)</li>
-<li><code>web platform APIs</code>(history,navigatot…)</li>
+<li><code>web platform APIs</code>(history,navigator…)</li>
 </ul>
 </li>
 </ul>
@@ -249,7 +249,7 @@
 <p>我們可以使用 <code>&lt;script&gt;</code> 標籤加入到瀏覽器的環境中，他會動態的建立一個DOM元素，上面的例子中我們將 <code>studentName</code> 和<code>hello(...)</code> 都宣告在全域作用中，這意味著我們可以在全域的物件（在瀏覽器中全域的物件是 <code>window</code> ）中找到與他們同名的屬性。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> studentName = <span class="string">&quot;Kyle&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Hello, <span class="subst">$&#123; <span class="built_in">window</span>.studentName &#125;</span>!`</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">window</span>.hello(); <span class="comment">// Hello, kyle!</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="Globals-Shadowing-Globals"><a href="#Globals-Shadowing-Globals" class="headerlink" title="Globals Shadowing Globals"></a>Globals Shadowing Globals</h4><p>我們有在 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10250830">The Scope Chain</a> 介紹到什麼是 shadowing，內部作用域的宣告可以覆蓋外部作用域的宣告，讓其無法訪問到外部作用域的同名變量。</p>
+<h4 id="Globals-Shadowing-Globals"><a href="#Globals-Shadowing-Globals" class="headerlink" title="Globals Shadowing Globals"></a>Globals Shadowing Globals</h4><p>我們有在 <a href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/5.%20The-Scope-Chain/">The Scope Chain</a> 介紹到什麼是 shadowing，內部作用域的宣告可以覆蓋外部作用域的宣告，讓其無法訪問到外部作用域的同名變量。</p>
 <p>而對於全域作用域來說，全域物件的屬性會被在全域宣告的變量shadowing。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.something = <span class="number">42</span>; <span class="comment">// property of object in global</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> something = <span class="string">&quot;Kyle&quot;</span>; <span class="comment">// decelerate global variable</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(something); <span class="comment">// Kyle -&gt; shadowing</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">window</span>.something); <span class="comment">//42</span></span><br></pre></td></tr></table></figure>
 <p>上面的程式碼中，對於全域的物件宣告一個 something 的屬性，但是也使用 <code>let</code> 宣告一個同名的變量，這樣的結果是 something 的詞法宣告會 shadowing 全域物件的屬性。</p>

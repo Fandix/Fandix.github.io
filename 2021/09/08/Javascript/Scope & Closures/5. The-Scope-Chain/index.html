@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210908/20124767pVroHhcMPA.jpg">
 <meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20201008/20124767K5alkLKbYA.png">
 <meta property="article:published_time" content="2021-09-08T03:12:56.000Z">
-<meta property="article:modified_time" content="2021-09-09T02:53:14.298Z">
+<meta property="article:modified_time" content="2021-09-09T03:05:11.818Z">
 <meta property="article:author" content="Fandix Huang">
 <meta property="article:tag" content="You Don&#39;t Know JavaScript">
 <meta name="twitter:card" content="summary">
@@ -185,7 +185,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-09 10:53:14" itemprop="dateModified" datetime="2021-09-09T10:53:14+08:00">2021-09-09</time>
+                <time title="Modified: 2021-09-09 11:05:11" itemprop="dateModified" datetime="2021-09-09T11:05:11+08:00">2021-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -208,14 +208,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10249231">What is Scope</a> 與 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10249458">Lexical Scope</a> 對辭法範圍做具體的定義與基本概念介紹，也了解作用域的嵌套與找尋變量的像上搜尋，在本章節中將介紹什麼是<code>作用域鏈</code>，可以把它想像為是<code>連接著嵌套作用域之間的通道</code>，而這個作用域鏈是固定方向的，它意味著變量的查詢只能往上/外層作用域移動。</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在 <a target="_blank" rel="noopener" href="http://localhost:4000/2021/09/08/Javascript/Scope%20&%20Closures/3.%20What-is-Scope/">What is Scope</a> 與 <a href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/4.%20Lexical-Scope/">Lexical Scope</a> 對辭法範圍做具體的定義與基本概念介紹，也了解作用域的嵌套與找尋變量的像上搜尋，在本章節中將介紹什麼是<code>作用域鏈</code>，可以把它想像為是<code>連接著嵌套作用域之間的通道</code>，而這個作用域鏈是固定方向的，它意味著變量的查詢只能往上/外層作用域移動。</p>
 <p><img src="https://ithelp.ithome.com.tw/upload/images/20210908/20124767pVroHhcMPA.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210908/20124767pVroHhcMPA.jpg"></p>
 <span id="more"></span>
 
 <h1 id="“Lookup”-is-Conceptual"><a href="#“Lookup”-is-Conceptual" class="headerlink" title="“Lookup” is Conceptual"></a>“Lookup” is Conceptual</h1><p><img src="https://ithelp.ithome.com.tw/upload/images/20201008/20124767K5alkLKbYA.png" alt="https://ithelp.ithome.com.tw/upload/images/20201008/20124767K5alkLKbYA.png"></p>
-<p>我們在前兩章中使用了這個程式來區分作用域，若我們在for…loop中呼叫了 <code>students</code> 這個變量，我們在 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10249458">Lexical Scope</a> 提到了 lookup 的概念，JS引擎會先在當前的作用域中查詢使否有宣告這個變量，若沒有會持續向上層作用域中查詢直到全域作用域中，這個查詢的過程有助於我們了解作用域個概念，但在正常的情況下<code>JS通常是不這麼做的</code>。</p>
+<p>我們在前兩章中使用了這個程式來區分作用域，若我們在for…loop中呼叫了 <code>students</code> 這個變量，我們在 <a href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/4.%20Lexical-Scope/">Lexical Scope</a> 提到了 lookup 的概念，JS引擎會先在當前的作用域中查詢使否有宣告這個變量，若沒有會持續向上層作用域中查詢直到全域作用域中，這個查詢的過程有助於我們了解作用域個概念，但在正常的情況下<code>JS通常是不這麼做的</code>。</p>
 <p>通常在編譯的過程中就會決定好變量的scope，基於這個原理，所以變量的作用域是不會根據程式運行時發生變化，由於scope是在編譯中得知並且不可變的，所以這個scope的訊息有可能與AST儲存在一起，然後當程式運行的時候使用這個訊息。</p>
-<p>換句話說，其實JS並不需要像 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10249458">Lexical Scope</a> 說的要一一遍歷作用域來找到這個變量在哪個作用域中宣告，因為這個訊息其實在編譯期間就知道了，透過不需要花費時間進行搜尋，它可以使我們的程序更高效能的運行，</p>
+<p>換句話說，其實JS並不需要像 <a href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/4.%20Lexical-Scope/">Lexical Scope</a> 說的要一一遍歷作用域來找到這個變量在哪個作用域中宣告，因為這個訊息其實在編譯期間就知道了，透過不需要花費時間進行搜尋，它可以使我們的程序更高效能的運行，</p>
 <p>不過凡事都有個例外，若我們使用了一個從未在任何地方宣告個變數，因為其實每一個專案對於JS來說都是獨立的，所以就算在這個專案中沒有辦法找這個變量的宣告，但是他也有可能被宣告在共享的全域範圍中，所以不一定會是個錯誤。</p>
 <p>因此可能將這個結果（變量準確宣告的位置）需要推遲到運行的時候才知道，所以當JS還沒編譯到其他專案的這個期間，這個變量都使處於無法確定作用域的情況，而延遲查找最終才會將這個變量宣告（有可能是全域中）但是這個動作只需要進行一次，因為作用域是無法被更改的。</p>
 <hr>
