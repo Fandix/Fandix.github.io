@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Template variable 可以讓你在 template 的任意一處使用被標記過的 HTML 元件的數據，例如響應使用者的輸入或微調應用程序的表單，簡單來說當你在畫面中有一個 &lt;input&gt;，除了透過 Form 獲得使用者在這個 &lt;input&gt; 所以輸入的數據之外，也可以透過將這個 &lt;input&gt; 設定為 template variable，這樣就可以讓">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day12. Template variables">
+<meta property="og:url" content="https://fandix.github.io/2021/09/13/Angular/Day12-Template-variables/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="Template variable 可以讓你在 template 的任意一處使用被標記過的 HTML 元件的數據，例如響應使用者的輸入或微調應用程序的表單，簡單來說當你在畫面中有一個 &lt;input&gt;，除了透過 Form 獲得使用者在這個 &lt;input&gt; 所以輸入的數據之外，也可以透過將這個 &lt;input&gt; 設定為 template variable，這樣就可以讓">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767lMmC7T1IVB.png">
+<meta property="og:image" content="https://i.imgur.com/ZhvCzuM.gif">
+<meta property="article:published_time" content="2021-09-13T07:18:44.000Z">
+<meta property="article:modified_time" content="2021-09-13T07:19:57.490Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767lMmC7T1IVB.png">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/13/Angular/Day12-Template-variables/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day12. Template variables | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day12-Template-variables/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day12. Template variables
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-13 15:18:44 / Modified: 15:19:57" itemprop="dateCreated datePublished" datetime="2021-09-13T15:18:44+08:00">2021-09-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Template variable 可以讓你在 template 的任意一處使用被標記過的 HTML 元件的數據，例如響應使用者的輸入或微調應用程序的表單，簡單來說當你在畫面中有一個 <code>&lt;input&gt;</code>，除了透過 Form 獲得使用者在這個 <code>&lt;input&gt;</code> 所以輸入的數據之外，也可以透過將這個 <code>&lt;input&gt;</code> 設定為 template variable，這樣就可以讓在別的地方的 <code>&lt;button&gt;</code> 中的 event binding 獲得這個 <code>&lt;input&gt;</code> 的數據，詳細的內容讓我們繼續看下去吧。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767lMmC7T1IVB.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767lMmC7T1IVB.png"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Syntax"><a href="#Syntax" class="headerlink" title="Syntax"></a>Syntax</h1><p>要將 template 中的元件聲明為 template variable，需要在這個元件上加上<code>哈希符號 #</code>，舉個例子</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> #<span class="attr">phone</span> <span class="attr">placeholder</span>=<span class="string">&quot;phone number&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- lots of other elements --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- phone refers to the input element; pass its `value` to an event handler --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;callPhone(phone.value)&quot;</span>&gt;</span>Call<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>雖然在 template 中 <code>&lt;button&gt;</code> 離 <code>&lt;input&gt;</code> 很遠，但因為<code>&lt;input&gt;</code> 透過 # 被標記為 template variable，所以遠處的 <code>&lt;button&gt;</code> 可以透過呼叫 phone.value 獲取這個 <code>&lt;input&gt;</code> 的值。</p>
+<hr>
+<h1 id="How-Angular-assigns-values-to-template-variables"><a href="#How-Angular-assigns-values-to-template-variables" class="headerlink" title="How Angular assigns values to template variables"></a>How Angular assigns values to template variables</h1><p>了解了 template variable 後，接著要來介紹 Angular 是如何根據你聲明變量的位置為 template variable 分配一個值：</p>
+<ul>
+<li>如果在 component 的 selector 上聲明變量，則是指這個 component 的 instance</li>
+<li>如果在標準 HTML element 上聲明變量，則是指這個 HTML 的 element</li>
+<li>如果在 <code>&lt;ng-template&gt;</code> 上聲明變量，則該變量引用一個 <code>TemplateRef</code> 的 instance，它代表著這個 template，這個之後會詳細介紹</li>
+<li>如果在變量右邊指定了一個名稱，例如 `#var=”ngModel”，則該變量引用匹配 ngModel 名稱 (exportAs name) 的元素上的 directive 或 component</li>
+</ul>
+<h3 id="Using-NgForm-with-template-variables"><a href="#Using-NgForm-with-template-variables" class="headerlink" title="Using NgForm with template variables"></a>Using NgForm with template variables</h3><p>在大多數情況下，Angular 將 template variable 的值設置為他出現的元素，比如上面的例子，phone 是指 <code>&lt;input&gt;</code>，而點擊了按鈕則會將 <code>&lt;input&gt;</code> 的內容傳遞給 component 中的 callPhone() method。</p>
+<p>不過也可以透過在變量右邊指定一個名稱達到其他的效果，比如說可以使用 NgForm directive 來達到 Form 的效果，他通過引用 directive 的 exportAs name 來獲取對不同值得引用，來舉個例子吧</p>
+<ol>
+<li><p>在 app.component.ts 中加入 property 與 method</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  <span class="attr">submitMessage</span>: <span class="built_in">string</span> = <span class="string">&#x27;&#x27;</span>;                 <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onSubmit</span>(<span class="params">$event: <span class="built_in">any</span></span>)</span> &#123;                     <span class="comment">// (2)</span></span><br><span class="line">    <span class="built_in">this</span>.submitMessage = $event.form.value.name;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 新增 property 用於在畫面中顯示 <code>&lt;input&gt;</code> 的值</li>
+<li>(2): 新增一個 method 用於當使用者點擊按鈕時觸發</li>
+</ul>
+</li>
+<li><p>在 app.component.html 中添加 <code>&lt;form&gt;</code></p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> #<span class="attr">itemForm</span>=<span class="string">&quot;ngForm&quot;</span> (<span class="attr">ngSubmit</span>)=<span class="string">&quot;onSubmit(itemForm)&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="tag">    &gt;</span>Name <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">name</span>=<span class="string">&quot;name&quot;</span> <span class="attr">ngModel</span> <span class="attr">required</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span>&gt;</span>Submit<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> [<span class="attr">hidden</span>]=<span class="string">&quot;!itemForm.form.valid&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123; submitMessage &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/ZhvCzuM.gif" alt="img"></p>
+<p>如果沒有在 #itemForm 右邊使用 <code>ngForm</code> 則 #itemForm 的引用值將是 <code>HTMLFormElement</code> 的 <code>&lt;form&gt;</code> 元件，但這邊是使用了 <code>ngForm</code> 所以 #itemForm 是對 NgForm directive 的引用，他可以跟蹤表單中的每一個可控制元件的值和有效性，這與原生的 <code>&lt;form&gt;</code> 元素不同，NgForm directive 中有一個 property，他用於檢測整個表單的有效性，所以當 itemForm.form.valid 無效時，則整個 NgForm 會將 submit 按鈕 disable。</p>
+<hr>
+<h1 id="Template-variable-scope"><a href="#Template-variable-scope" class="headerlink" title="Template variable scope"></a>Template variable scope</h1><p>既然提到 variable 就不免俗的要提到 scope，至於什麼是 scope？簡單來說 <code>scope 就是一個變數的生存範圍，一但超出了這個範圍就無法存取到這個變數</code> 至於詳細的內容可以看我這一篇 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10249231">[JS] You Don’t Know JavaScript [Scope &amp; Closures] - What is Scope?</a> 文章中有詳細的介紹什麼是 scope。</p>
+<p>而 template variable 則可以在 template 中的任何一個位置中調用到，但是 <code>Structural directive</code> （*ngIf, *ngFor, <code>&lt;ng-template&gt;</code> …） 他會充當 template 的邊界，所以你會無法訪問到 Structural directive 內部的 template variable。</p>
+<h3 id="Accessing-in-a-nested-template"><a href="#Accessing-in-a-nested-template" class="headerlink" title="Accessing in a nested template"></a>Accessing in a nested template</h3><p>就如同 Javascript 的 scope 一樣，template 中內部的 template 可以訪問外部 template 的變量，但相反的話不行，舉個在同層級的例子</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> #<span class="attr">ref1</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> [(<span class="attr">ngModel</span>)]=<span class="string">&quot;firstExample&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span> *<span class="attr">ngIf</span>=<span class="string">&quot;true&quot;</span>&gt;</span>Value: &#123;&#123; ref1.value &#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span> </span><br></pre></td></tr></table></figure>
+
+<p> 當更改了 <code>&lt;input&gt;</code> 的內容時會立即更改 <code>&lt;span&gt;</code> 中的內容，因為 Angular 會立即通過 template variable ref1 來更新內容，接著再舉一個由內部訪問到外部變量的例子</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> #<span class="attr">ref1</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> [(<span class="attr">ngModel</span>)]=<span class="string">&quot;firstExample&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- New template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ng-template</span> [<span class="attr">ngIf</span>]=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- Because the context is inherited, the value is available to the new template --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span>&gt;</span>Value: &#123;&#123; ref1.value &#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ng-template</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>像上面提到的，<code>&lt;ng-template&gt;</code> 會創造一個新的 template 範圍，但是因為在這個新的 template 範圍中的 <code>&lt;span&gt;</code> 是從內部訪問外部的變量 ref1，所以是可以正常訪問到的，就跟 Javascript  一樣</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> ref1 = <span class="string">&#x27;input value&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">spanValue</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(ref1); <span class="comment">// input value</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>雖然 ref1 與 function spanValue 是不同的 scope，但因為內部可以訪問外部變量，所以可以將 ref1 給 console 出來，接著來看父層如果訪問子層變量會發生什麼事</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ng-template</span> [<span class="attr">ngIf</span>]=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- The reference is defined within a template --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> #<span class="attr">ref2</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> [(<span class="attr">ngModel</span>)]=<span class="string">&quot;secondExample&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ng-template</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- ref2 accessed from outside that template doesn&#x27;t work --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span>&gt;</span>Value: &#123;&#123; ref2?.value &#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果是上面例子的情況，<code>&lt;span&gt;</code> 會無法獲得 ref2 的內容，因為對於 ref2 來說他是存在於子層的變量，所以無法透過父層呼叫到，就跟 Javascript 一樣</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">inputScope</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> ref2 = <span class="string">&#x27;in child scope&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(ref2);  <span class="comment">// Uncaught ReferenceError: ref2 is not defined</span></span><br></pre></td></tr></table></figure>
+
+<p>外部無法呼叫到內部 scope 的變量，所以在使用 template variable 時要記得存取變量的規則， <code>外部 scope 無法存取到內部 scope 的變量</code>。</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章中介紹了什麼是 template variable 與他的使用方法，簡單來說就是可以利用他獲得其他 element 的內容，不過因為他也是屬於變量所以也會有 scope 的問題，要記住外部 scope 是無法訪問到內部 scope 的變量的，而使用了 <code>Structural directive</code> 則會創造一個獨立的 template 讓整個 template 出現父子層的現象，就跟在 javascript 中使用 function 建立 function scope  一樣，所以要特別注意。</p>
+<p>而本篇也是講解 template 的最後一篇，明天開始將會進入到 directive，這個觀念在前面多多少少都有提到一點，但沒關係之後會詳細地對他進行講解，那我們就明天見吧。</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/template-reference-variables">Angular.io</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day11-Attribute-class-and-style-bindings-and-Two-way-binding/" rel="prev" title="Day11. Attribute, class, and style bindings and Two-way binding">
+      <i class="fa fa-chevron-left"></i> Day11. Attribute, class, and style bindings and Two-way binding
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day13-Built-in-directives-attribute/" rel="next" title="Day13. Built-in directives - attribute">
+      Day13. Built-in directives - attribute <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Syntax"><span class="nav-number">1.</span> <span class="nav-text">Syntax</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#How-Angular-assigns-values-to-template-variables"><span class="nav-number">2.</span> <span class="nav-text">How Angular assigns values to template variables</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-NgForm-with-template-variables"><span class="nav-number">2.0.1.</span> <span class="nav-text">Using NgForm with template variables</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Template-variable-scope"><span class="nav-number">3.</span> <span class="nav-text">Template variable scope</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Accessing-in-a-nested-template"><span class="nav-number">3.0.1.</span> <span class="nav-text">Accessing in a nested template</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

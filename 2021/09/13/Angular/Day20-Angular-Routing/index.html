@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在現代網頁中常會使用一種稱為 single page application（SPA）的技術，可以通過顯示或隱藏特定的 component 來更改用戶看到的畫面，而不是像伺服器重新請求整個頁面的數據對其重新加載，可以使用 Angular router 來處理當你需要處理從一個畫面到另一個畫面的任務，Router 通過將瀏覽器的 URL 解析為更改畫面的指令，將使用者導航到指定的畫面。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day20. Angular Routing">
+<meta property="og:url" content="https://fandix.github.io/2021/09/13/Angular/Day20-Angular-Routing/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在現代網頁中常會使用一種稱為 single page application（SPA）的技術，可以通過顯示或隱藏特定的 component 來更改用戶看到的畫面，而不是像伺服器重新請求整個頁面的數據對其重新加載，可以使用 Angular router 來處理當你需要處理從一個畫面到另一個畫面的任務，Router 通過將瀏覽器的 URL 解析為更改畫面的指令，將使用者導航到指定的畫面。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767VAxO4x8GEi.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210815/20124767IICbH9PtB5.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210815/20124767qNfTFTuqDd.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210815/20124767iHe8uy4GSV.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210815/20124767uEueB4YNCA.png">
+<meta property="og:image" content="https://i.imgur.com/Nh7xpWU.gif">
+<meta property="article:published_time" content="2021-09-13T07:35:39.000Z">
+<meta property="article:modified_time" content="2021-09-13T07:36:45.747Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767VAxO4x8GEi.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/13/Angular/Day20-Angular-Routing/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day20. Angular Routing | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day20-Angular-Routing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day20. Angular Routing
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-13 15:35:39 / Modified: 15:36:45" itemprop="dateCreated datePublished" datetime="2021-09-13T15:35:39+08:00">2021-09-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在現代網頁中常會使用一種稱為 <code>single page application（SPA）</code>的技術，可以通過顯示或隱藏特定的 component 來更改用戶看到的畫面，而不是像伺服器重新請求整個頁面的數據對其重新加載，可以使用 <code>Angular router</code> 來處理當你需要處理從一個畫面到另一個畫面的任務，Router 通過將瀏覽器的 URL 解析為更改畫面的指令，將使用者導航到指定的畫面。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767VAxO4x8GEi.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767VAxO4x8GEi.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="What-is-single-page-application-SPA"><a href="#What-is-single-page-application-SPA" class="headerlink" title="What is single page application (SPA) ?"></a>What is single page application (SPA) ?</h1><p>single page application (SPA) 中文翻譯為<code>單頁面應用程序</code>，就如同他的名字他是一個只有一個頁面的應用程序，在網頁中可以看成使用者對網頁的任何操作都不會讓網頁整個重新載入，簡單來說他會讓大部分的信息跟畫面保持不變只更新少部分需要變動的資訊或畫面，舉例來說你在使用 gmail 的時候無論你是在收件夾還是在寄件夾，畫面的標題跟左邊的側欄基本上都不會更改，更改的只有中間的那一部分，這就是 SPA 的概念。</p>
+<p>SPA 最大的好處在於，他不像過去的網頁當使用者點擊某個任務時需要將整個畫面重新載入，會造成使用者每次的點擊都會花費大量的時間等待畫面重新載入，這嚴重引響了使用者體驗，而 SPA 則不一樣，他通過動態重寫當前頁面的方式做到快速的更換畫面，大大提升使用者的使用體驗，這邊只是簡單介紹一下他的觀念，有需要詳細了解 SPA 與 MPA 的差別與各自的好處，可以看<a target="_blank" rel="noopener" href="https://asperbrothers.com/blog/spa-vs-mpa/">這一篇</a>文章。</p>
+<hr>
+<h1 id="What-is-router"><a href="#What-is-router" class="headerlink" title="What is router?"></a>What is router?</h1><p>在開發一個大型的專案時一定不可能只有一個畫面，隨著功能越來越多越來越複雜，就會需要更多的頁面專門處理他們各自的任務，比如說登錄頁面專門用來處理登陸的任務，購物車頁面專門用來處理購物車的存放與增刪，諸如此類有非常非常多的任務與畫面存在於我們的專案中。</p>
+<p>而當在主頁面中點擊了購物車的功能按鈕就會進到購物車的頁面中，就好比主頁面連接著購物車頁面<br><img src="https://ithelp.ithome.com.tw/upload/images/20210815/20124767IICbH9PtB5.png" alt="https://ithelp.ithome.com.tw/upload/images/20210815/20124767IICbH9PtB5.png"></p>
+<p>而使用者又可以點擊購物車頁面的商品內容按鈕，他又回連接到商品內容頁面，商品內容頁面又可以連接回主頁面或去到登陸頁面，諸如此類的互相關聯著就如同</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210815/20124767qNfTFTuqDd.png" alt="https://ithelp.ithome.com.tw/upload/images/20210815/20124767qNfTFTuqDd.png"></p>
+<p>光看到就頭皮發麻， 隨著專案越來越大越來越複雜，上面這個圖只會越來越密集越來越大，為了應對這種麻煩的情況 Router 出現了。</p>
+<p>router 只有一個工作就是<code>接收使用者傳來要去到哪一個頁面的任務並把畫面導向對的地方</code>，當使用者點擊購物車按鈕，他會發送一個<code>使用者需要到購物車頁面</code>的任務給 Router，而 Router 正確地把畫面引導向購物車頁面，而在購物車頁面中使用者又點擊了商品內容按鈕，他又會發送一個<code>使用者要到商品內容頁面</code>的任務給 Router，當它收到任務後會再次精準地把畫面導向商品內容頁面</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210815/20124767iHe8uy4GSV.png" alt="https://ithelp.ithome.com.tw/upload/images/20210815/20124767iHe8uy4GSV.png"></p>
+<p>這樣是不是乾淨整潔多了呢？雖然在開發的過程中沒有一定需要使用 Router 來達到 SPA 的效果，但是可以看到整個程式會變得非常非常複雜，所以當要建立比較大型的網頁時 Router 就是非常重要的功能，當然他不只是接受任務導向畫面這麼簡單，還可以傳遞參數、紀錄資訊等等，詳細的內容就繼續望下看吧。</p>
+<hr>
+<h1 id="Generate-an-application-with-routing-enabled"><a href="#Generate-an-application-with-routing-enabled" class="headerlink" title="Generate an application with routing enabled"></a>Generate an application with routing enabled</h1><p>了解了什麼是 SPA 與 Router 後接著來看看在 Angular 中該如何實現吧，一樣舉個簡單的例子，當要創建 Angular 專案時可以使用 Angular CLI 自動化建立專案，在建立時有一個選項</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210815/20124767uEueB4YNCA.png" alt="https://ithelp.ithome.com.tw/upload/images/20210815/20124767uEueB4YNCA.png"></p>
+<p>可以選擇在創建專案時直接選擇要加入 Angular routing，那麼專案生成時就會附加一個 <code>app-routing.module.ts</code> 檔案，用於建立專案的 router 設定，而如果沒有在一開始生成也沒關係，一樣可以使用 Angular CLI 建立出來</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate module project --routing</span><br></pre></td></tr></table></figure>
+
+<p>這邊要提醒一下當你是手動建立 routing module 的話，需要將你建立出來的 RoutingModule 放入 app.module.ts 中 @NgModule 的 metadata 的 <code>imports</code> 裏面，這樣才可以正常使用喔</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; BrowserModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/platform-browser&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; AppRoutingModule &#125; <span class="keyword">from</span> <span class="string">&#x27;./app-routing.module&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AppComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./app.component&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    AppComponent</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    AppRoutingModule,        <span class="comment">// remember to settings routing module in here</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [],</span><br><span class="line">  <span class="attr">bootstrap</span>: [AppComponent]   </span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Adding-components-for-routing"><a href="#Adding-components-for-routing" class="headerlink" title="Adding components for routing"></a>Adding components for routing</h3><ol>
+<li><p>建立完 routing.module 後接著來建立兩個 component 讓畫面可以切換這兩個 component 的 view</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ng generate component first</span><br><span class="line">ng generate component second</span><br></pre></td></tr></table></figure></li>
+<li><p>接著將這兩個 component 引入到 app-routing.module.ts 中</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; RouterModule, Routes &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/router&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; FirstComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./sub-component/first/first.component&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; SecondComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./sub-component/second/second.component&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> routes: Routes = [];</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">imports</span>: [RouterModule.forRoot(routes)],</span><br><span class="line">  <span class="attr">exports</span>: [RouterModule]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppRoutingModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 routes 陣列中設定要導向的路線</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> routes: Routes = [</span><br><span class="line">  &#123; <span class="attr">path</span>: <span class="string">&#x27;first-component&#x27;</span>, <span class="attr">component</span>: FirstComponent &#125;,</span><br><span class="line">  &#123; <span class="attr">path</span>: <span class="string">&#x27;second-component&#x27;</span>, <span class="attr">component</span>: SecondComponent &#125;,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+
+<p> 在 routes 陣列中每個 route 都是一組包含兩個 property 的 javascript object，第一個 property 定義了 route 的 <code>url 路徑</code>，第二個 property 定義了 Angular 看到這個 url 後應該<code>顯示哪一個 component</code>。</p>
+</li>
+<li><p>將 route 加到專案中</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Angular Router App<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">nav</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">a</span> <span class="attr">routerLink</span>=<span class="string">&quot;/first-component&quot;</span> <span class="attr">routerLinkActive</span>=<span class="string">&quot;active&quot;</span>&gt;</span>First Component<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">a</span> <span class="attr">routerLink</span>=<span class="string">&quot;/second-component&quot;</span> <span class="attr">routerLinkActive</span>=<span class="string">&quot;active&quot;</span>&gt;</span>Second Component<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">nav</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">router-outlet</span>&gt;</span><span class="tag">&lt;/<span class="name">router-outlet</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>首先建立兩個 <code>&lt;a&gt;</code> 元件，代表在畫面中可以點擊兩個連結分別切換兩個 component 的 view</li>
+<li>在 <code>&lt;a&gt;</code> 的 attribute 中使用 <code>routerLink</code> 指定 url 的路徑</li>
+<li>在 <code>&lt;a&gt;</code> 的 attrubute 中加上 <code>routerLinkActive</code>，他是用來處理當現在的網址與所設定的連結一致時要加上去的Class名稱，簡單來說當 router 為當下那個 link 時，就會將在該link 加上對應的 css class</li>
+<li>最後在下方加上 <code>&lt;router-outlet&gt;</code> 用來顯示切換的 component，等於說要被切換的 component 會出現在這邊</li>
+</ol>
+</li>
+</ol>
+<p><img src="https://i.imgur.com/Nh7xpWU.gif" alt="img"></p>
+<p>在畫面中可以看到，當點擊不同的連接的時候會先更改瀏覽器的 url ，接著會隨著 url 的切換也改變畫面顯示的 component，這就是 router 的功用。</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章中介紹了什麼是 SPA 以及他的優點，而在開發 SPA 時會隨著頁面越來越多而形成越來越複雜的互相連接的關係，所以就需要 <code>Router</code> 的出現，他可以讓我們開發專案時減少複雜的頁面連接，專心開發 component 與畫面就好，導向的工作就由 Router 來完成。</p>
+<p>講解了最基本的 Router 的用法，下一篇中將會介紹 Router 在 Angular 中的更多用法，那我們就明天見吧！</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://asperbrothers.com/blog/spa-vs-mpa/">Single Page Application (SPA) vs Multi Page Application (MPA) – Two Development Approaches</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Learn/Common_questions/How_does_the_Internet_work">How does the Internet work?</a></li>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/routing-overview">Angular.io - Angular Routing</a></li>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/router">Angular.io - Common Routing Tasks</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day19-Dependency-providers/" rel="prev" title="Day19. Dependency providers">
+      <i class="fa fa-chevron-left"></i> Day19. Dependency providers
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Typescript/get-started/" rel="next" title="TypeScript - Get started">
+      TypeScript - Get started <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-single-page-application-SPA"><span class="nav-number">1.</span> <span class="nav-text">What is single page application (SPA) ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-router"><span class="nav-number">2.</span> <span class="nav-text">What is router?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Generate-an-application-with-routing-enabled"><span class="nav-number">3.</span> <span class="nav-text">Generate an application with routing enabled</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Adding-components-for-routing"><span class="nav-number">3.0.1.</span> <span class="nav-text">Adding components for routing</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

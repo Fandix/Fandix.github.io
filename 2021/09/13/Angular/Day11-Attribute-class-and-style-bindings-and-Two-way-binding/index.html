@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在上一張中介紹了 property binding 是用來將 Component 中的 property 綁定給 HTML Tag 的 property，還介紹了 event binding 是用來將 Component 中的 method 綁定給 HTML Tag 用來監聽畫面事件，而本章將持續介紹兩種 binding 方式。 Attribute binding 可以用來讓你在開發 Templa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day11. Attribute, class, and style bindings and Two-way binding">
+<meta property="og:url" content="https://fandix.github.io/2021/09/13/Angular/Day11-Attribute-class-and-style-bindings-and-Two-way-binding/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在上一張中介紹了 property binding 是用來將 Component 中的 property 綁定給 HTML Tag 的 property，還介紹了 event binding 是用來將 Component 中的 method 綁定給 HTML Tag 用來監聽畫面事件，而本章將持續介紹兩種 binding 方式。 Attribute binding 可以用來讓你在開發 Templa">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767uy096133tc.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210805/20124767zQSQyFVxiV.png">
+<meta property="og:image" content="https://i.imgur.com/oKbjOZJ.gif">
+<meta property="article:published_time" content="2021-09-13T07:15:40.000Z">
+<meta property="article:modified_time" content="2021-09-13T07:17:27.621Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767uy096133tc.png">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/13/Angular/Day11-Attribute-class-and-style-bindings-and-Two-way-binding/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day11. Attribute, class, and style bindings and Two-way binding | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day11-Attribute-class-and-style-bindings-and-Two-way-binding/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day11. Attribute, class, and style bindings and Two-way binding
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-13 15:15:40 / Modified: 15:17:27" itemprop="dateCreated datePublished" datetime="2021-09-13T15:15:40+08:00">2021-09-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在上一張中介紹了 property binding 是用來將 Component 中的 property 綁定給 HTML Tag 的 property，還介紹了 event binding 是用來將 Component 中的 method 綁定給 HTML Tag 用來監聽畫面事件，而本章將持續介紹兩種 binding 方式。</p>
+<p>Attribute binding 可以用來讓你在開發 Template 時直接設置 property 值，透過 attribute 可以提高訪問性、動態設置畫面樣式與可以同時管理多個 CSS Class 或樣式。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767uy096133tc.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767uy096133tc.png"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Binding-to-an-attribute"><a href="#Binding-to-an-attribute" class="headerlink" title="Binding to an attribute"></a>Binding to an attribute</h1><p>在大部分的情況下，對於設置 HTML 元件屬性都建議你都使用 property binding 來做，但是有時候會遇到你可能要綁定某一個元件的某個屬性，但這個元件並沒有這個屬性，如果強制使用 property binding 則會出錯，這實際需要使用 attribute binding了，比如說 <a target="_blank" rel="noopener" href="https://www.w3.org/WAI/standards-guidelines/aria/">ARIA（WAI-ARIA）</a> 或 <a target="_blank" rel="noopener" href="https://www.elegantthemes.com/blog/wordpress/what-is-an-svg-file-and-how-do-you-use-it">SVG（Scalable Vector Graphic）</a> 都是 <code>purely attribute</code>，代表他們既沒有元件的 property 也無法對他進行設置，這時就必須使用 attribute binding。</p>
+<p>到這邊可能有滿多新手開始頭暈了，attribute 跟 property 不是都是屬性嗎？有什麼不一樣，這邊簡單來說 <code>attributes 由 HTML 定義，所有出現在 HTML 標籤內的描述皆為 attributes</code> ，而 DOM properties 則是 <code>標準的 HTML attributes 經過瀏覽器解析後會產生相對應的 DOM properties</code>，有興趣可以看看 <a target="_blank" rel="noopener" href="https://jimmyswebnote.com/html-attributes-and-dom-properties/">這篇文章</a> 裡面詳細的介紹了什麼是 HTML attribute 與 DOM Property 的區別。</p>
+<h3 id="Syntax"><a href="#Syntax" class="headerlink" title="Syntax"></a>Syntax</h3><p>要了解一個新的用法就必須先瞭解他的語法，而 attribute binding 的語法與 property binding 相似，但不是將 element property 放在括號之間，而是在 attuibute 前面加上一個前綴字 <code>attr 後跟一個點（.）</code>，這樣就會把你輸入在後面的字串表達式解析成 attribute 值。</p>
+<p><strong>Note</strong>: 這邊的介紹可能都會使用英文介紹對應的專有名詞，畢竟 property 與 attribute 的中文都是屬性…</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span> [<span class="attr">attr.attribute-you-are-targeting</span>]=<span class="string">&quot;expression&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>注意喔！如果將後面的字串表達式設置為 <code>null</code> 或 <code>undefined</code> 的話，Angular 會直接將這個屬性完全刪除。</p>
+<hr>
+<h1 id="Example-Binding-to-colspan"><a href="#Example-Binding-to-colspan" class="headerlink" title="Example: Binding to colspan"></a>Example: Binding to colspan</h1><p>舉個 attribute binding 的例子吧，常見的使用 attribute binding 的例子是 table 中的 <code>colspan</code> attribute，colspan 是用來改變一個單元的格子應該跨越多少格，所以如果使用 attribute binding 可以做到動態這是 table。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--  expression calculates colspan=2 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> [<span class="attr">attr.colspan</span>]=<span class="string">&quot;1 + 1&quot;</span>&gt;</span>One-Two<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣的設定可以使綁定的 <code>&lt;tr&gt;</code> 跨越兩列。</p>
+<p><strong>Note</strong>: 要注意，<code>&lt;tr&gt;</code> 元件擁有的是 <code>colspan</code>  attribute，而如果是 property 的話則是 <code>colSpan</code>，大小寫要非常注意！ </p>
+<hr>
+<h1 id="Binding-to-the-class-attribute"><a href="#Binding-to-the-class-attribute" class="headerlink" title="Binding to the class attribute"></a>Binding to the class attribute</h1><p>attribute 還有一個常用的用法，就是用於綁定 element 中的 CSS class，可以做到同時新增或刪除等管理多個 CSS class。</p>
+<h3 id="Binding-to-a-single-CSS-class"><a href="#Binding-to-a-single-CSS-class" class="headerlink" title="Binding to a single CSS class"></a>Binding to a single CSS class</h3><p>如果要綁定單個 CSS class 請使用 <code>class</code> 當作前綴後面跟上一個點（.）和 CSS class 的名稱，例如 <code>[class.sale]=&quot;onSale&quot;</code>，當訂的表達是為 true 時 Angular 會為這個 element 多添加一個 CSS class，反之則會被移除。</p>
+<h3 id="Binding-to-multiple-CSS-classes"><a href="#Binding-to-multiple-CSS-classes" class="headerlink" title="Binding to multiple CSS classes"></a>Binding to multiple CSS classes</h3><p>如果要同時綁定多個 CSS class 請使用 <code>[class]</code>，例如：[class]=”classExpression”，插入的表達是可以是：</p>
+<ul>
+<li>以<code>空格</code>分隔的 CSS class 的名字</li>
+<li>以 object 的 key 作為名稱，以 true 或 false 表達式作為值的物件</li>
+<li>包含多個 CSS class 名字的陣列</li>
+</ul>
+<hr>
+<h1 id="Binding-to-the-style-attribute"><a href="#Binding-to-the-style-attribute" class="headerlink" title="Binding to the style attribute"></a>Binding to the style attribute</h1><p>attribute binding 也可以做到動態設置你的 element style。</p>
+<h3 id="Binding-to-a-single-style"><a href="#Binding-to-a-single-style" class="headerlink" title="Binding to a single style"></a>Binding to a single style</h3><p>要創建單個的 style binding，請使用前綴字 <code>style</code>後跟一個點（.）和 CSS style property，例如 <code>[style.width]=&quot;width&quot;</code>， Angular 將 property 設置為綁定表達式的值，通常是一個字串或著可以添加像 <code>em</code> 或 <code>%</code> 的單位擴展符。</p>
+<p><strong>Note</strong>: 可以使用破折號或駝峰命民法來編寫 style property 的名稱</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">nav</span> [<span class="attr">style.background-color</span>]=<span class="string">&quot;expression&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">nav</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">nav</span> [<span class="attr">style.backgroundColor</span>]=<span class="string">&quot;expression&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">nav</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Binding-to-multiple-styles"><a href="#Binding-to-multiple-styles" class="headerlink" title="Binding to multiple styles"></a>Binding to multiple styles</h3><p>要綁定多個 style 請綁定到 [style] property，例如 [style]=”styleExpression” 而 styleExpression 可以是以下之一：</p>
+<ul>
+<li>樣式的字串列表：<code>&quot;width: 100px; height: 100px; background-color: cornflowerblue;&quot;</code></li>
+<li>以樣式名稱為 key，以樣式值為 value 的物件：<code>&#123;width: &#39;100px&#39;, height: &#39;100px&#39;, backgroundColor: &#39;cornflowerblue&#39;&#125;</code></li>
+</ul>
+<p><strong>Note</strong>: 注意！ [style] 不像 [class] 一樣支持綁定陣列喔！</p>
+<hr>
+<h1 id="Styling-Precedence"><a href="#Styling-Precedence" class="headerlink" title="Styling Precedence"></a>Styling Precedence</h1><p>可以將多個源頭的值綁定給單一 HTML element 的 CSS class 和 style，當同一個 CSS class 或 style property 有多個綁定時，Angular 會遵循一組優先規則解決衝突並確定哪些 CSS class 或 style 最終被應用於 HTML element。</p>
+<ol>
+<li>Template bindings<ol>
+<li><strong>Property binding</strong>: <code>&lt;div [class.foo]=&quot;hasFoo&quot;&gt; or &lt;div [style.colo]=&quot;color&quot;&gt;</code></li>
+<li><strong>Map binding</strong>: <code>&lt;div [class]=&quot;classExpr&quot;&gt; or &lt;div [style]=&quot;styleExpr&quot;</code></li>
+<li><strong>Static value</strong>:  <code>&lt;div class=&quot;foo&quot;&gt; or &lt;div style=&quot;color: blue&quot;&gt;</code></li>
+</ol>
+</li>
+<li>Directive host bindings<ol>
+<li><strong>Property binding</strong>: <code>host: &#123;&#39;[class.foo]&#39;: &#39;hasFoo&#39;&#125; or host: &#123;&#39;[style.color]&#39;: &#39;color&#39;&#125;</code></li>
+<li><strong>Map binding</strong>: <code>host: &#123;&#39;[class]&#39;: &#39;classExpr&#39;&#125; or host: &#123;&#39;[style]&#39;: &#39;styleExpr&#39;&#125;</code></li>
+<li><strong>Static value</strong>: <code>host: &#123;&#39;class&#39;: &#39;foo&#39;&#125; or host: &#123;&#39;style&#39;: &#39;color: blue&#39;&#125;</code></li>
+</ol>
+</li>
+<li>Component host bindings<ol>
+<li><strong>Property binding</strong>: <code>host: &#123;&#39;[class.foo]&#39;: &#39;hasFoo&#39;&#125; or host: &#123;&#39;[style.color]&#39;: &#39;color&#39;&#125;</code></li>
+<li><strong>Map binding</strong>: <code>host: &#123;&#39;[class]&#39;: &#39;classExpr&#39;&#125; or host: &#123;&#39;[style]&#39;: &#39;styleExpr&#39;&#125;</code></li>
+<li><strong>Static value</strong>: <code>host: &#123;&#39;class&#39;: &#39;foo&#39;&#125; or host: &#123;&#39;style&#39;: &#39;color: blue&#39;&#125;</code></li>
+</ol>
+</li>
+</ol>
+<p>可以看到 CSS class 或 style 越具體其優先級就越高，綁定到特定 CSS class（[class.foo]）會優先於通用 [class] 的綁定，而通用 [class] 的綁定又會優先於特定樣式綁定（[style.bar]），而他又會優先於通用 [style]  的綁定。</p>
+<hr>
+<h1 id="Two-way-binding"><a href="#Two-way-binding" class="headerlink" title="Two-way binding"></a>Two-way binding</h1><p>介紹完 attribute, class, style binding 後，接著要來介紹另一個非常常用的 binding 方法 <code>Two-way binding</code>，還記得在前幾天介紹的 @Input() 與 @Output() 嗎？在父層的 HTML 中如果要傳遞數據給子層，需要將父層的 property 利用 property binding 將它放入中括號 ( [ ] ) 中傳遞給子層，而父層要接受子層傳遞的數據時，需要利用 event binding 將子層的 EventEmitter 放括號中，當子層傳遞數據時觸發父層中綁定的 method</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">app-childComponent</span> [<span class="attr">inputData</span>]=<span class="string">&quot;inputData&quot;</span> (<span class="attr">outputData</span>)=<span class="string">&quot;onChildOutput($event)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-childComponent</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210805/20124767zQSQyFVxiV.png" alt="https://ithelp.ithome.com.tw/upload/images/20210805/20124767zQSQyFVxiV.png"></p>
+<p>所以如果同一個子層同時要有 @Input() 與 @Output() 那就會把他家的很長不太好看，所以 Angular  提供了 <code>Two-way binding</code>，將 property binding 與 event binding 整合再一起，語法是將方括號與圓括號組合再一起 <code>[()]</code>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">app-sizer</span> [(<span class="attr">size</span>)]=<span class="string">&quot;fontSizePx&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-sizer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="How-two-way-binding-works"><a href="#How-two-way-binding-works" class="headerlink" title="How two-way binding works"></a>How two-way binding works</h1><p>要讓 Two-way binding 可以正常運作需要將 @Output() property 使用 <code>inputChange</code> 模式，其中 input 是 @Input() 的名稱，舉例來說當你的 @Input() 命名為 size 則要將 @Output() 命名為 sizeChange，讓我們舉個例吧</p>
+<ol>
+<li><p>在 child.component.ts 中建立一個 @Input() 屬性 size 與 @Output() 屬性 sizeChange 並加入三個 method</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Input, Output, EventEmitter &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-child&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./child.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./child.component.css&#x27;</span>],</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ChildComponent</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Input</span>() size!: <span class="built_in">number</span> | <span class="built_in">string</span>;                             <span class="comment">// (1)</span></span><br><span class="line">  <span class="meta">@Output</span>() sizeChange = <span class="keyword">new</span> EventEmitter&lt;<span class="built_in">number</span>&gt;();           <span class="comment">// (2)</span></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">dec</span>(<span class="params"></span>)</span> &#123;                                                      <span class="comment">// (3)</span></span><br><span class="line">    <span class="built_in">this</span>.resize(-<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">inc</span>(<span class="params"></span>)</span> &#123;                                                      <span class="comment">// (4)</span></span><br><span class="line">    <span class="built_in">this</span>.resize(+<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">resize</span>(<span class="params">delta: <span class="built_in">number</span></span>)</span> &#123;                                      <span class="comment">// (5)</span></span><br><span class="line">    <span class="built_in">this</span>.size = <span class="built_in">Math</span>.min(<span class="number">40</span>, <span class="built_in">Math</span>.max(<span class="number">8</span>, +<span class="built_in">this</span>.size + delta));</span><br><span class="line">    <span class="built_in">this</span>.sizeChange.emit(<span class="built_in">this</span>.size);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1):  使用 @Input() 將 size 裝飾為父層傳遞下來的數據</li>
+<li>(2): 使用@Output() 將 sizeChange 裝飾為一個 EventEmitter 用於將數據向上傳給父層</li>
+<li>(3): 用於減小字體大小</li>
+<li>(4): 用於增加字體大小</li>
+<li>(5): 增加或減少字體大小的 method</li>
+</ul>
+</li>
+<li><p>在 child.component.html 中新增兩個按鈕用於讓使用者增加或減少字體大小，和使用 text interpolation 將 size 插入到 template 中</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;dec()&quot;</span> <span class="attr">title</span>=<span class="string">&quot;smaller&quot;</span>&gt;</span>-<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;inc()&quot;</span> <span class="attr">title</span>=<span class="string">&quot;bigger&quot;</span>&gt;</span>+<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span> [<span class="attr">style.font-size.px</span>]=<span class="string">&quot;size&quot;</span>&gt;</span>FontSize: &#123;&#123;size&#125;&#125;px<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>在 parent.component.ts 中新增一個 property </p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-parent&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./parent.component.html&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ParentComponent</span> </span>&#123;</span><br><span class="line">  frontSizePx = <span class="number">16</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 parent.component.html 中將 frontSizePx 使用 Two-way binding 綁定給子層</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">app-child</span> [(<span class="attr">size</span>)]=<span class="string">&quot;fontSizePx&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-child</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> [<span class="attr">style.font-size.px</span>]=<span class="string">&quot;fontSizePx&quot;</span>&gt;</span>Resizable Text<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/oKbjOZJ.gif" alt="img"><br>在畫面中可以看到，當我們點擊畫面中的 button 後，首先先讓子層向父層傳遞更改的大小，父層收到後再透過 @Input() 將變更的大小傳遞回子層讓子層可以顯示出 FontSize 的數值，這又就可以透過一個綁定就完成需要 @Input() 與 @Output() 的情況。</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章中介紹了什麼最後的兩種綁定模式，可以使用 attribute binding 對沒有 property 的 HTML 元件動態綁定，可以使用 class binding 對一個 HTML 元件綁定一個或多個 CSS class，可以使用 style binding 對一個 HTML 元件綁定一個或多個樣式，而 CSS class 與 style 的綁定優先級遵守越具體其優先級就越高的概念。</p>
+<p>第二種介紹了 Two-way binding，如何透過一種綁定就達成 property binding 與 event binding，要注意的是如果要讓 Two-way binding 成功作用必須將 @Output() 麼名稱設定為 @Input() 的名稱加上Change。</p>
+<p>下一篇將會介紹 <code>Template variables</code>，他可以讓你在 template 的任意一處使用被標記過的 HTML 元件的數據，詳細的內容就留到明天在介紹吧，那我們明天見。</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/attribute-binding">Angular.io - Attribute, class, and style bindings</a></li>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/two-way-binding">Angular.io - Two-way binding</a></li>
+<li><a target="_blank" rel="noopener" href="https://jimmyswebnote.com/html-attributes-and-dom-properties/">HTML Attributes 與 DOM Properties 的區別</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.elegantthemes.com/blog/wordpress/what-is-an-svg-file-and-how-do-you-use-it">What is an SVG File (And How Do You Use it)?</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.w3.org/WAI/standards-guidelines/aria/">WAI-ARIA Overview</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day10-Property-binding-and-Event-bindin/" rel="prev" title="Day10. Property binding and Event binding">
+      <i class="fa fa-chevron-left"></i> Day10. Property binding and Event binding
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day12-Template-variables/" rel="next" title="Day12. Template variables">
+      Day12. Template variables <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Binding-to-an-attribute"><span class="nav-number">1.</span> <span class="nav-text">Binding to an attribute</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Syntax"><span class="nav-number">1.0.1.</span> <span class="nav-text">Syntax</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Example-Binding-to-colspan"><span class="nav-number">2.</span> <span class="nav-text">Example: Binding to colspan</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Binding-to-the-class-attribute"><span class="nav-number">3.</span> <span class="nav-text">Binding to the class attribute</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Binding-to-a-single-CSS-class"><span class="nav-number">3.0.1.</span> <span class="nav-text">Binding to a single CSS class</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Binding-to-multiple-CSS-classes"><span class="nav-number">3.0.2.</span> <span class="nav-text">Binding to multiple CSS classes</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Binding-to-the-style-attribute"><span class="nav-number">4.</span> <span class="nav-text">Binding to the style attribute</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Binding-to-a-single-style"><span class="nav-number">4.0.1.</span> <span class="nav-text">Binding to a single style</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Binding-to-multiple-styles"><span class="nav-number">4.0.2.</span> <span class="nav-text">Binding to multiple styles</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Styling-Precedence"><span class="nav-number">5.</span> <span class="nav-text">Styling Precedence</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Two-way-binding"><span class="nav-number">6.</span> <span class="nav-text">Two-way binding</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#How-two-way-binding-works"><span class="nav-number">7.</span> <span class="nav-text">How two-way binding works</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">8.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">9.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在上一章中介紹了如何建立客製化的 attribute directive 與使用，而本章將會介紹如何建立 structural directives，那就接著往下看吧！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day16. Writing structural directives">
+<meta property="og:url" content="https://fandix.github.io/2021/09/13/Angular/Day16-Writing-structural-directives/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在上一章中介紹了如何建立客製化的 attribute directive 與使用，而本章將會介紹如何建立 structural directives，那就接著往下看吧！">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767xY1I5d66k3.jpg">
+<meta property="og:image" content="https://i.imgur.com/hTN54zr.gif">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210811/20124767YcWEc4HmyA.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210811/20124767mkg1tsQNMi.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210811/201247672JMq8WtBWV.png">
+<meta property="article:published_time" content="2021-09-13T07:28:56.000Z">
+<meta property="article:modified_time" content="2021-09-13T07:29:43.643Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767xY1I5d66k3.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/13/Angular/Day16-Writing-structural-directives/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day16. Writing structural directives | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day16-Writing-structural-directives/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day16. Writing structural directives
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-13 15:28:56 / Modified: 15:29:43" itemprop="dateCreated datePublished" datetime="2021-09-13T15:28:56+08:00">2021-09-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在上一章中介紹了如何建立客製化的 attribute directive 與使用，而本章將會介紹如何建立 structural directives，那就接著往下看吧！</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767xY1I5d66k3.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767xY1I5d66k3.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Creating-a-structural-directive"><a href="#Creating-a-structural-directive" class="headerlink" title="Creating a structural directive"></a>Creating a structural directive</h1><p>本章一樣會利用 Angular 官方文檔的例子建立一個範例，範例內容是會建立一個 <code>UnlessDirective</code> 以及該如何設置他的條件值，這個 <code>UnlessDirective</code> 與 *ngIf 相法，當為 true 時會顯示 NgIf 的內容反之則顯示 <code>UnlessDirective</code> 的</p>
+<ol>
+<li><p>首先利用 Angular CLI 建立一個 directive</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ng generate directive unless</span><br><span class="line">ng g d unless</span><br></pre></td></tr></table></figure></li>
+<li><p>在 <code>@angular/core</code> 中引入 <code>Input</code>, <code>TemplateRef</code>, <code>ViewContainerRef</code></p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Directive, Input, TemplateRef, ViewContainerRef &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Directive</span>(&#123; <span class="attr">selector</span>: <span class="string">&#x27;[appUnless]&#x27;</span>&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">UnlessDirective</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 unless.directive.ts 的 constructor 中 inject TemplateRef 與 ViewContainerRef 成為他的私有變量</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Directive, Input, TemplateRef, ViewContainerRef &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Directive</span>(&#123; <span class="attr">selector</span>: <span class="string">&#x27;[appUnless]&#x27;</span> &#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">UnlessDirective</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="keyword">private</span> templateRef: TemplateRef&lt;<span class="built_in">any</span>&gt;,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="keyword">private</span> viewContainer: ViewContainerRef</span></span></span><br><span class="line"><span class="params"><span class="function">  </span>)</span> &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> UnlessDirective 會從 Angular 生成的 <code>&lt;ng-template&gt;</code> 中創建一個 embedded view 並將他插入到宿主 element 相鄰的地方，而 <code>TemplateRef</code> 可以讓你訪問到 <code>&lt;ng-template&gt;</code> 的內容，而 ViewContainerRef 可以讓你訪問 view container。</p>
+<p> <strong>Note</strong>: embedded view 是為 ng-template 中指定的 view node 所創建的 view，簡單來說他類似 component 中的 template 所創建出來的 view，但是他<code>沒有 component 的元素或數據</code>，不過他還是屬於一個有效的 view，會在檢測過程中與其他 view  一樣被檢測到。</p>
+</li>
+<li><p>在 unless.directive.ts 中添加一個 property 用來表示是否顯示畫面，與使用 setter 添加一個 appUnless property。</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Directive, Input, TemplateRef, ViewContainerRef &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Directive</span>(&#123; <span class="attr">selector</span>: <span class="string">&#x27;[appUnless]&#x27;</span> &#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">UnlessDirective</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> hasView = <span class="literal">false</span>;                                    <span class="comment">// (1)</span></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="keyword">private</span> templateRef: TemplateRef&lt;<span class="built_in">any</span>&gt;,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="keyword">private</span> viewContainer: ViewContainerRef</span></span></span><br><span class="line"><span class="params"><span class="function">  </span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Input</span>() <span class="keyword">set</span> <span class="title">appUnless</span>(<span class="params">condition: <span class="built_in">boolean</span></span>) &#123;                <span class="comment">// (2)</span></span><br><span class="line">    <span class="keyword">if</span> (!condition &amp;&amp; !<span class="built_in">this</span>.hasView) &#123;</span><br><span class="line">      <span class="built_in">this</span>.viewContainer.createEmbeddedView(<span class="built_in">this</span>.templateRef);</span><br><span class="line">      <span class="built_in">this</span>.hasView = <span class="literal">true</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.viewContainer.clear();</span><br><span class="line">      <span class="built_in">this</span>.hasView = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 添加一個 property 用於表示是否顯示畫面</li>
+<li>(2): 用 setter 添加一個 property，當 condition 為 true 時透過 viewContainer 創造一個 embedded view 並將 templateRef 放入，如果為 false 的話則清除</li>
+</ul>
+</li>
+<li><p>在 app.component.ts 中新增一個 property 與 method</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./app.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  condition = <span class="literal">false</span>;                        <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onClick</span>(<span class="params"></span>)</span> &#123;                               <span class="comment">// (2)</span></span><br><span class="line">    <span class="built_in">this</span>.condition = !<span class="built_in">this</span>.condition;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 新增一個 property 用於綁定 structural directive</li>
+<li>(2): 新增一個 method 用於點擊畫面中按鈕時觸發變更 condition 的狀態</li>
+</ul>
+</li>
+<li><p>在 app.component.html 中使用我們建立的 directive</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> *<span class="attr">appUnless</span>=<span class="string">&quot;condition&quot;</span>&gt;</span>unless display area<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngIf</span>=<span class="string">&quot;condition&quot;</span>&gt;</span>ngIf display area<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;onClick()&quot;</span>&gt;</span>Click<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/hTN54zr.gif" alt="img"></p>
+<p>在畫面中可以看到，我們一開始設計的邏輯就是希望要跟 ngIf 相反，所以當 condition = false 時會顯示我們剛建立的 directive 滿足的區域 <code>unless display area</code>，反之當點擊按鈕將 condition 變為 true 時，則會顯示 ngIf 的內容 <code>ngIf display area</code>。</p>
+<hr>
+<h1 id="Structural-directive-shorthand"><a href="#Structural-directive-shorthand" class="headerlink" title="Structural directive shorthand"></a>Structural directive shorthand</h1><p>看完上面的例子後應該會了解該怎麼建立自己的 structural directive，但是可能有人會疑問，連自己建立的 structural directive 也要使用<code>星號 ( * )</code> 嗎？這個星號是什麼？接著就要來講解一下這個星號是什麼。</p>
+<p>structural directive 上面的星號( * )語法是 Angular 將其解釋為更常形式的速記，他會將星號轉換成一個 <code>&lt;ng-template&gt;</code> 並將它圍繞著宿主元素與他的所有子層，舉例來說</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngIf</span>=<span class="string">&quot;hero&quot;</span> <span class="attr">class</span>=<span class="string">&quot;name&quot;</span>&gt;</span>&#123;&#123;hero.name&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>當 hero 為 true 時才會顯示英雄的名字，而其實 Angular 看到上面的程式後會將它轉變為</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ng-template</span> [<span class="attr">ngIf</span>]=<span class="string">&quot;hero&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;name&quot;</span>&gt;</span>&#123;&#123;hero.name&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ng-template</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到 Angular 將星號變為一個 <code>&lt;ng-template&gt;</code> ，而 ngIf 變成了他的 property binding，而其他的內容會移動到 <code>&lt;ng-template&gt;</code> 之中，因為 Angular 不會真正的創建 <code>&lt;ng-template&gt;</code> 元素而是指將內部的 <code>&lt;div&gt;</code> 和 <code>comment node placeholder</code> 放到 DOM 中。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210811/20124767YcWEc4HmyA.png" alt="https://ithelp.ithome.com.tw/upload/images/20210811/20124767YcWEc4HmyA.png"></p>
+<p>而如果 ngIf 為 false 的話則會連 <code>&lt;div&gt;</code> 的內容都不會放在 DOM 中。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210811/20124767mkg1tsQNMi.png" alt="https://ithelp.ithome.com.tw/upload/images/20210811/20124767mkg1tsQNMi.png"></p>
+<p>看完了 ngIf 的速記用法後，接著來看看 ngFor 會長什麼樣子，一樣先舉個例子</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngFor</span>=<span class="string">&quot;let hero of heroes; let i=index; let odd=odd; [class.odd]=&quot;</span><span class="attr">odd</span>&quot;&gt;</span></span><br><span class="line">  (&#123;&#123;i&#125;&#125;) &#123;&#123;hero.name&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>使用了 ngFor 將 heroes 中的內容迭代的顯示在畫面上，並使用了之前提到的 ngFor 的一些參數，而這個例子在經過 Angular 轉換後會變成</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ng-template</span> <span class="attr">ngFor</span> <span class="attr">let-hero</span> [<span class="attr">ngForOf</span>]=<span class="string">&quot;heroes&quot;</span> <span class="attr">let-i</span>=<span class="string">&quot;index&quot;</span> <span class="attr">let-odd</span>=<span class="string">&quot;odd&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> [<span class="attr">class.odd</span>]=<span class="string">&quot;odd&quot;</span>&gt;</span>(&#123;&#123;i&#125;&#125;) &#123;&#123;hero.name&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ng-template</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到他跟 ngIf 一樣會將星號變為一個 <code>&lt;ng-template&gt;</code> 並且將 ngFor 變為 property binding，比較不同的是在這個 <code>&lt;ng-template&gt;</code> 中使用了 <code>let</code> 宣告了一個模板輸入變量，讓他可以被 template 中被引用，在上面的例子中的輸入變量是 <code>hero</code>, <code>i</code>, ‘odd’，解析器會將 let hero、let i 和 let odd 轉換為 <code>let-hero</code>、 <code>let-i</code> 和 <code>let-odd</code> ，Angular 會將當前的值在適當的時間點賦予給宣告的輸入變量。</p>
+<h3 id="Creating-template-fragments-with-lt-ng-template-gt"><a href="#Creating-template-fragments-with-lt-ng-template-gt" class="headerlink" title="Creating template fragments with &lt;ng-template&gt;"></a>Creating template fragments with <code>&lt;ng-template&gt;</code></h3><p>Angular 的 <code>&lt;ng-template&gt;</code> 定義了一個默認不渲染任何東西的 template，可以透過 structural directive 來控制是否要顯示 <code>&lt;ng-template&gt;</code> 中定義的內容</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hip!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ng-template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Hip!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ng-template</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hooray!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210811/201247672JMq8WtBWV.png" alt="https://ithelp.ithome.com.tw/upload/images/20210811/201247672JMq8WtBWV.png"></p>
+<p>可以看到，當我們使用 <code>&lt;ng-template&gt;</code> 將 <code>&lt;p&gt;Hip!&lt;/p&gt;</code> 包住，但是沒有使用 structural directive 決定他是否要被顯示出來，所以在 DOM 中會看到 <code>comment node placeholder</code> 而不是希望呈現的數據。</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章中介紹了如何建立客製化的 structural directive，他相較於建立客製化的 attribute directive 男的多，所以需要瞭解更多的觀念，比如說 Angular 的 view 觀念其實非常複雜，這邊只有稍微提到而已，如果之後有專案上的需求再回來鑽研就好，這邊只是大概介紹該如何使用與客製化。</p>
+<p>本篇是 directive 的最後一篇，明天將會回頭介紹 component 的最後一個例子，動態載入 component，他使用了之前講到的滿多技巧，範例的難度也比較大，那麼就明天來好好的講解一下吧，那我們就明天見吧。</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/structural-directives">Angular.io</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day15-Attribute-directives/" rel="prev" title="Day15. Attribute directives">
+      <i class="fa fa-chevron-left"></i> Day15. Attribute directives
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day17-Dynamic-component-loader/" rel="next" title="Day17. Dynamic component loader">
+      Day17. Dynamic component loader <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Creating-a-structural-directive"><span class="nav-number">1.</span> <span class="nav-text">Creating a structural directive</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Structural-directive-shorthand"><span class="nav-number">2.</span> <span class="nav-text">Structural directive shorthand</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-template-fragments-with-lt-ng-template-gt"><span class="nav-number">2.0.1.</span> <span class="nav-text">Creating template fragments with &lt;ng-template&gt;</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">3.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本篇中將介紹 Angular 的 property binding 與 event binding，property binding 可以讓你設置 HTML Tag 或 directive 的屬性值，可以利用 property binding 做到切換按鈕、以程式方式設置 url 路徑以及在各個 Component 之間共享數據等等。 而 Event binding 則是可以將事件綁定在 HTML">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day10. Property binding and Event binding">
+<meta property="og:url" content="https://fandix.github.io/2021/09/13/Angular/Day10-Property-binding-and-Event-bindin/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="本篇中將介紹 Angular 的 property binding 與 event binding，property binding 可以讓你設置 HTML Tag 或 directive 的屬性值，可以利用 property binding 做到切換按鈕、以程式方式設置 url 路徑以及在各個 Component 之間共享數據等等。 而 Event binding 則是可以將事件綁定在 HTML">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ffyD1EUI66.jpg">
+<meta property="og:image" content="https://i.imgur.com/8xGMs5C.gif">
+<meta property="og:image" content="https://fandix.github.io/images/emoticon/emoticon05.gif">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210804/20124767Ao6tNhpeYF.png">
+<meta property="article:published_time" content="2021-09-13T07:12:25.000Z">
+<meta property="article:modified_time" content="2021-09-13T07:14:27.027Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ffyD1EUI66.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/13/Angular/Day10-Property-binding-and-Event-bindin/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day10. Property binding and Event binding | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day10-Property-binding-and-Event-bindin/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day10. Property binding and Event binding
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-13 15:12:25 / Modified: 15:14:27" itemprop="dateCreated datePublished" datetime="2021-09-13T15:12:25+08:00">2021-09-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本篇中將介紹 Angular 的 <code>property binding</code> 與 <code>event binding</code>，property binding 可以讓你<code>設置 HTML Tag 或 directive 的屬性值</code>，可以利用 property binding 做到切換按鈕、以程式方式設置 url 路徑以及在各個 Component 之間共享數據等等。</p>
+<p>而 Event binding 則是可以<code>將事件綁定在 HTML 的元件上</code>，隨時監聽使用者的操作，例如按下按鍵、滑鼠移動、點擊以及觸摸，就先從 property binding 開始介紹吧。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ffyD1EUI66.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ffyD1EUI66.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Binding-to-a-property"><a href="#Binding-to-a-property" class="headerlink" title="Binding to a property"></a>Binding to a property</h1><p>在 Angular 中的 property binding 會讓數據往一個方向流動，就是從 component 流向 HTML 的元件，而如果要將數據綁定到 HTML 元件請使用<code>方括號（ [ ] ）</code>將他括在其中，比如說可以將 <code>&lt;img&gt;</code>中的 <code>src</code> 屬性利用 property binding 綁定。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> [<span class="attr">src</span>]=<span class="string">&quot;itemImageUrl&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在大多數形況下目標名稱就是屬性的名稱，所以以上面的例子來說，src 就是 <code>&lt;img&gt;</code> 元件的屬性名稱，而方括號會讓 Angular 將等號右邊評估為動態表達式，如果沒有括號 Angular 會將右側視為字串文字並將屬性設置為該靜態值。</p>
+<hr>
+<h1 id="Setting-an-element-property-to-a-component-property-value"><a href="#Setting-an-element-property-to-a-component-property-value" class="headerlink" title="Setting an element property to a component property value"></a>Setting an element property to a component property value</h1><p>以上面的例子來說，如果要將 <code>&lt;img&gt;</code> 的屬性綁定到 Component 的 property，請將 src 放在方括號中，後面加上等號與 component 的 property 名稱。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> [<span class="attr">src</span>]=<span class="string">&quot;itemImageUrl&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>這時就可以在 Component 中定義一個 property 並將他賦值，那麼這個值就會綁定到 HTML 的元件上</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">itemImageUrl: <span class="string">&#x27;../assets/phone.png&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="Toggling-button-functionality"><a href="#Toggling-button-functionality" class="headerlink" title="Toggling button functionality"></a>Toggling button functionality</h1><p>在 <code>&lt;button&gt;</code> 這個 HTML 中有一個屬性可以控制是否可以點擊這個按鈕那就是 <code>disabled</code>，我們可以透過 property binding 將這個屬性綁定到 component 的 property，建立一個動態改變他狀態的功能，一樣來舉個例子吧：</p>
+<ol>
+<li><p>在 app.component.ts 中新增一個 property 用來綁定 <code>&lt;button&gt;</code> 與一個 method 用來更改 property 的值</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  isUnchanged = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onButtonChange</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.isUnchanged = !<span class="built_in">this</span>.isUnchanged;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.html 中新增兩個 <code>&lt;button&gt;</code> 一個用來做 property binding 另一個用來改變 property 的內容</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;margin-bottom: 10px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> [<span class="attr">disabled</span>]=<span class="string">&quot;isUnchanged&quot;</span>&gt;</span>Property binding<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;onButtonChange()&quot;</span>&gt;</span>Change Property value<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/8xGMs5C.gif" alt="img"></p>
+<p>在畫面中可以看到，當我們點擊 <code>Change Property value</code> 時，他將 Component 中的 isUnchanged 內容更改，所以讓 <code>Property binding</code> 這個 <code>&lt;button&gt;</code> 可以動態被 disable 與 enable。</p>
+<hr>
+<h1 id="Bind-values-between-components"><a href="#Bind-values-between-components" class="headerlink" title="Bind values between components"></a>Bind values between components</h1><p>在前幾天介紹 @Input() 時常常在用到的 <code>&lt;app-child-component [item]=&quot;currentItem&quot;&gt;&lt;/app-child-component&gt;</code> 其實就是 property binding，將父層 component 中的 property 綁定給子層，當父層 Component 的這個 property 發生改變時，因為綁定的關係所以會將這個改變也帶給子層，</p>
+<p>這邊再稍微複習一下該怎麼使用 @Input() 吧<img src="/images/emoticon/emoticon05.gif" alt="/images/emoticon/emoticon05.gif"></p>
+<ol>
+<li><p>先 parent.component.ts 中定義一個 property 並將他賦值</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-parent-component&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./parent.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ParentComponent</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">  currentItem = <span class="string">&#x27;Television&#x27;</span>;  <span class="comment">// defind a property</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 parent.component.html 中使用 property binding 將父層的 currentItem property 綁定給子層</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">app-child-component</span> [<span class="attr">item</span>]=<span class="string">&quot;currentItem&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-child-component</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>在 child.component.ts 中使用 @Input( ) 裝飾器將 property 裝飾為是從父層傳下來的</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Input &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>; </span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-child-component&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./child.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ChildComponent</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Input</span>() item = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 child.component.html 中使用 Text interpolation 將他呈現在畫面上</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span>Today&#x27;s item: &#123;&#123; item &#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>當初在介紹 @Input() 時還有很多技巧沒有講到（property binding、test interpolation）現在在重複看一次之前的例子有沒有比較可以把前幾章的內容串起來了呢。</p>
+<hr>
+<h1 id="Property-binding-and-security"><a href="#Property-binding-and-security" class="headerlink" title="Property binding and security"></a>Property binding and security</h1><p>既然 property binding 這麼好用，那有沒有什麼問題或是缺點呢？來看看下面的例子</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evilTitle = <span class="string">&#x27;Template &lt;script&gt;alert(&quot;evil never sleeps&quot;)&lt;/script&gt; Syntax&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>當我在一個 component 中添加一個屬性，並將這個屬性裡面多加了 <code>&lt;script&gt;</code>，在這個裡面放了一些會危害到你專案的 javascript 程式，那麼會發生什麼事？</p>
+<p>其實不會發生上面說的會危害到你專案的情況發生，因為 Angular 在 property binding 中有做一個限制，<code>不允許帶有 &lt;script&gt; 標籤的 HTML 元件，也不允許帶有插值和屬性綁定</code>，所以將上面那個 property 差值到你的 HTML file 中時，會有下面的 error message</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;Template &lt;script&gt;alert(&quot;</span>evil never sleeps<span class="string">&quot;)&lt;/script&gt; Syntax&quot;</span> is the interpolated evil title.</span><br></pre></td></tr></table></figure>
+
+<p>這是 Angular 對 property binding 做的安全機制。</p>
+<hr>
+<h1 id="Property-binding-and-interpolation"><a href="#Property-binding-and-interpolation" class="headerlink" title="Property binding and interpolation"></a>Property binding and interpolation</h1><p>可能有人會問拉：property binding 與 text interpolation 都是將 component 中的 property 綁定在 HTML file 中，那們他們有什麼不一樣嗎？</p>
+<p>其實這個問題非常好，他們兩個理論上可以達到相同的目的</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;&#123;&#123;itemImageUrl&#125;&#125;&quot;</span>&gt;</span> is the <span class="tag">&lt;<span class="name">i</span>&gt;</span>interpolated<span class="tag">&lt;/<span class="name">i</span>&gt;</span> image.</span><br><span class="line"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">img</span> [<span class="attr">src</span>]=<span class="string">&quot;itemImageUrl&quot;</span>&gt;</span> is the <span class="tag">&lt;<span class="name">i</span>&gt;</span>property bound<span class="tag">&lt;/<span class="name">i</span>&gt;</span> image.</span><br><span class="line"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>上面這兩個的結果會是一樣的，無論是透過 text interpolation 將 property 插進 <code>&lt;img&gt;</code> 的 src 屬性，還是利用 proprety binding 住 <code>&lt;img&gt;</code> 的 src 屬性都是可以將 component 的 property 放進我們想放的位置。</p>
+<p>雖然兩個都可以達到目的，所以<code>當在將數據值呈現為字串時可以使用兩種方法的其中一種</code>，但為了可讀性更傾向於使用 text interpolation，但是當將元素屬性設置為<code>非字串數值</code>時，就必須使用屬性綁定，比如上面提到的 <code>&lt;button&gt;</code> 的 disabled 屬性。</p>
+<hr>
+<h1 id="Binding-to-events"><a href="#Binding-to-events" class="headerlink" title="Binding to events"></a>Binding to events</h1><p>介紹完 property binding 後，接著要來介紹 event binding，顧名思義他就是將 event 綁定到 HTML 的元件上用於監聽使用這的操作，event binding 的語法是將<code>目標事件名稱放在等號左邊的括弧中</code>和將<code>引號的模板語句</code> 放在右側，舉個例子吧，當畫面中的一個按鈕被點擊到時，要觸發 component 中的 onSave() method，這時就可以這樣寫</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;onSave()&quot;</span>&gt;</span>Save<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210804/20124767Ao6tNhpeYF.png" alt="https://ithelp.ithome.com.tw/upload/images/20210804/20124767Ao6tNhpeYF.png"></p>
+<p>如果你的 method 是帶有參數的，只要再等號右邊的 method 的括號中填入參數即可</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;onSave(data)&quot;</span>&gt;</span>Save<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="Custom-events-with-EventEmitter"><a href="#Custom-events-with-EventEmitter" class="headerlink" title="Custom events with EventEmitter"></a>Custom events with EventEmitter</h1><p>還記得在前幾天中介紹的 @Output() 嗎？來複習一下吧， @Output() 的用意是將子層的內容透過一個 event 往上傳遞給父層，一樣舉個子來回憶一下吧</p>
+<ol>
+<li><p>在 child.component.ts 中加入一個 property 並將他使用 @Output() 裝飾成 EventEmitter 型態</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Output, EventEmitter &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>; </span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-child-component&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./child.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./child.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ChildComponent</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Output</span>() newItemEvent = <span class="keyword">new</span> EventEmitter&lt;<span class="built_in">boolean</span>&gt;();  <span class="comment">// (2)</span></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">parentValueChange</span>(<span class="params">value: <span class="built_in">boolean</span></span>)</span> &#123; </span><br><span class="line">    <span class="built_in">this</span>.newItemEvent.emit(value);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 child.component.html 中新增兩個 <code>&lt;button&gt;</code> 用來讓 user 點擊觸發 event</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- child.component.html  --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>child component works!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;button&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;parentValueChange(true)&quot;</span>&gt;</span>+<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;parentValueChange(false)&quot;</span>&gt;</span>-<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>在 parent.component.ts 中添加一個 method，用來處理當子層傳送的數據</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-parent-component&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./parent.component.html&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ParentComponent</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">  counterValue = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">addOrSub</span>(<span class="params">event: <span class="built_in">boolean</span></span>)</span> &#123; </span><br><span class="line">    <span class="keyword">if</span> (event) &#123;</span><br><span class="line">      <span class="built_in">this</span>.counterValue++;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.counterValue--;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 parent.component.html 中使用 event binding 將子層傳送的事件與 parent.component.ts 的 method 綁定</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- parent.component.html --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>parent component works!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span>parent component property counter: &#123;&#123;counterValue&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">app-child-component</span> (<span class="attr">newItemEvent</span>)=<span class="string">&quot;addOrSub($event)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-child-component</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>在介紹完 event binding 後再回來看這個例子，有沒有更能夠了解如何使用 @Output() 與 event binding 了呢？</p>
+<hr>
+<h1 id="Determining-an-event-target"><a href="#Determining-an-event-target" class="headerlink" title="Determining an event target"></a>Determining an event target</h1><p>在使用 Event binding 時，Angular 會檢查 event target 的名稱是否與已知指令事件屬性匹配，比如說</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> (<span class="attr">myClick</span>)=<span class="string">&quot;clickMessage=$event&quot;</span> <span class="attr">clickable</span>&gt;</span>click with myClick<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>你使用了一個自訂義的 <code>(myClick)</code> 作爲 event target 時，因為他不符合已知指令事件屬性，所以 Angular 會傳出 <code>unknown directive</code> 的錯誤訊息，所以在使用 event binding 時要記得使用正確的 event target 喔！</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>在本章中介紹了兩種 binding，property binding 是用於將 component 中的 property 綁定給 HTML 中的元件，常用在將父層的 property 綁定給子層、將比較複雜或是需要邏輯計算的 HTML 元件屬性放到 component 中計算後再放回等等。</p>
+<p>而 event binding 是將 component 中的 method 綁定到 HTML 的元件上用於監聽使用者的操作，常用再處理使用者使用者操作畫面而處發的事件、將子層透過 EventEmitter 往父層傳遞數據時的綁定。</p>
+<p>下一章將會介紹另外兩種 binding 方法，分別是 Attribute, class, style binding 與 Two-way binding， Attribute, class, style binding 顧名思義就是將 component 中的 property 綁定到 HTML 的 class 或 attribute，而 Two-way binding 則是可以讓父子層之間只使用一個 binding 就可以同時監聽事件與更新值，不需要使用 property binding 和 event binding。</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/property-binding">Angular.io - property binding</a></li>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/event-binding">Angular.io - event binding</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/09/Angular/Day9-Transforming-Data-Using-Pipes/" rel="prev" title="Day9. Transforming Data Using Pipes">
+      <i class="fa fa-chevron-left"></i> Day9. Transforming Data Using Pipes
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day11-Attribute-class-and-style-bindings-and-Two-way-binding/" rel="next" title="Day11. Attribute, class, and style bindings and Two-way binding">
+      Day11. Attribute, class, and style bindings and Two-way binding <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Binding-to-a-property"><span class="nav-number">1.</span> <span class="nav-text">Binding to a property</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Setting-an-element-property-to-a-component-property-value"><span class="nav-number">2.</span> <span class="nav-text">Setting an element property to a component property value</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Toggling-button-functionality"><span class="nav-number">3.</span> <span class="nav-text">Toggling button functionality</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bind-values-between-components"><span class="nav-number">4.</span> <span class="nav-text">Bind values between components</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Property-binding-and-security"><span class="nav-number">5.</span> <span class="nav-text">Property binding and security</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Property-binding-and-interpolation"><span class="nav-number">6.</span> <span class="nav-text">Property binding and interpolation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Binding-to-events"><span class="nav-number">7.</span> <span class="nav-text">Binding to events</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Custom-events-with-EventEmitter"><span class="nav-number">8.</span> <span class="nav-text">Custom events with EventEmitter</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Determining-an-event-target"><span class="nav-number">9.</span> <span class="nav-text">Determining an event target</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">10.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">11.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

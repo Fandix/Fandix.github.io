@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在上一篇中提到了如何建立與使用一個 Service，也大概介紹了什麼是 Dependency Injection，在介紹使用 @Injectable() 裝飾 service 的 class 的時候提到了要在他的 metadata 中設定 providedIn，如果將它設定為 root 的話代表這個 service 在整個專案中都是可被使用的，但如果沒有設定這個 property，則要在 comp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day19. Dependency providers">
+<meta property="og:url" content="https://fandix.github.io/2021/09/13/Angular/Day19-Dependency-providers/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在上一篇中提到了如何建立與使用一個 Service，也大概介紹了什麼是 Dependency Injection，在介紹使用 @Injectable() 裝飾 service 的 class 的時候提到了要在他的 metadata 中設定 providedIn，如果將它設定為 root 的話代表這個 service 在整個專案中都是可被使用的，但如果沒有設定這個 property，則要在 comp">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ZpsjOVE7SU.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210815/20124767PRR6NqC8Uy.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210815/20124767fXP00j0QCs.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210815/20124767nVTPjutgPn.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210815/20124767AUS3HBvDqV.png">
+<meta property="article:published_time" content="2021-09-13T07:34:15.000Z">
+<meta property="article:modified_time" content="2021-09-13T07:35:18.369Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ZpsjOVE7SU.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/13/Angular/Day19-Dependency-providers/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day19. Dependency providers | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day19-Dependency-providers/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day19. Dependency providers
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-13 15:34:15 / Modified: 15:35:18" itemprop="dateCreated datePublished" datetime="2021-09-13T15:34:15+08:00">2021-09-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在上一篇中提到了如何建立與使用一個 Service，也大概介紹了什麼是 Dependency Injection，在介紹使用 @Injectable() 裝飾 service 的 class 的時候提到了要在他的 metadata 中設定 <code>providedIn</code>，如果將它設定為 <code>root</code> 的話代表這個 service 在整個專案中都是可被使用的，但如果沒有設定這個 property，則要在 component 中注入這個 service 時需要在 @Component() 的 metadata 中設定 providers ，將要注入的 service 放進去，在上一章中的用法是 <code>providers: [ProductService]</code>，這其實是一個縮寫，本篇就是要來詳細的介紹他，那我們就繼續往下看吧！</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ZpsjOVE7SU.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ZpsjOVE7SU.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Dependency-injection-tokens"><a href="#Dependency-injection-tokens" class="headerlink" title="Dependency injection tokens"></a>Dependency injection tokens</h1><p>在上一章中提到了什麼是 Dependency injection 不過這邊再來複習一下，這有利於我們接下來要講的內容，簡單來說 Dependency injection 又稱 DI 它是一種設計模式和機制，他用於將某些部分與依賴相分離，以 Angular 的例子來說，他就是用於將複雜的邏輯與 Component 中負責處理畫面或事件的邏輯分離，而這些被分離出來的部分也可以給其他 Component 使用，使它變成可重複使用且可測試的一個部分。</p>
+<p>當整個應用程式啟動時，會創建一個名為 <code>injector</code> 的東西，可以將它看成會檢查客戶訂單且滿足客戶要求的服務生，舉例來說他可以製作一些咖啡（實例化 CoffeeService）將它提供給客戶，而如果有其他的客戶想要喝茶，那麼這個聰明的服務生就會實例化 MintTeaService 和 CamomileTeaService 用於滿足不同客戶的需求。</p>
+<p>然而要讓我們的服務生（injector）知道該出什麼餐點則需要客戶點單（component），他可以在 component 中的 constructor 中要求他要吃什麼（dependency）</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> coffee: CoffeeService</span>)</span>&#123;&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><code>coffee: CoffeeService</code> 就是一個 <code>Dependency injection tokens</code> 它是一種 inject class 的快捷方式，現在我們的服務生從客戶那邊收集了所有的訂單（ injector 向 component 收集需求 ），接著 服務生（injector） 會使用 CoffeeService 來找咖啡的標記，將客戶點的咖啡記在他的筆記本上。</p>
+<p>記錄完客戶的點單後，接著就需要知道如何製作指定的咖啡，這時就需要配方（provider）了，這個配方是一個 object 他會定義如何獲取與 Dependency injection tokens 有關連的可注入依賴項，簡單來說他會告訴服務生（injector）該如何製作這杯咖啡（ 將 service 實例化成一個 object 並將它注入給 component ）</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">providers: [CoffeeService, BurgerService, PizzaService]</span><br></pre></td></tr></table></figure>
+
+<p>上面的例子來說服務生將知道如何做出咖啡、漢堡、Pizza 並提供給客戶，以程式的角度來看可以看成 injector 知道 CoffeeService 要使用 CoffeeService 作為模板將它實例化成一個 object 並注入給 component 讓他使用，這邊可能看不出來可以換另一種更詳細的表達方式</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">providers: [</span><br><span class="line">	&#123; <span class="attr">provide</span>: CoffeeService, <span class="attr">useClass</span>: CoffeeService &#125;,</span><br><span class="line">    &#123; <span class="attr">provide</span>: BurgerService, <span class="attr">useClass</span>: BurgerService &#125;,</span><br><span class="line">	&#123; <span class="attr">provide</span>: PizzaService, <span class="attr">useClass</span>: PizzaService &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>這樣應該更可以了解，provide property 作爲 locating a dependency value 和 configuring the injector 的 Token，可以把它理解為他是一個 ID，以服務生的例子來說他就等於是客戶點的餐點名稱，以程式的觀點來看就等於他是 component 需要使用的 service name。</p>
+<p>而第二個 property 是一個提供 provider 定義的一個 object，他會告訴 injector 該如何建立 dependency 的值，以上面的服務生例子來說他就是菜單，他會告訴服務生該怎麼製作客戶點的咖啡，而這個定義 provider 的 key 可以是 <code>useClass</code> 就像上面使用的，也可以是 <code>useExisting</code>、<code>useValue</code> 或 <code>useFactory</code> 他們每一個都提供了不同類型的 dependency，下面將仔細介紹他們的區別。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210815/20124767PRR6NqC8Uy.png" alt="https://ithelp.ithome.com.tw/upload/images/20210815/20124767PRR6NqC8Uy.png"></p>
+<hr>
+<h1 id="Specifying-an-alternative-class-provider"><a href="#Specifying-an-alternative-class-provider" class="headerlink" title="Specifying an alternative class provider"></a>Specifying an alternative class provider</h1><p>首先介紹的是 <code>useClass</code> ，不同的 class 可以提供給相同的 service，比如說</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&#123; <span class="attr">provide</span>: Logger, <span class="attr">useClass</span>: BetterLogger &#125;]</span><br></pre></td></tr></table></figure>
+
+<p>上面的例子中代表 component 向 injector 説他需要使用 Logger，而 provider 向他提供了 <code>BetterLogger</code> 這個 class 讓 injector 將它實例化後注入給 component 使用。</p>
+<h3 id="Configuring-class-providers-with-dependencies"><a href="#Configuring-class-providers-with-dependencies" class="headerlink" title="Configuring class providers with dependencies"></a>Configuring class providers with dependencies</h3><p>如果使用 useClass 的這個 class 有自己的 dependencies，則要在父層 module 或 component 的 metadata 中的 providers 提供他自己於他的 dependencies，舉個例子</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Injectable</span>()</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">EvenBetterLogger</span> <span class="keyword">extends</span> <span class="title">Logger</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> userService: UserService</span>)</span> &#123; <span class="built_in">super</span>(); &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">log</span>(<span class="params">message: <span class="built_in">string</span></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> name = <span class="built_in">this</span>.userService.user.name;</span><br><span class="line">    <span class="built_in">super</span>.log(<span class="string">`Message to <span class="subst">$&#123;name&#125;</span>: <span class="subst">$&#123;message&#125;</span>`</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">	<span class="attr">providers</span>: [UserService, &#123; <span class="attr">provide</span>: Logger, <span class="attr">useClass</span>: EvenBetterLogger &#125;]]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>在 component 中使用 useClass 的 class 有自己的  dependencies （UserService），所以在 component 的 metadata 中也需要提供 UserService。</p>
+<hr>
+<h1 id="Aliasing-class-providers"><a href="#Aliasing-class-providers" class="headerlink" title="Aliasing class providers"></a>Aliasing class providers</h1><p>在我們使用 useClass 注入指定 class 內容時可能會遇到一個情況，一開始我們建立了兩個 service 分別是 <code>oldService</code> 與 <code>newService</code>，這兩個 service 一開始負責不同的服務但是到後來的增加跟刪除下，發現只要使用 newService 就好，當遇到這種情況可能有些人會到每個有使用到 oldService 的 component 或 module 去把它改掉，但其實 Angular 他提供了另一個方法那就是別名。</p>
+<p>在提到這個方法之前先來釐清一下 useClass 的用法</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">providers: [&#123;<span class="attr">provide</span>: Class1, <span class="attr">useClass</span>: Class1&#125;]</span><br></pre></td></tr></table></figure>
+
+<p>當使用上面這個方法可以等價為將 Class1 注入到 component 或 module 中</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">providers: [&#123;<span class="attr">provide</span>: Class1, <span class="attr">useClass</span>: Class3&#125;]</span><br></pre></td></tr></table></figure>
+
+<p>而上面這個方法可以看成在 Component 或 module 中有一個名叫 Class1 的 Token 要用 Class3 創建並注入，那麼問題來了下面這樣該怎麼解釋？</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">providers: [</span><br><span class="line">	Class3,</span><br><span class="line">	&#123;<span class="attr">provide</span>: Class1, <span class="attr">useClass</span>: Class3&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>其實很簡單，你可以想像在這個 component 或 module 中有一個 Class3 的 Token 利用 Class3 創建並注入，還有第二個 Token 名叫 Class1 但是也是用 Class3 創建並注入，等於說這個 component 或 module 有<code>兩個 class3 的實例</code>。</p>
+<p>有上面的概念後就可以來看 <code>useExisting</code> ，在一開始提到的我們希望 <code>oldService</code> 都替換成 <code>newService</code> 這時有人會下意識的覺得</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">providers: [</span><br><span class="line">	newService,</span><br><span class="line">	&#123;<span class="attr">provide</span>: oldService, <span class="attr">useClass</span>: newService&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>上面的這種改法可以看成在這個 component 或 module 中注入一個 newService 的實例並且在將一個名為 oldService 的 Token 也使用 newService 創建，等於說會有兩個 newService 這是我們不希望看見的，這時就可以用 <code>useExisting</code> 改寫</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">providers: [</span><br><span class="line">	newService,</span><br><span class="line">	&#123;<span class="attr">provide</span>: oldService, <span class="attr">useExisting</span>: newService&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>上面的寫法改成使用 <code>useExisting</code> 就可以避免建立兩個 newService 的情況了，可以想像是 <code>newService</code> 這個實例但是用了 <code>oldService</code> 這個別名。</p>
+<hr>
+<h1 id="Injecting-an-object"><a href="#Injecting-an-object" class="headerlink" title="Injecting an object"></a>Injecting an object</h1><p>除了使用 useClass 直接提供一個 class 之外，也可以使用 <code>useValue</code> 將一個 object 提供給 injector，舉例來說</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> silentLogger = &#123;</span><br><span class="line">	<span class="attr">logs</span>: [<span class="string">&#x27;Silent logger says &quot;Shhhhh!&quot;. Provided via &quot;useValue&quot;&#x27;</span>],</span><br><span class="line">	<span class="attr">log</span>: <span class="function">() =&gt;</span> &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">&#x27;You are log in&#x27;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">	<span class="attr">providers</span>: [&#123; <span class="attr">provide</span>: Logger, <span class="attr">useValue</span>: silentLogger &#125;]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>上面的例子中可以看到，在別的地方建立一個 Object 並將它提供給 injector 讓他注入給 component 中讓 component 中可以使用到這個 Object 中的 property 與 method。</p>
+<h3 id="Using-an-InjectionToken-object"><a href="#Using-an-InjectionToken-object" class="headerlink" title="Using an InjectionToken object"></a>Using an InjectionToken object</h3><p>在上面可以看到我們在填入 property provide 的時候都是預定他是一個 service，那們可不可以填入某個 object 或一個 function 呢？答案是可以的，不過你得使用 <code>InjectionToken</code> 強制將你想填入的內容產生一個 token，舉個例子吧</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Inject, OnInit, InjectionToken &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> APP_CONFIG = <span class="keyword">new</span> InjectionToken&lt;&#123;                          <span class="comment">// (1)</span></span><br><span class="line">  <span class="attr">apiEndpoint</span>: <span class="built_in">string</span>;</span><br><span class="line">  title: <span class="built_in">string</span>;</span><br><span class="line">&#125;&gt;(<span class="string">&#x27;app.config&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">providers</span>: [                                                            <span class="comment">// (2)</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">provide</span>: APP_CONFIG,</span><br><span class="line">      <span class="attr">useValue</span>: &#123;</span><br><span class="line">        <span class="attr">apiEndpoint</span>: <span class="string">&#x27;api.heroes.com&#x27;</span>,</span><br><span class="line">        <span class="attr">title</span>: <span class="string">&#x27;Dependency Injection&#x27;</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">  ],</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  title!: <span class="built_in">string</span>;</span><br><span class="line">  apiEndpoint!: <span class="built_in">string</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="meta">@Inject</span>(APP_CONFIG) config: &#123; apiEndpoint: <span class="built_in">string</span>; title: <span class="built_in">string</span> &#125;    <span class="comment">// (3)</span></span></span></span><br><span class="line"><span class="params"><span class="function">  </span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.title = config.title;</span><br><span class="line">    <span class="built_in">this</span>.apiEndpoint = config.apiEndpoint;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">ngOnInit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.title);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.apiEndpoint);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 替 APP_CONFIG 產生一個 token，參數的字串（’app.config’）只是對他的描述</li>
+<li>(2): 將 APP_CONFIG 使用 useValue 提供模板給 injector</li>
+<li>(3): 使用 <code>@Inject()</code> 裝飾器告知使用哪一個 token 注入</li>
+</ul>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210815/20124767fXP00j0QCs.png" alt="https://ithelp.ithome.com.tw/upload/images/20210815/20124767fXP00j0QCs.png"></p>
+<hr>
+<h1 id="Using-factory-providers"><a href="#Using-factory-providers" class="headerlink" title="Using factory providers"></a>Using factory providers</h1><p>在介紹完 <code>useValue</code> 後可以看到就算是普通的 object 也可以使用 InjectionToken 強制產生一個 token，不過要這樣做的前提是要事先建立好要替代的 token 實體，但這種事先建立的情況在實際中不太常發生，比較多都是需要動態產生的，這時就可以使用 <code>useFactory</code> 把複雜的動態計算放在 factory 裏面，動態的建立需要的 token 實體，舉個例子</p>
+<ol>
+<li><p>建立 service1 與 service2</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ng generate service service1</span><br><span class="line">ng generate service service1</span><br></pre></td></tr></table></figure></li>
+<li><p>在兩個 service 中添加一個 getName() method 但是回傳不同的字串</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Injectable &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Injectable</span>(&#123; <span class="attr">providedIn</span>: <span class="string">&#x27;root&#x27;</span> &#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">Service1Service</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">  <span class="function"><span class="title">getName</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;This is Service-1 method&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Injectable &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Injectable</span>(&#123; <span class="attr">providedIn</span>: <span class="string">&#x27;root&#x27;</span> &#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">Service2Service</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">  <span class="function"><span class="title">getName</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;This is Service-2 method&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在 app.component.ts 中使用 useFactory</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, InjectionToken, OnInit  &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Service1Service &#125; <span class="keyword">from</span> <span class="string">&#x27;./service1.service&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Service2Service &#125; <span class="keyword">from</span> <span class="string">&#x27;./service2.service&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AppService &#125; <span class="keyword">from</span> <span class="string">&#x27;./app.service&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="built_in">enum</span> ServiceList &#123;                                                 <span class="comment">// (1)</span></span><br><span class="line">  SERVICE_1 = <span class="number">0</span>,</span><br><span class="line">  SERVICE_2 = <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> SelectService = <span class="keyword">new</span> InjectionToken&lt;<span class="built_in">number</span>&gt;(<span class="string">&#x27;selectService&#x27;</span>); <span class="comment">// (2)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> serviceFactory = <span class="function">(<span class="params">selectService: <span class="built_in">number</span></span>) =&gt;</span> &#123;                <span class="comment">// (3)</span></span><br><span class="line">  <span class="keyword">if</span> (selectService === ServiceList.SERVICE_1) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Service1Service();</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Service2Service();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">providers</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">provide</span>: SelectService,                                             <span class="comment">// (4)</span></span><br><span class="line">      <span class="attr">useValue</span>: ServiceList.SERVICE_1</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">provide</span>: AppService,                                                <span class="comment">// (5)</span></span><br><span class="line">      <span class="attr">useFactory</span>: serviceFactory,</span><br><span class="line">      <span class="attr">deps</span>: [SelectService]</span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> appService: AppService</span>)</span> &#123;&#125;                          <span class="comment">// (6)</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">ngOnInit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;Useing Service: &#x27;</span>, <span class="built_in">this</span>.appService.getName());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(1): 定義一個選擇使用哪一個 service 的 enum</li>
+<li>(2): 使用剛剛介紹的 <code>Using an InjectionToken object</code> 為 SelectService 這個 number 產生一個 Token</li>
+<li>(3): 建立一個 Factory function，傳入 select number 用來決定要使用哪一個 service</li>
+<li>(4): 使用剛剛介紹的 <code>useValue</code> 將 SelectService Token 賦予 ServiceList.SERVICE_1 的值並將他創建出來注入給 app.component</li>
+<li>(5): 使用 <code>useFactory</code> 將 Factory function 的結果提供給 AppService Token 並將他創建出來注入到 app.component 中</li>
+<li>(6): 在 component 的 constructor 中注入 service</li>
+</ul>
+</li>
+</ol>
+<p>這邊特別介紹一下 <code>deps</code> 這個 property，他是 injector 要解析的 Token list，然後他列表中的值會作為 useFactory 的參數傳入 factory function 中，這就是為什麼上面的例子中要先用 <code>InjectionToken</code> 產生一個 Token，這樣 injector 才能將 SelectService 解析並將其中的值，也就是使用 <code>useValue</code> 賦予的值傳遞近 factory function 裏面。</p>
+<p>如果使用 useValue 設定值為 <code>ServiceList.SERVICE_1</code> 那們在 console 中會看到<br><img src="https://ithelp.ithome.com.tw/upload/images/20210815/20124767nVTPjutgPn.png" alt="https://ithelp.ithome.com.tw/upload/images/20210815/20124767nVTPjutgPn.png"><br>app.component 中注入的 service 是 service1 的內容，而 useValue 設定值為 <code>ServiceList.SERVICE_2</code> 時<br><img src="https://ithelp.ithome.com.tw/upload/images/20210815/20124767AUS3HBvDqV.png" alt="https://ithelp.ithome.com.tw/upload/images/20210815/20124767AUS3HBvDqV.png"><br>app.component 中注入的 service 變為 service2 的內容，這就是 <code>useFactory</code> 的概念，不過實際上 useFactory 用法會遠比上面的例子還要複雜得多，不過這邊介紹的是一個概念。</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章中介紹了什麼是 injector 與 provider 和他們之間的關係，用了一個客戶與服務生的例子，不過一樣實際上背後的原理比這個複雜得多，不過這邊就是介紹他的概念不會太過鑽研他背後的原理。</p>
+<p>也介紹了 provider 可以透過使用 <code>useClass</code>、<code>useValue</code>、<code>useFactory</code> 或 <code>useExisting</code> 將 component 或 module 需要的 Token 利用不同的來源建立出來並注入回去，基本上大多都使用場景都是使用 useClass 跟 useValue，不過在面對比較複雜的專案時也會需要用到另外兩個，這樣才能使你的專案更加的靈活。</p>
+<p>下一篇將會介紹 Angular 的 Router，他在 Angular 中也是佔有非常重要的地位，現代的網頁中沒有人只做一頁的，所以就需要 Router 來控制不同的 url 會進到那一個頁面，詳細的內容就留到明天再講解吧，那們一樣明天見囉！</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/dependency-injection-providers">Angular.io - Dependency providers</a></li>
+<li><a target="_blank" rel="noopener" href="https://angular.io/api/core/FactorySansProvider#deps">Angular.io - FactorySansProvider</a></li>
+<li><a target="_blank" rel="noopener" href="https://angular.io/api/core/FactoryProvider">Angular.io - FactoryProvider</a></li>
+<li><a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10207990">[Angular 大師之路] Day 21 - 在 @NgModule 的 providers: [] 自由更換注入內容 (1)</a></li>
+<li><a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10208240">[Angular 大師之路] Day 21 - 在 @NgModule 的 providers: [] 自由更換注入內容 (2)</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1739373">Angular里useExisting和useClass的使用场景</a></li>
+<li><a target="_blank" rel="noopener" href="https://medium.com/ngconf/this-wont-hurt-a-bit-dependency-injection-tokens-in-angular-2fa5f6e6293">This Won’t Hurt a Bit — Dependency Injection Tokens in Angular</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.tektutorialshub.com/angular/angular-injector-injectable-inject/">Angular Injector, @Injectable &amp; @Inject</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.thoughtram.io/angular/2015/05/18/dependency-injection-in-angular-2.html">Dependency Injection in Angular</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day18-Introduction-to-services-and-dependency-injection/" rel="prev" title="Day18. Introduction to services and dependency injection">
+      <i class="fa fa-chevron-left"></i> Day18. Introduction to services and dependency injection
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day20-Angular-Routing/" rel="next" title="Day20. Angular Routing">
+      Day20. Angular Routing <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Dependency-injection-tokens"><span class="nav-number">1.</span> <span class="nav-text">Dependency injection tokens</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Specifying-an-alternative-class-provider"><span class="nav-number">2.</span> <span class="nav-text">Specifying an alternative class provider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-class-providers-with-dependencies"><span class="nav-number">2.0.1.</span> <span class="nav-text">Configuring class providers with dependencies</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Aliasing-class-providers"><span class="nav-number">3.</span> <span class="nav-text">Aliasing class providers</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Injecting-an-object"><span class="nav-number">4.</span> <span class="nav-text">Injecting an object</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-an-InjectionToken-object"><span class="nav-number">4.0.1.</span> <span class="nav-text">Using an InjectionToken object</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Using-factory-providers"><span class="nav-number">5.</span> <span class="nav-text">Using factory providers</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">6.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">7.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

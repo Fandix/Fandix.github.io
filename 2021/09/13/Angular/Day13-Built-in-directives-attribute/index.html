@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在介紹完 component 與 template 後，接著要來介紹什麼是 directive，可能在前面的章節中多多少少都有提到，但是可能都沒有詳細的講解過，也有遇過實際上已經有在使用了但卻不知道這個其實就是 directive，不過沒關係接下來會詳細的介紹什麼是 directive。 directive 是 Angular 中為了應用程序元素額外添加行為的 class，可以使用 Angular">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day13. Built-in directives - attribute">
+<meta property="og:url" content="https://fandix.github.io/2021/09/13/Angular/Day13-Built-in-directives-attribute/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在介紹完 component 與 template 後，接著要來介紹什麼是 directive，可能在前面的章節中多多少少都有提到，但是可能都沒有詳細的講解過，也有遇過實際上已經有在使用了但卻不知道這個其實就是 directive，不過沒關係接下來會詳細的介紹什麼是 directive。 directive 是 Angular 中為了應用程序元素額外添加行為的 class，可以使用 Angular">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210807/20124767SxBTFn4QZA.png">
+<meta property="og:image" content="https://i.imgur.com/6gn4aw4.gif">
+<meta property="og:image" content="https://i.imgur.com/JNULNN0.gif">
+<meta property="og:image" content="https://i.imgur.com/hIek2rn.gif">
+<meta property="article:published_time" content="2021-09-13T07:20:57.000Z">
+<meta property="article:modified_time" content="2021-09-13T07:22:37.767Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210807/20124767SxBTFn4QZA.png">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/13/Angular/Day13-Built-in-directives-attribute/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day13. Built-in directives - attribute | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day13-Built-in-directives-attribute/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day13. Built-in directives - attribute
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-13 15:20:57 / Modified: 15:22:37" itemprop="dateCreated datePublished" datetime="2021-09-13T15:20:57+08:00">2021-09-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在介紹完 component 與 template 後，接著要來介紹什麼是 directive，可能在前面的章節中多多少少都有提到，但是可能都沒有詳細的講解過，也有遇過實際上已經有在使用了但卻不知道這個其實就是 directive，不過沒關係接下來會詳細的介紹什麼是 directive。</p>
+<p>directive 是 Angular 中為了應用程序元素額外添加行為的 class，可以使用 Angular 內建的 directive 來管理 <code>form</code> 、<code>lists</code>、 <code>style</code> 和 <code>使用者看到的內容</code>。</p>
+<p>而 directive 有不同類性的用法，以下分為三種：</p>
+<ol>
+<li><strong>Component</strong>: 帶有 template 的 directive，這種是最常見的 directive</li>
+<li><strong>Attribute directive</strong>: 改變 element, component 或其他 directive 的外觀或行為的 directive</li>
+<li><strong>Structural directive</strong>: 通過添加或刪除 DOM element 來改變 DOM 的佈局</li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210807/20124767SxBTFn4QZA.png" alt="https://ithelp.ithome.com.tw/upload/images/20210807/20124767SxBTFn4QZA.png"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Built-in-attribute-directives"><a href="#Built-in-attribute-directives" class="headerlink" title="Built-in attribute directives"></a>Built-in attribute directives</h1><p>attribute directive 是用來監聽和修改 HTML 的 element、attribute、property 和 component 的行為，比如 RouterModule 或 FormsModule 這類型的 NgModule，他都有定義自己的 attribute directive，而常見的的 attribute directive 有：</p>
+<ul>
+<li>NgClass: 添加或刪除一組 css class</li>
+<li>NgStyle: 添加或刪除一組 HTML style</li>
+<li>NgModule: 像 HTML 的 <code>&lt;form&gt;</code> element 添加雙向數據綁定</li>
+</ul>
+<hr>
+<h1 id="Adding-and-removing-classes-with-NgClass"><a href="#Adding-and-removing-classes-with-NgClass" class="headerlink" title="Adding and removing classes with NgClass"></a>Adding and removing classes with NgClass</h1><p>可以使用 ngClass 同時添加或刪除一個或多個 CSS class，而如果要添加或刪除一個 CSS class 則不要使用 ngClass，請使用 class binding。</p>
+<h3 id="Using-NgClass-with-an-expression"><a href="#Using-NgClass-with-an-expression" class="headerlink" title="Using NgClass with an expression"></a>Using NgClass with an expression</h3><p>要在設置樣式的 element 上添加 [ngClass] 並將一個表達式賦予給他，來舉個子吧</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> [<span class="attr">ngClass</span>]=<span class="string">&quot;isSpecial ? &#x27;special&#x27; : &#x27;&#x27;&quot;</span>&gt;</span>This div is special<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在上面的例子中可以看到將一個<code>三元運算子</code>作為表達式賦予給 [ngClass]，所以當 <code>isSpecial</code> 為 true 時，就會在這個 <code>&lt;div&gt;</code> element 中套用名為 <code> special</code> 的 CSS class 反之則不套用任何 class。</p>
+<h3 id="Using-NgClass-with-a-method"><a href="#Using-NgClass-with-a-method" class="headerlink" title="Using NgClass with a method"></a>Using NgClass with a method</h3><p>除了將表達式賦予給 [ngClass] 之外，也可以與 component 中的 method 一起使用，舉個例子吧，希望透過畫面中三個 check box 來更換畫面中的字體或顏色。</p>
+<ol>
+<li><p>在 app.component.html 中建立三個 check box 與一個按鈕</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> [<span class="attr">ngClass</span>]=<span class="string">&quot;currentClasses&quot;</span>&gt;</span></span><br><span class="line">  This div element CSS class is initial color, size and bgcColor</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;colorChange&quot;</span>&gt;</span>Change color<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;checkbox&quot;</span> <span class="attr">id</span>=<span class="string">&quot;colorChange&quot;</span> (<span class="attr">change</span>)=<span class="string">&quot;onChange(&#x27;color&#x27;)&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;fontSizeChange&quot;</span>&gt;</span>Font size change<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;checkbox&quot;</span> <span class="attr">id</span>=<span class="string">&quot;fontSizeChange&quot;</span> (<span class="attr">change</span>)=<span class="string">&quot;onChange(&#x27;size&#x27;)&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;bgcChange&quot;</span>&gt;</span>Background color change<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;checkbox&quot;</span> <span class="attr">id</span>=<span class="string">&quot;bgcChange&quot;</span> (<span class="attr">change</span>)=<span class="string">&quot;onChange(&#x27;bgcColor&#x27;)&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;onSetCurrentClasses()&quot;</span>&gt;</span>Change div CSS class<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 在最上面添加一個 <code>&lt;div&gt;</code> 並將他使用 [ngClass]=”currentClasses”，透過 currentClasses 的內容決定要將幾個 CSS class 綁定在上面</li>
+<li>(2): 新增三個 check box 並將他們綁定一個 method，當使用者點擊時改變他們各自的狀態</li>
+<li>(3): 當使用者選擇好 check box 後，點擊按鈕觸發重新設置 currentClasses</li>
+</ul>
+</li>
+<li><p>在 app.component.ts 中新增 property 與 method</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  color = <span class="literal">false</span>;                                      <span class="comment">// (1)</span></span><br><span class="line">  size = <span class="literal">false</span>;</span><br><span class="line">  bgcColor = <span class="literal">false</span>;</span><br><span class="line">  currentClasses = &#123; <span class="attr">color</span>: <span class="literal">false</span>, <span class="attr">size</span>: <span class="literal">false</span>, <span class="attr">bgcColor</span>: <span class="literal">false</span> &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onChange</span>(<span class="params">checkboxId: <span class="built_in">string</span></span>)</span> &#123;                      <span class="comment">// (2)</span></span><br><span class="line">    <span class="keyword">switch</span> (checkboxId) &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="string">&#x27;color&#x27;</span>:</span><br><span class="line">        <span class="built_in">this</span>.color = !<span class="built_in">this</span>.color;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      <span class="keyword">case</span> <span class="string">&#x27;size&#x27;</span>:</span><br><span class="line">        <span class="built_in">this</span>.size = !<span class="built_in">this</span>.size;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      <span class="keyword">case</span> <span class="string">&#x27;bgcColor&#x27;</span>:</span><br><span class="line">        <span class="built_in">this</span>.bgcColor = !<span class="built_in">this</span>.bgcColor;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onSetCurrentClasses</span>(<span class="params"></span>)</span> &#123;                             <span class="comment">// (3)</span></span><br><span class="line">    <span class="built_in">this</span>.currentClasses = &#123;</span><br><span class="line">      <span class="attr">color</span>: <span class="built_in">this</span>.color,</span><br><span class="line">      <span class="attr">size</span>: <span class="built_in">this</span>.size, </span><br><span class="line">      <span class="attr">bgcColor</span>: <span class="built_in">this</span>.bgcColor</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 新增每個 check box 所控制的 property，並新增 currentClasses 用於改變整體樣式</li>
+<li>(2): 新增當 check box 被點擊時觸發的 method</li>
+<li>(3): 新增當畫面中的 button 被點擊時觸發的 method</li>
+</ul>
+</li>
+<li><p>在 app.component.css 中新增三個 CSS class</p>
+ <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.color</span> &#123;</span><br><span class="line">    <span class="attribute">color</span>: lightskyblue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.size</span> &#123;</span><br><span class="line">    <span class="attribute">font-size</span>: <span class="number">36px</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.bgcColor</span> &#123;</span><br><span class="line">    <span class="attribute">background-color</span>: lightpink;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/6gn4aw4.gif" alt="img"></p>
+<p>在畫面中可以看到，當我們點選一個或多個 check box 時，會依照對應的名稱對 <code>&lt;div&gt;</code> 添加或刪除一個或多個 CSS class，當點擊其中一個 check box 先將他的對應的 property 變更狀態，等全部都變更好後，當使用者點擊了 change 的按鈕，會將 [ngClass] 所綁定的 object 進行更新從而更新 <code>&lt;div&gt;</code> 中的 CSS class。</p>
+<p>還記得為什麼綁定物件時可以更改 CSS class 的綁定嗎？在前幾篇的 class binding 中有提到，可以使用物件綁定，他的要求是 <code>key 為 class 名稱， value 為布林值（用於控制是否呈現）</code> 的這種型別的 object，忘記的可以回去複習一下喔！</p>
+<h3 id="Setting-inline-styles-with-NgStyle"><a href="#Setting-inline-styles-with-NgStyle" class="headerlink" title="Setting inline styles with NgStyle"></a>Setting inline styles with NgStyle</h3><p>講完了 NgClass 後接著來介紹 NgStyle 的用法，他與 NgClass 差不多，唯一不同的是他是可以添加或刪除一個或多個 style，既然他們的使用方法差不多，那我們就以上面的例子，將上面的例子從 NgClass 更改為 NgStyle 吧。</p>
+<ol>
+<li><p>首先先將 app.component.html 中顯示的 <code>&lt;div&gt;</code> 從 [ngClass] 更改為 [ngStyle] 並將綁定的名稱更改為 currentStyle，其他我們保持不變</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- Change [ngClass] to [ngStyle] --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> [<span class="attr">ngStyle</span>]=<span class="string">&quot;currentStyle&quot;</span>&gt;</span></span><br><span class="line">  This div element style is initial color, size and bgcColor</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;colorChange&quot;</span>&gt;</span>Change color<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;checkbox&quot;</span> <span class="attr">id</span>=<span class="string">&quot;colorChange&quot;</span> (<span class="attr">change</span>)=<span class="string">&quot;onChange(&#x27;color&#x27;)&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;fontSizeChange&quot;</span>&gt;</span>Font size change<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;checkbox&quot;</span> <span class="attr">id</span>=<span class="string">&quot;fontSizeChange&quot;</span> (<span class="attr">change</span>)=<span class="string">&quot;onChange(&#x27;size&#x27;)&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;bgcChange&quot;</span>&gt;</span>Background color change<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;checkbox&quot;</span> <span class="attr">id</span>=<span class="string">&quot;bgcChange&quot;</span> (<span class="attr">change</span>)=<span class="string">&quot;onChange(&#x27;bgcColor&#x27;)&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- Change method name --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;onSetCurrentStyle()&quot;</span>&gt;</span>Change div Style<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>接著我們改寫 app.component.ts 中的 property name 與 method</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  color = <span class="literal">false</span>;</span><br><span class="line">  size = <span class="literal">false</span>;</span><br><span class="line">  bgcColor = <span class="literal">false</span>;</span><br><span class="line">  currentStyle: Record&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; = &#123;&#125;;    <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onChange</span>(<span class="params">checkboxId: <span class="built_in">string</span></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> (checkboxId) &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="string">&#x27;color&#x27;</span>:</span><br><span class="line">        <span class="built_in">this</span>.color = !<span class="built_in">this</span>.color;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      <span class="keyword">case</span> <span class="string">&#x27;size&#x27;</span>:</span><br><span class="line">        <span class="built_in">this</span>.size = !<span class="built_in">this</span>.size;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      <span class="keyword">case</span> <span class="string">&#x27;bgcColor&#x27;</span>:</span><br><span class="line">        <span class="built_in">this</span>.bgcColor = !<span class="built_in">this</span>.bgcColor;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onSetCurrentStyle</span>(<span class="params"></span>)</span> &#123;                        <span class="comment">// (2)</span></span><br><span class="line">    <span class="built_in">this</span>.currentStyle = &#123;</span><br><span class="line">      <span class="string">&#x27;color&#x27;</span>:  <span class="built_in">this</span>.color ? <span class="string">&#x27;lightskyblue&#x27;</span> : <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">      <span class="string">&#x27;font-size&#x27;</span>: <span class="built_in">this</span>.size ? <span class="string">&#x27;36px&#x27;</span> : <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">      <span class="string">&#x27;background-color&#x27;</span>: <span class="built_in">this</span>.bgcColor? <span class="string">&#x27;lightpink&#x27;</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 將原本的 currentClasses 改名為 currentStyle （因為已經將 <code>&lt;div&gt;</code> 重新使用 [ngStyle] 綁定過了）</li>
+<li>(2): 更改使用者點擊按鈕時處發的 method</li>
+</ul>
+</li>
+</ol>
+<p><img src="https://i.imgur.com/JNULNN0.gif" alt="img"></p>
+<p>在畫面中可以看到雖然將 <code>&lt;div&gt;</code> 重新使用 [ngStyle] 綁定過但是結果與使用 [ngClass] 一樣，唯一不同的是在 onSetCurrentStyle 中的操作改了，如果是要綁定 style 的話需要使用<code>以樣式名稱為 key，以樣式值為 value 的物件</code> 一樣在前幾天的 style binding 裡面有提到喔！</p>
+<hr>
+<h1 id="Displaying-and-updating-properties-with-ngModel"><a href="#Displaying-and-updating-properties-with-ngModel" class="headerlink" title="Displaying and updating properties with ngModel"></a>Displaying and updating properties with ngModel</h1><p>介紹完如何透過 [ngClass] 與 [ngStyle] 改變 HTML element 的樣式後，接著介紹如何使用 ngModel</p>
+<p>ngModel directive 是用在顯示數據 property 與當用戶對被綁定的 HTML element 進行更改時同步更新 property， 一樣舉個例子吧</p>
+<ol>
+<li><p>首先要使用 ngModel 必須要在 app.module.ts 中引用 <code>FormsModule</code> 並將他放在 <code>import</code> 當中，可能很多新手會覺得為什麼要放在這邊，沒關係之後再講解 Module 時會專門為大家講解</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; BrowserModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/platform-browser&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; AppRoutingModule &#125; <span class="keyword">from</span> <span class="string">&#x27;./app-routing.module&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AppComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./app.component&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormsModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    AppComponent,</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    AppRoutingModule,</span><br><span class="line">    FormsModule</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [],</span><br><span class="line">  <span class="attr">bootstrap</span>: [AppComponent]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.ts 中新增一個 property 用於綁定畫面中的 <code>&lt;input&gt;</code></p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./app.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  currentItem = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.html 中新增一個 <code>&lt;input&gt;</code> 並將他綁定</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;example-ngModel&quot;</span>&gt;</span>[(ngModel)]: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> [(<span class="attr">ngModel</span>)]=<span class="string">&quot;currentItem&quot;</span> <span class="attr">id</span>=<span class="string">&quot;example-ngModel&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;&#123;currentItem&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/hIek2rn.gif" alt="img"></p>
+<p>在畫面中可以看到當我們在 <code>&lt;input&gt;</code> 中輸入數值時，會同步的將 component 中的 property 更改。</p>
+<p>可能有人會問：阿這個跟 Two-way binding 有什麼不一樣？這個答案我可以很明確地告訴你，他們是一樣的，所以你也可以把它理解為在同一層中的 Two-way binding，於是你也可以利用 property binding 與 event binding 達到相同的結果</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> [<span class="attr">currentItem</span>]=<span class="string">&quot;currentItem&quot;</span> (<span class="attr">change</span>)=<span class="string">&quot;onChange($event)&quot;</span> <span class="attr">id</span>=<span class="string">&quot;example-ngModel&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;&#123;currentItem&#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>有興趣的可以嘗試看看把他從 ngModel 改寫為 property binding 與 event binding 喔！</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章中介紹了什麼是 attribute directive 與該怎使用，可以利用 ngClass 對 HTML 的 element 進行一個或多個的 CSS class 綁定，也可以使用 ngStyle 對 HTML 的 element 進行一個或多個的 Style 綁定，最後介紹的是 ngModel 的綁定，在使用他之前需要在 app.module.ts 的 imports 中引入 <code>FormsModule</code> 才可以使用，他的作用可以把它想像成是在同一層中的 Two-way binding，對於表單的控制非常好用，本章中使用了比較多例子，如果在嘗試的時候遇到問題也歡迎在底下留言。</p>
+<p>雖然本章的開頭提到 Angular 的預設有 attribute 與 structural directives 兩種，但礙於篇章長度的問題將它分為本篇的 attribute directive 與下一篇的 structural directive。</p>
+<p>structural directive 的概念其實我們在前面的例子中多多少少都有用到一點，比如 <code>*ngFor</code> 或 <code>*ngIf</code> 等等的，主要的目的是用來改變 DOM 的結構與佈局，詳細的內容會在明天介紹，那我們就明天見吧！</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/built-in-directives">Angular.io</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day12-Template-variables/" rel="prev" title="Day12. Template variables">
+      <i class="fa fa-chevron-left"></i> Day12. Template variables
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day14-Built-in-directives-structural/" rel="next" title="Day14. Built-in directives - structural">
+      Day14. Built-in directives - structural <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Built-in-attribute-directives"><span class="nav-number">1.</span> <span class="nav-text">Built-in attribute directives</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Adding-and-removing-classes-with-NgClass"><span class="nav-number">2.</span> <span class="nav-text">Adding and removing classes with NgClass</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-NgClass-with-an-expression"><span class="nav-number">2.0.1.</span> <span class="nav-text">Using NgClass with an expression</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-NgClass-with-a-method"><span class="nav-number">2.0.2.</span> <span class="nav-text">Using NgClass with a method</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Setting-inline-styles-with-NgStyle"><span class="nav-number">2.0.3.</span> <span class="nav-text">Setting inline styles with NgStyle</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Displaying-and-updating-properties-with-ngModel"><span class="nav-number">3.</span> <span class="nav-text">Displaying and updating properties with ngModel</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

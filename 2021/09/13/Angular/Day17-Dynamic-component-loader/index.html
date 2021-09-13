@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="介紹完什麼是 template 與 structural directive 後，接著回來介紹 component 中被跳過的章節，那就是動態仔入 component，再開發專案時可能會遇到 component template 需要被動態載入的情況，比如說常見的網頁廣告或是當捲軸轉到某個地方時才會顯示出只定 component 的 template，那麼就繼續看下去吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day17. Dynamic component loader">
+<meta property="og:url" content="https://fandix.github.io/2021/09/13/Angular/Day17-Dynamic-component-loader/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="介紹完什麼是 template 與 structural directive 後，接著回來介紹 component 中被跳過的章節，那就是動態仔入 component，再開發專案時可能會遇到 component template 需要被動態載入的情況，比如說常見的網頁廣告或是當捲軸轉到某個地方時才會顯示出只定 component 的 template，那麼就繼續看下去吧。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210818/20124767jPdUbmDQQh.png">
+<meta property="og:image" content="https://i.imgur.com/EvEFuPO.gif">
+<meta property="og:image" content="https://i.imgur.com/1atiuaj.gif">
+<meta property="article:published_time" content="2021-09-13T07:30:08.000Z">
+<meta property="article:modified_time" content="2021-09-13T07:31:49.971Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210818/20124767jPdUbmDQQh.png">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/13/Angular/Day17-Dynamic-component-loader/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day17. Dynamic component loader | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day17-Dynamic-component-loader/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day17. Dynamic component loader
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-13 15:30:08 / Modified: 15:31:49" itemprop="dateCreated datePublished" datetime="2021-09-13T15:30:08+08:00">2021-09-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>介紹完什麼是 template 與 structural directive 後，接著回來介紹 component 中被跳過的章節，那就是動態仔入 component，再開發專案時可能會遇到 component template 需要被動態載入的情況，比如說常見的網頁廣告或是當捲軸轉到某個地方時才會顯示出只定 component 的 template，那麼就繼續看下去吧。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210818/20124767jPdUbmDQQh.png" alt="https://ithelp.ithome.com.tw/upload/images/20210818/20124767jPdUbmDQQh.png"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Dynamic-component-loading"><a href="#Dynamic-component-loading" class="headerlink" title="Dynamic component loading"></a>Dynamic component loading</h1><p>以 Angular 官方文檔的例子來介紹一下如何使用 Dynamic component loading，這個例子將會製作一個畫面中的廣告，會隨著時間而顯示不同的廣告內容，要滿足這個條件使用過去靜態 component 載入就顯得不切實際，讓我們一起看看這個例子吧</p>
+<hr>
+<h1 id="The-anchor-directive"><a href="#The-anchor-directive" class="headerlink" title="The anchor directive"></a>The anchor directive</h1><p>在添加動態 component 之前，需要先使用 directive 來讓 Angular 知道你要將這的動態 component 插入在哪邊，使用 Angular CLI 建立一個 directive</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate directive Ad</span><br></pre></td></tr></table></figure>
+
+<p>接著在 ad.directive.ts 中從 <code>@angular/core</code> 中引入 <code>ViewContainerRef</code> 並將它注入到 class 中</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Directive, ViewContainerRef &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Directive</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;[appAd]&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AdDirective</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">public</span> viewContainerRef: ViewContainerRef</span>)</span> &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ViewContainerRef 讓你可以訪問動態 component 的 view container。</p>
+<hr>
+<h1 id="Loading-components"><a href="#Loading-components" class="headerlink" title="Loading components"></a>Loading components</h1><p>接著我們將要動態顯示廣告的邏輯定義在 ad-banner 中，所以使用 Angular CLI 建立一個 component</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate component ad-banner</span><br></pre></td></tr></table></figure>
+
+<p>接著在 ad.banner.html 中添加 <code>&lt;ng-template&gt;</code> 與使用 <code>directive</code> 綁定這個元素</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;ad-banner-example&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h3</span>&gt;</span>Advertisements<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ng-template</span> <span class="attr">adHost</span>&gt;</span><span class="tag">&lt;/<span class="name">ng-template</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在 template 中使用 <code>&lt;ng-template&gt;</code> 對於要動態載入 component 的 view 而言非常適合，因為在尚未滿足條件的情況下 Angular 並不會將 <code>&lt;ng-template&gt;</code> 的內容放入 DOM 中。</p>
+<hr>
+<h1 id="Create-view-component"><a href="#Create-view-component" class="headerlink" title="Create view component"></a>Create view component</h1><p>在完成 ad-banner 後，接著要建立負責顯示廣告畫面的 component，一樣先用 Angular CLI 建立 component</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ng generate component hero-job-ad</span><br><span class="line">ng generate component hero-profile</span><br></pre></td></tr></table></figure>
+
+<p>這邊的設計比較特別，不像一般傳統的 component 設計，他要將這兩個 component 做為參數傳遞給某個 method，藉由這個 method 將 component 實例話而不是像之前的使用他的 <code>selector</code></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Input &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;div class=&quot;job-ad&quot;&gt;</span></span><br><span class="line"><span class="string">      &lt;h4&gt;&#123;&#123; data.headline &#125;&#125;&lt;/h4&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      &#123;&#123; data.body &#125;&#125;</span></span><br><span class="line"><span class="string">    &lt;/div&gt;</span></span><br><span class="line"><span class="string">  `</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">HeroJobAdComponent</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Input</span>() data: <span class="built_in">any</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Input &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;div class=&quot;hero-profile&quot;&gt;</span></span><br><span class="line"><span class="string">      &lt;h3&gt;Featured Hero Profile&lt;/h3&gt;</span></span><br><span class="line"><span class="string">      &lt;h4&gt;&#123;&#123;data.name&#125;&#125;&lt;/h4&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      &lt;p&gt;&#123;&#123;data.bio&#125;&#125;&lt;/p&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      &lt;strong&gt;Hire this hero today!&lt;/strong&gt;</span></span><br><span class="line"><span class="string">    &lt;/div&gt;</span></span><br><span class="line"><span class="string">  `</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">HeroProfileComponent</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Input</span>() data: <span class="built_in">any</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由於不需要使用 <code>selector</code> 所以將不需要的 property 從 metadata 中移除只留下 template 設定畫面。</p>
+<hr>
+<h1 id="Create-service"><a href="#Create-service" class="headerlink" title="Create service"></a>Create service</h1><p>在建立完顯示畫面的 component 後，剛剛提到的要將這兩個 component 傳給某個 method 將它實例化，那麼就要建立一個 class 用於將他們實例化，這邊手動新增一個檔案就好</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ad-item.ts</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; Type &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AdItem</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">public</span> component: Type&lt;<span class="built_in">any</span>&gt;, <span class="keyword">public</span> data: <span class="built_in">any</span></span>)</span> &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>這邊使用了 <code>@angular/core</code> 中的 <code>Type</code> 代表定義的參數的型態是 component 或是其實例，這樣才滿足我們要將 component 傳進這個 class 後實例化的目的。</p>
+<p>接著建立一個 service 用於利用剛剛建立出的兩個 component 建立畫面，首先一樣使用 Angular CLI 建立一個 service</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate service ad</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Injectable &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HeroJobAdComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./view/hero-job-ad/hero-job-ad.component&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HeroProfileComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./view/hero-profile/hero-profile.component&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; AdItem &#125; <span class="keyword">from</span> <span class="string">&#x27;./ad-item&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Injectable</span>(&#123;</span><br><span class="line">  <span class="attr">providedIn</span>: <span class="string">&#x27;root&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AdService</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">getAds</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> [</span><br><span class="line">      <span class="keyword">new</span> AdItem(HeroProfileComponent, &#123;</span><br><span class="line">        <span class="attr">name</span>: <span class="string">&#x27;Bombasto&#x27;</span>,</span><br><span class="line">        <span class="attr">bio</span>: <span class="string">&#x27;Brave as they come&#x27;</span>,</span><br><span class="line">      &#125;),</span><br><span class="line">      <span class="keyword">new</span> AdItem(HeroProfileComponent, &#123;</span><br><span class="line">        <span class="attr">name</span>: <span class="string">&#x27;Dr IQ&#x27;</span>,</span><br><span class="line">        <span class="attr">bio</span>: <span class="string">&#x27;Smart as they come&#x27;</span>,</span><br><span class="line">      &#125;),</span><br><span class="line">      <span class="keyword">new</span> AdItem(HeroJobAdComponent, &#123;</span><br><span class="line">        <span class="attr">headline</span>: <span class="string">&#x27;Hiring for several positions&#x27;</span>,</span><br><span class="line">        <span class="attr">body</span>: <span class="string">&#x27;Submit your resume today!&#x27;</span>,</span><br><span class="line">      &#125;),</span><br><span class="line">      <span class="keyword">new</span> AdItem(HeroJobAdComponent, &#123;</span><br><span class="line">        <span class="attr">headline</span>: <span class="string">&#x27;Openings in all departments&#x27;</span>,</span><br><span class="line">        <span class="attr">body</span>: <span class="string">&#x27;Apply today&#x27;</span>,</span><br><span class="line">      &#125;),</span><br><span class="line">    ];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 service 中新增一個獲取廣告的 method，將剛剛建立的 component 作為參數傳遞給 <code>AdItem</code> 並將 component 需要的 Input 參數也傳遞進去。</p>
+<hr>
+<h1 id="Finish-this-project"><a href="#Finish-this-project" class="headerlink" title="Finish this project"></a>Finish this project</h1><p>建立完這些工具後，最後要將它們組合起來讓畫面顯示動態的 component 畫面，首先先在 app.component.ts 中注入剛剛寫的 adService 並調用 method 獲得英雄廣告的列表</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AdService &#125; <span class="keyword">from</span> <span class="string">&#x27;./ad.service&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AdItem &#125; <span class="keyword">from</span> <span class="string">&#x27;./ad-item&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  <span class="attr">ads</span>: AdItem[] = [];</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> adService: AdService</span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">ngOnInit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.ads = <span class="built_in">this</span>.adService.getAds();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接著在 app.component.html 中使用 ad.banner 的 selector 並將 ads 綁定為他的 input binding</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">app-ad-banner</span> [<span class="attr">ads</span>]=<span class="string">&quot;ads&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-ad-banner</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>再來要進到 ad-banner.component.ts 中增加動態 component 的邏輯</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit, Input, ComponentFactoryResolver, ViewChild, OnDestroy &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AdItem &#125; <span class="keyword">from</span> <span class="string">&#x27;../ad-item&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AdDirective &#125; <span class="keyword">from</span> <span class="string">&#x27;../ad.directive&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-ad-banner&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./ad-banner.component.html&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AdBannerComponent</span> <span class="title">implements</span> <span class="title">OnInit</span>, <span class="title">OnDestroy</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Input</span>() ads: AdItem[] = [];                                                <span class="comment">// (1)</span></span><br><span class="line">  <span class="meta">@ViewChild</span>(AdDirective, &#123;<span class="attr">static</span>: <span class="literal">true</span>&#125;) adHost!: AdDirective;               <span class="comment">// (2)</span></span><br><span class="line">  interval: <span class="built_in">any</span>;                                                              <span class="comment">// (3)</span></span><br><span class="line">  currentAdIndex = -<span class="number">1</span>;                                                        <span class="comment">// (4)</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> componentFactoryResolver: ComponentFactoryResolver</span>)</span> &#123; &#125; <span class="comment">// (5)</span></span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.loadComponent();</span><br><span class="line">    <span class="built_in">this</span>.getAds();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">ngOnDestroy</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">clearInterval</span>(<span class="built_in">this</span>.interval);                                             <span class="comment">// (8)</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">loadComponent</span>(<span class="params"></span>)</span> &#123;                                                           <span class="comment">// (6)</span></span><br><span class="line">    <span class="built_in">this</span>.currentAdIndex = (<span class="built_in">this</span>.currentAdIndex + <span class="number">1</span>) % <span class="built_in">this</span>.ads.length;</span><br><span class="line">    <span class="keyword">const</span> adItem = <span class="built_in">this</span>.ads[<span class="built_in">this</span>.currentAdIndex];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> componentFactory = <span class="built_in">this</span>.componentFactoryResolver.resolveComponentFactory(adItem.component);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> viewContainerRef = <span class="built_in">this</span>.adHost.viewContainerRef;</span><br><span class="line">    viewContainerRef.clear();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> componentRef = viewContainerRef.createComponent&lt;&#123; <span class="attr">data</span>: <span class="built_in">any</span> &#125;&gt;(componentFactory);</span><br><span class="line">    componentRef.instance.data = adItem.data;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">getAds</span>(<span class="params"></span>)</span> &#123;                                                                  <span class="comment">// (7)</span></span><br><span class="line">    <span class="built_in">this</span>.interval = <span class="built_in">setInterval</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.loadComponent();</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>這邊的邏輯比較複雜一點，來一一說明一下：</p>
+<ul>
+<li>(1): 利用 <code>@Input()</code> 將 ads 裝飾為是父層傳遞的數據，並使用 <code>AdItem</code> 指定型別。</li>
+<li>(2): 利用  <code>@ViewChild</code> 將 adHost 裝飾為可以訪問到 view element 的 property，可以直接在 ad-banner.component 中直接使用 adDirective 中的 method，而將 <code>static</code> 設定為 true 代表在更改檢測運行之前會先解析查詢的結果。</li>
+<li>(3): 建立一個 property 用來接收 setInterval 回傳的值，主要用於取消計時器。</li>
+<li>(4): 建立一個 property 用來計算目前要顯示第幾個英雄廣告。</li>
+<li>(5): 將 <code>ComponentFactoryResolver</code> 注入到 component 中，主要用來將選擇的 ad-component 解析為一個 <code>componentFactory</code>。</li>
+<li>(6): 建立一個 method 用於計算要顯示第幾個英雄廣告並將被選中的英雄廣告 component 透過 <code>ComponentFactoryResolver</code> 解析為 <code>componentFactory</code> 並將它利用 <code>createComponent</code> 實例化。</li>
+<li>(7): 建立一個 method 用於建立一個計時器，每過 3 秒就取得一次英雄廣告</li>
+<li>(8): 在 ngOnDestroy() 中取消計時器</li>
+</ul>
+<p><img src="https://i.imgur.com/EvEFuPO.gif" alt="img"></p>
+<p>在畫面中看到每過三秒就會更換一次畫面，打開網頁中的 console 檢查一下</p>
+<p><img src="https://i.imgur.com/1atiuaj.gif" alt="img"></p>
+<p>可以看到每過三秒就會更換一次 component，這就是動態載入 component。</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本篇中使用了滿多之前提到的技巧來完成這個動態載入 component 的功能，可以一邊看 Angular 提供的 <a target="_blank" rel="noopener" href="https://stackblitz.com/angular/kklkvybnydr?file=src/index.html">stackbitz</a> 一邊看我的解釋應該會比較好看懂。</p>
+<p>明天開始會進入到 Angular 中非常重要的一個觀念，<code>Dependency injection</code>，可能在前面幾篇中多多少少都有提到一點關於他的內容，不過沒關係之後會詳細的講解他到底是什麼，那我們就明天見吧！</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/dynamic-component-loader">Angular.io - Dynamic component loader</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day16-Writing-structural-directives/" rel="prev" title="Day16. Writing structural directives">
+      <i class="fa fa-chevron-left"></i> Day16. Writing structural directives
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/13/Angular/Day18-Introduction-to-services-and-dependency-injection/" rel="next" title="Day18. Introduction to services and dependency injection">
+      Day18. Introduction to services and dependency injection <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Dynamic-component-loading"><span class="nav-number">1.</span> <span class="nav-text">Dynamic component loading</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-anchor-directive"><span class="nav-number">2.</span> <span class="nav-text">The anchor directive</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Loading-components"><span class="nav-number">3.</span> <span class="nav-text">Loading components</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Create-view-component"><span class="nav-number">4.</span> <span class="nav-text">Create view component</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Create-service"><span class="nav-number">5.</span> <span class="nav-text">Create service</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Finish-this-project"><span class="nav-number">6.</span> <span class="nav-text">Finish this project</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">7.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">8.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
