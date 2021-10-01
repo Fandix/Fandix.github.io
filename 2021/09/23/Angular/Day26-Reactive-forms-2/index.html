@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="上一篇中介紹了如何使用 FormControl 建立單個表單控制元件，也介紹了如何使用 FormGroup 將多個相關控制元件分組到單個輸入表單中，可以讓複雜的表單分割為一個一個小小的，對其精準的控制，最後再將它們合為一個大的 Group，而本篇將會介紹如何使用 FormBuilder 他可以讓建表單控制模型更簡單與更好閱讀，也會介紹怎麼使用 FormArray 建立一個動態的表單，詳細的內容就繼">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day26. Reactive forms (二)">
+<meta property="og:url" content="https://fandix.github.io/2021/09/23/Angular/Day26-Reactive-forms-2/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="上一篇中介紹了如何使用 FormControl 建立單個表單控制元件，也介紹了如何使用 FormGroup 將多個相關控制元件分組到單個輸入表單中，可以讓複雜的表單分割為一個一個小小的，對其精準的控制，最後再將它們合為一個大的 Group，而本篇將會介紹如何使用 FormBuilder 他可以讓建表單控制模型更簡單與更好閱讀，也會介紹怎麼使用 FormArray 建立一個動態的表單，詳細的內容就繼">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210824/20124767h3EynlCvSX.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210824/20124767HbsKhUWCCW.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210824/20124767ljo4RKATBj.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210824/20124767k7ypBp3c6C.png">
+<meta property="og:image" content="https://i.imgur.com/ZAgA8wr.gif">
+<meta property="og:image" content="https://i.imgur.com/NKCpOMh.gif">
+<meta property="article:published_time" content="2021-09-23T09:33:28.000Z">
+<meta property="article:modified_time" content="2021-09-23T09:34:43.725Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210824/20124767h3EynlCvSX.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/23/Angular/Day26-Reactive-forms-2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day26. Reactive forms (二) | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day26-Reactive-forms-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day26. Reactive forms (二)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-23 17:33:28 / Modified: 17:34:43" itemprop="dateCreated datePublished" datetime="2021-09-23T17:33:28+08:00">2021-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>上一篇中介紹了如何使用 FormControl 建立單個表單控制元件，也介紹了如何使用 FormGroup 將多個相關控制元件分組到單個輸入表單中，可以讓複雜的表單分割為一個一個小小的，對其精準的控制，最後再將它們合為一個大的 Group，而本篇將會介紹如何使用 <code>FormBuilder</code> 他可以讓建表單控制模型更簡單與更好閱讀，也會介紹怎麼使用 <code>FormArray</code> 建立一個動態的表單，詳細的內容就繼續看下去吧。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210824/20124767h3EynlCvSX.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210824/20124767h3EynlCvSX.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Using-the-FormBuilder-service-to-generate-controls"><a href="#Using-the-FormBuilder-service-to-generate-controls" class="headerlink" title="Using the FormBuilder service to generate controls"></a>Using the FormBuilder service to generate controls</h1><p>之前提到可以將多個相關控制元件集合成一個 FormGroup，而這個 FormGroup 中又可以嵌套下一層的 FormGroup，當表單變得更複雜時手動創建單個 FormControl 會變得很麻煩而且一直重複，這時就可以使用 <code>FormBuilder</code> service 它提供了生成 FormControl 的便捷方法。</p>
+<p>舉個例子，將上一篇的例子（ProfileEditor）使用 FormBuilder 進行改寫</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;                     <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-profile-editor&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./profile-editor.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./profile-editor.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ProfileEditorComponent</span> </span>&#123;</span><br><span class="line">  <span class="attr">formValue</span>: <span class="built_in">any</span>;</span><br><span class="line">  profileForm = <span class="built_in">this</span>.fb.group(&#123;                                  <span class="comment">// (3)</span></span><br><span class="line">    <span class="attr">firstName</span>: [<span class="string">&#x27;&#x27;</span>],</span><br><span class="line">    <span class="attr">lastName</span>: [<span class="string">&#x27;&#x27;</span>],</span><br><span class="line">    <span class="attr">address</span>: <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">      <span class="attr">street</span>: [<span class="string">&#x27;&#x27;</span>],</span><br><span class="line">      <span class="attr">city</span>: [<span class="string">&#x27;&#x27;</span>],</span><br><span class="line">      <span class="attr">state</span>: [<span class="string">&#x27;&#x27;</span>],</span><br><span class="line">      <span class="attr">zip</span>: [<span class="string">&#x27;&#x27;</span>]</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder</span>)</span> &#123;&#125;                        <span class="comment">// (2)</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onSubmit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.formValue = <span class="built_in">this</span>.profileForm.value;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onUpdate</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.profileForm.get(<span class="string">&#x27;firstName&#x27;</span>)?.setValue(<span class="string">&#x27;Fandix&#x27;</span>);</span><br><span class="line">    <span class="built_in">this</span>.profileForm.get(<span class="string">&#x27;address&#x27;</span>)?.get(<span class="string">&#x27;city&#x27;</span>)?.setValue(<span class="string">&#x27;New York&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 從 <code>@angular/forms</code> 中引入 <code>FormBuilder</code></li>
+<li>(2): 在 constructor 中將 FormBuilder 注入到 component 中</li>
+<li>(3): 使用 FormBuilder 改寫 FormGroup</li>
+</ul>
+<p>更改為這樣是不是簡單多了，從每一個 FormControl 都要使用 <code>new</code> 建立實例，到使用 FormBuilder 的話只要使用 <code>[ ]</code> 就好，簡直非常方便。</p>
+<hr>
+<h1 id="Validating-form-input"><a href="#Validating-form-input" class="headerlink" title="Validating form input"></a>Validating form input</h1><p> reactive forms 和 template-driven forms 一樣都有對表單進行驗證的功能，這點再開發表單來說非常重要，而在 reactive forms 中對每一個 FormControl 添加驗證也比較簡單，能添加的驗證內容也更多，甚至可以創建客製化的驗證，而這邊只大概介紹該怎麼添加表單驗證，詳細的內容會到明天專門介紹 form validator。</p>
+<p>最常見的表單驗證就是 <code>required</code> 它代表著這個欄位不能為空，接著來使用上面的例子為表單添加驗證功能</p>
+<ol>
+<li><p>從 <code>@angular/forms</code> 中引入 Validators class</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p>在需要添驗證的 FormControl 後面添加 <code>Validators</code></p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">profileForm = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">  <span class="attr">firstName</span>: [<span class="string">&#x27;&#x27;</span>, Validators.required],</span><br><span class="line">  <span class="attr">lastName</span>: [<span class="string">&#x27;&#x27;</span>],</span><br><span class="line">  <span class="attr">address</span>: <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">    <span class="attr">street</span>: [<span class="string">&#x27;&#x27;</span>],</span><br><span class="line">    <span class="attr">city</span>: [<span class="string">&#x27;&#x27;</span>],</span><br><span class="line">    <span class="attr">state</span>: [<span class="string">&#x27;&#x27;</span>],</span><br><span class="line">    <span class="attr">zip</span>: [<span class="string">&#x27;&#x27;</span>]</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p> 在 <code>firstName</code> 的後面添加了 <code>Validators.required</code> 代表這個 FormControl 不能為空</p>
+</li>
+<li><p>在 profile-editor.component.html 的 submit <code>&lt;button&gt;</code> 中添加驗證</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-success&quot;</span> [<span class="attr">disabled</span>]=<span class="string">&quot;profileForm.invalid&quot;</span>&gt;</span>Submit<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210824/20124767HbsKhUWCCW.png" alt="https://ithelp.ithome.com.tw/upload/images/20210824/20124767HbsKhUWCCW.png"></p>
+<p>當 First Name 欄位為空時，表單的驗證為 <code>invalid</code> 並且將 submit 按鈕 disable 掉，若將表格填上資料時</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210824/20124767ljo4RKATBj.png" alt="https://ithelp.ithome.com.tw/upload/images/20210824/20124767ljo4RKATBj.png"></p>
+<p>當 First Name 欄位為空時，表單的驗證為 <code>invalid</code> 並且將 submit 按鈕 disable 掉，若將表格填上資料時</p>
+<hr>
+<h1 id="Creating-dynamic-forms"><a href="#Creating-dynamic-forms" class="headerlink" title="Creating dynamic forms"></a>Creating dynamic forms</h1><p>在昨天和上面的部分都是介紹與使用 FormGroup 來管理多個 FormControl，但是當遇到不確定數量的 FormControl 時就需要使用另一種集合多個 FormControl 的方式那就是 <code>FormArray</code>，他就像陣列一樣可以隨時插入或刪除陣列中的 FormControl，由於是不確定數量的 FormControl，所以不需要事先定義每一個 FormControl 的內容。</p>
+<p>舉個例子，將上面的範例做一個改寫，更改為可以動態加入或刪除的表單</p>
+<ol>
+<li><p>從 <code>@angular/forms</code> 中引入 <code>FormArray</code></p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; FormArray &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p>將 profile-editor.component.ts 中的 FormGroup 進行更改</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">profileForm = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">  <span class="attr">users</span>: <span class="built_in">this</span>.fb.array([&#123; <span class="attr">firstName</span>: <span class="string">&#x27;&#x27;</span>, <span class="attr">lastName</span>: <span class="string">&#x27;&#x27;</span> &#125;])</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p> 將 FormGroup 改為只有一個 Control，而這個 control 的型態為 FormArray，代表他可以存放許多 FormControl，並給予一個初始值</p>
+</li>
+<li><p>在 profile-editor.component.ts 中新增一個 <code>get</code> method，用於獲得 FormControl 的 control</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">get users () &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">this</span>.profileForm.get(<span class="string">&#x27;users&#x27;</span>) <span class="keyword">as</span> FormArray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>接著在 profile-editor.component.html 中綁定輸入元素</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;profileForm&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span> (<span class="attr">ngSubmit</span>)=<span class="string">&quot;onSubmit()&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ng-container</span> <span class="attr">formArrayName</span>=<span class="string">&quot;users&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span></span></span><br><span class="line"><span class="tag">      *<span class="attr">ngFor</span>=<span class="string">&quot;let user of users.controls; let i = index;&quot;</span></span></span><br><span class="line"><span class="tag">      [<span class="attr">formGroupName</span>]=<span class="string">&quot;i&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">class</span>=<span class="string">&quot;formArray&quot;</span></span></span><br><span class="line"><span class="tag">    &gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formControl&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;first-name&quot;</span>&gt;</span>First Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;first-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;firstName&quot;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formControl&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;last-name&quot;</span>&gt;</span>Last Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;last-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;lastName&quot;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ng-container</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;option-btn&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span></span></span><br><span class="line"><span class="tag">      <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">class</span>=<span class="string">&quot;btn btn-success&quot;</span></span></span><br><span class="line"><span class="tag">      [<span class="attr">disabled</span>]=<span class="string">&quot;profileForm.invalid&quot;</span></span></span><br><span class="line"><span class="tag">    &gt;</span></span><br><span class="line">      Submit</span><br><span class="line">    <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p> 這邊稍微有點複雜，首先雖然是使用 FormArray 但他的最上一層還是使用 FormGroup，所以要在最外層的 <code>&lt;form&gt;</code> 綁定 FormGroup，就跟之前一樣。</p>
+<p> 和綁定 FormGroup 的方法類似，FormArrayNameDirective 提供了 <code>formArrayName</code> 讓表單數組的實例可以與 template 中的元素綁定並溝通。</p>
+<p> 接著使用 <code>*ngFor</code> 將 FormArray 中的 control 遞迴的放在每一個 <code>&lt;div&gt;</code> 中，而這邊使用的 <code>[formGroupName]=&quot;i&quot;</code> 可以把他看做每一個遞迴出來的 <code>&lt;div&gt;</code> 都和最上面的 <code>&lt;form&gt;</code> 一樣綁定了一個 <code>formGroup</code> ，最後將 formGroup 中的 FormControl 綁定給輸入元素，如果要拆開的話可以看成</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;profileForm&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span> (<span class="attr">ngSubmit</span>)=<span class="string">&quot;onSubmit()&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ng-container</span> <span class="attr">formArrayName</span>=<span class="string">&quot;users&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;formGroup-1&quot;</span> <span class="attr">class</span>=<span class="string">&quot;formArray&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formControl&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;first-name&quot;</span>&gt;</span>First Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;first-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;firstName&quot;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formControl&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;last-name&quot;</span>&gt;</span>Last Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;last-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;lastName&quot;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;formGroup-2&quot;</span> <span class="attr">class</span>=<span class="string">&quot;formArray&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formControl&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;first-name&quot;</span>&gt;</span>First Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;first-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;firstName&quot;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formControl&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;last-name&quot;</span>&gt;</span>Last Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;last-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;lastName&quot;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ng-container</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210824/20124767k7ypBp3c6C.png" alt="https://ithelp.ithome.com.tw/upload/images/20210824/20124767k7ypBp3c6C.png"></p>
+<h2 id="Dynamic-add-FormControl"><a href="#Dynamic-add-FormControl" class="headerlink" title="Dynamic add FormControl"></a>Dynamic add FormControl</h2><p>在一開始提到 FormArray 的功能就是可以動態新增或刪除 FormControl，該怎麼使用就來舉個例子吧。</p>
+<ol>
+<li><p>首先先在 profile-editor.component.html 中新增插入 FormControl 的按鈕</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-light&quot;</span> (<span class="attr">click</span>)=<span class="string">&quot;onAddItem()&quot;</span>&gt;</span>Add Item<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>在 profile-editor.component.ts 中添加 onAddItem method</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormArray, FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-profile-editor&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./profile-editor.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./profile-editor.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ProfileEditorComponent</span> </span>&#123;</span><br><span class="line">  <span class="attr">formValue</span>: <span class="built_in">any</span>;</span><br><span class="line">  profileForm = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">    <span class="attr">users</span>: <span class="built_in">this</span>.fb.array([&#123; <span class="attr">firstName</span>: <span class="string">&#x27;&#x27;</span>, <span class="attr">lastName</span>: <span class="string">&#x27;&#x27;</span> &#125;])</span><br><span class="line">  &#125;)  </span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder</span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  get users () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.profileForm.get(<span class="string">&#x27;users&#x27;</span>) <span class="keyword">as</span> FormArray;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onAddItem</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.users.push(<span class="built_in">this</span>.fb.group(&#123; <span class="attr">firstName</span>: <span class="string">&#x27;&#x27;</span>, <span class="attr">lastName</span>: <span class="string">&#x27;&#x27;</span> &#125;))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 直接呼叫 <code>get</code> method 他將會回傳 FormArray 的實例，將 FormGroup push 進去就可以了</p>
+</li>
+</ol>
+<p><img src="https://i.imgur.com/ZAgA8wr.gif" alt="img"></p>
+<h2 id="Delete-FormControl"><a href="#Delete-FormControl" class="headerlink" title="Delete FormControl"></a>Delete FormControl</h2><p>除了可以動態添加 FormControl 之外也可以動態刪除指定 index 的 FormControl，舉個例子吧</p>
+<ol>
+<li><p>在 profile-editor.component.html 的每個 FormControl 後面添加一個刪除的按鈕</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ng-container</span> <span class="attr">formArrayName</span>=<span class="string">&quot;users&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span></span></span><br><span class="line"><span class="tag">      *<span class="attr">ngFor</span>=<span class="string">&quot;let user of users.controls; let i = index&quot;</span></span></span><br><span class="line"><span class="tag">      [<span class="attr">formGroupName</span>]=<span class="string">&quot;i&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">class</span>=<span class="string">&quot;formArray&quot;</span></span></span><br><span class="line"><span class="tag">    &gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formControl&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;first-name&quot;</span>&gt;</span>First Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;first-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;firstName&quot;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formControl&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;last-name&quot;</span>&gt;</span>Last Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;last-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;lastName&quot;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-danger&quot;</span> (<span class="attr">click</span>)=<span class="string">&quot;onDeleteItem(i)&quot;</span>&gt;</span>X<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ng-container</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p> 建立一個 <code>&lt;button&gt;</code> 並綁定 onDeleteItem method，這邊要注意的是是傳入了當下這個 controls 的 index，這可以用來刪除指定 index 的 control</p>
+</li>
+<li><p>在 profile-editor.component 中添加 onDeleteItem method</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormArray, FormBuilder &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-profile-editor&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./profile-editor.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./profile-editor.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ProfileEditorComponent</span> </span>&#123;</span><br><span class="line">  <span class="attr">formValue</span>: <span class="built_in">any</span>;</span><br><span class="line">  profileForm = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">    <span class="attr">users</span>: <span class="built_in">this</span>.fb.array([&#123; <span class="attr">firstName</span>: <span class="string">&#x27;&#x27;</span>, <span class="attr">lastName</span>: <span class="string">&#x27;&#x27;</span> &#125;])</span><br><span class="line">  &#125;)  </span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder</span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  get users () &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.profileForm.get(<span class="string">&#x27;users&#x27;</span>) <span class="keyword">as</span> FormArray;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onAddItem</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.users.push(<span class="built_in">this</span>.fb.group(&#123; <span class="attr">firstName</span>: <span class="string">&#x27;&#x27;</span>, <span class="attr">lastName</span>: <span class="string">&#x27;&#x27;</span> &#125;))</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onDeleteItem</span>(<span class="params">index: <span class="built_in">number</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.users.removeAt(index);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 使用 FormArray 提供的 method 將 index 做完參數傳入，可以刪除指定 index 的內容</p>
+</li>
+</ol>
+<p><img src="https://i.imgur.com/NKCpOMh.gif" alt="img"></p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章介紹了如何使用 <code>FormBuilder</code> 減少建立大量 FormControl 的動作，讓建立複雜的表單時可以更加快速且便捷。</p>
+<p>也介紹了如何使用 <code>FormArray</code> 建立動態表單，動態新增或刪除內容。</p>
+<p>最後介紹了如何使用 <code>Validator</code> 對每一個 FormControl 進行表單內容驗證，但是在這邊只有大概介紹怎麼使用，明天會介紹詳細的 Validator 內容並且可以建立客製化的 Validator，那麼詳細的內容就留到明天吧，那就明天見。</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/reactive-forms#creating-dynamic-forms">Angular.io - Reactive forms</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day25-Reactive-forms-1/" rel="prev" title="Day25. Reactive forms (一)">
+      <i class="fa fa-chevron-left"></i> Day25. Reactive forms (一)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day27-Validating-form-input/" rel="next" title="Day27. Validating form input">
+      Day27. Validating form input <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Using-the-FormBuilder-service-to-generate-controls"><span class="nav-number">1.</span> <span class="nav-text">Using the FormBuilder service to generate controls</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Validating-form-input"><span class="nav-number">2.</span> <span class="nav-text">Validating form input</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Creating-dynamic-forms"><span class="nav-number">3.</span> <span class="nav-text">Creating dynamic forms</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Dynamic-add-FormControl"><span class="nav-number">3.1.</span> <span class="nav-text">Dynamic add FormControl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Delete-FormControl"><span class="nav-number">3.2.</span> <span class="nav-text">Delete FormControl</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

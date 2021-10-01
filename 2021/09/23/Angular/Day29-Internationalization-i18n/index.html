@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Angular 提供了 i18n 功能讓我們開發專案時可以讓我們的專案應在不同的國家中被使用，Localization 是為不同語言環境構建應用程式版本的過程，包過提取文本已翻譯成不同語言以及為特定語言環境設置數據格式。 使用 Angular i18n 為應用程式進行國際化：  使用 pipes 顯示本地化的日期、數字、百分比和貨幣 在 template 中標記文本以進行翻譯 標複數形式的表達方式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day29. Internationalization (i18n)">
+<meta property="og:url" content="https://fandix.github.io/2021/09/23/Angular/Day29-Internationalization-i18n/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="Angular 提供了 i18n 功能讓我們開發專案時可以讓我們的專案應在不同的國家中被使用，Localization 是為不同語言環境構建應用程式版本的過程，包過提取文本已翻譯成不同語言以及為特定語言環境設置數據格式。 使用 Angular i18n 為應用程式進行國際化：  使用 pipes 顯示本地化的日期、數字、百分比和貨幣 在 template 中標記文本以進行翻譯 標複數形式的表達方式">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210828/20124767LCHVMC00vy.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210828/20124767IvMMcvJsHE.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210828/20124767LkrRPBsZbj.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210828/20124767V3j0Qi41tg.png">
+<meta property="og:image" content="https://i.imgur.com/WQY5zIG.gif">
+<meta property="article:published_time" content="2021-09-23T09:39:24.000Z">
+<meta property="article:modified_time" content="2021-09-23T09:41:27.161Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210828/20124767LCHVMC00vy.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/23/Angular/Day29-Internationalization-i18n/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day29. Internationalization (i18n) | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day29-Internationalization-i18n/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day29. Internationalization (i18n)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-23 17:39:24 / Modified: 17:41:27" itemprop="dateCreated datePublished" datetime="2021-09-23T17:39:24+08:00">2021-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Angular 提供了 <code>i18n</code> 功能讓我們開發專案時可以讓我們的專案應在不同的國家中被使用，<code>Localization</code> 是為不同語言環境構建應用程式版本的過程，包過提取文本已翻譯成不同語言以及為特定語言環境設置數據格式。</p>
+<p>使用 Angular i18n 為應用程式進行國際化：</p>
+<ul>
+<li>使用 <code>pipes</code> 顯示本地化的日期、數字、百分比和貨幣</li>
+<li>在 template 中標記文本以進行翻譯</li>
+<li>標複數形式的表達方式以提供翻譯</li>
+<li>標記替代文本進行翻譯</li>
+</ul>
+<p>要使用 Angular i18n 的前提下需要準備好 Angular CLI，因為幾乎全部的任務都需要使用 Angular CLI</p>
+<ul>
+<li>使用 Angular CLI 將標記的文本提取到 source language file</li>
+<li>為每種語言製作此文本的副本，將這些翻譯文件發送給相關的翻譯人員，對文本內的語言進行翻譯</li>
+<li>在為一種會多種語言環境構建應用程序時，使用 Angular CLI 合併完成的翻譯文件</li>
+</ul>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210828/20124767LCHVMC00vy.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210828/20124767LCHVMC00vy.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Add-the-localize-package"><a href="#Add-the-localize-package" class="headerlink" title="Add the localize package"></a>Add the localize package</h1><p>要使用 Angular CLI 的功能需要先使用 Angular CLI 將 <code>@angular/localize</code> 添加到專案中</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng add @angular/localize</span><br></pre></td></tr></table></figure>
+
+<p>使用這個 CLI Command 後會在 <code>package.json</code> 與 <code>polyfill.ts</code> 中導入 <code>@angular/localize</code>，要注意如果沒有加入這個功能的話，使用 i18n 功能將會失敗。</p>
+<hr>
+<h1 id="Refer-to-locales-by-ID"><a href="#Refer-to-locales-by-ID" class="headerlink" title="Refer to locales by ID"></a>Refer to locales by ID</h1><p>Angular i18n 使用 <code>Unicode</code> 語言環境標示符 (ID) 引用語言環境，他可以用於指定 <code>語言</code>、<code>國家/地區</code>，這個 ID 由語言標示符所組成，例如 <code>en</code> 代表英語或 <code>fr</code> 代表法語，後面可以加上一個 <code>破折號 ( - )</code> 和 <code>區域擴展名</code>，例如 US 表示美國 CA 表示加拿大，所以可以變成 <code>en-US</code> 他代表在美國的英語，fr-CA 代表在加拿大的法語以此類推， Angular 會依照這個 ID 來查找正確的對應區域設置數據。</p>
+<p>在默認情況下 Angular 是使用 <code>en-US</code> 作為應用程序的初始語言環境，可以在 <code>angular.json</code> 中的 <code>sourceLocale</code> 中更改原始語言環境。</p>
+<hr>
+<h1 id="Prepare-templates-for-translations"><a href="#Prepare-templates-for-translations" class="headerlink" title="Prepare templates for translations"></a>Prepare templates for translations</h1><p>講了這麼多，接著直接來看看如何在 Angular 終使用 i18n 吧，要翻譯應用程序的 template 需要通過使用 Angular i18n attribute 和其他 attribute 來為翻譯器準備文本，通常會使用以下的步驟：</p>
+<ol>
+<li>標記要翻譯的文本</li>
+<li>添加有用的描述和含義，這用於幫助翻譯人員知道這個要翻譯的文本是什麼東西</li>
+<li>翻譯不用於顯示的文本</li>
+<li>標記翻譯的元素 attribute</li>
+<li>標記複數和代替翻譯，以符合不同語言的複數規則和語法結構</li>
+</ol>
+<h2 id="Mark-text-for-translations"><a href="#Mark-text-for-translations" class="headerlink" title="Mark text for translations"></a>Mark text for translations</h2><p>使用 <code>i18n</code> 這個 attribute 標記要翻譯的 template 的內容，將它放在需要翻譯的元素標籤上並帶有要翻譯的固定文本，舉個例子</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello i18n!<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果要將上面這個 <code>&lt;h1&gt;</code> 元素進行翻譯的話，將 i18n attribute 添加到上面</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">i18n</span>&gt;</span>Hello i18n!<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Add-helpful-descriptions-and-meanings"><a href="#Add-helpful-descriptions-and-meanings" class="headerlink" title="Add helpful descriptions and meanings"></a>Add helpful descriptions and meanings</h2><p>當翻譯人員與程式開發人員是不同人時，程式開發人員需要將這個要翻譯的內容做一些解釋好讓翻譯人員知道這個是什麼，才能進行準確的翻譯，所以需要在 i18n attribute 中添加額外的說明用於描述這個翻譯是什麼</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">i18n</span>=<span class="string">&quot;An introduction header for this sample&quot;</span>&gt;</span>Hello i18n!<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>除了加上這個 i18n attribute 的意圖之外，還需要添加這個對於這個元素的描述，這樣可大幅提高翻譯的精準度，使用 <code>|</code> 將意圖與描述分開 <code>&lt;maining&gt; | &lt;description&gt;</code>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">i18n</span>=<span class="string">&quot;site header|An introduction header for this sample&quot;</span>&gt;</span>Hello i18n!<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Translate-text-not-for-display"><a href="#Translate-text-not-for-display" class="headerlink" title="Translate text not for display"></a>Translate text not for display</h2><p>如果需要翻譯一個還沒有顯示出來的元素時，請將文本加入到 <code>&lt;ng-container&gt;</code> 中</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ng-container</span> <span class="attr">i18n</span>&gt;</span>I don&#x27;t output any element<span class="tag">&lt;/<span class="name">ng-container</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Mark-element-attributes-for-translations"><a href="#Mark-element-attributes-for-translations" class="headerlink" title="Mark element attributes for translations"></a>Mark element attributes for translations</h2><p>如果要翻譯 HTML 的 attribute，例如 <code>&lt;img&gt;</code> 中的 title attribute 應該要將 i18n 使用 <code>-</code> 符號連接要翻譯的 attribute</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> [<span class="attr">src</span>]=<span class="string">&quot;logo&quot;</span> <span class="attr">title</span>=<span class="string">&quot;Angular logo&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>若要翻譯 HTML 元素的 attribute 請添加 <code>i18n-attribute</code> 其中的 attribute 是需要翻譯的 attribute 名稱</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> [<span class="attr">src</span>]=<span class="string">&quot;logo&quot;</span> <span class="attr">i18n-title</span> <span class="attr">title</span>=<span class="string">&quot;Angular logo&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以使用 <code>i18n-attribute=&quot;&lt;meaning&gt; | &lt;description&gt;@@&lt;id&gt;&quot;</code>  語法分配含義、描述以及自定義的 ID</p>
+<hr>
+<h1 id="Mark-plurals-and-alternates-for-translation"><a href="#Mark-plurals-and-alternates-for-translation" class="headerlink" title="Mark plurals and alternates for translation"></a>Mark plurals and alternates for translation</h1><p>不同語言有不同的複數規則和語法結構，這讓翻譯的難度大大增加，所以為了簡化翻譯請使用帶有<code>正規表達式</code> 的 <code>Unicode</code>ICU 子句。</p>
+<h2 id="Mark-plurals"><a href="#Mark-plurals" class="headerlink" title="Mark plurals"></a>Mark plurals</h2><p>使用 <code>plural</code> 來標記如果逐字翻譯可能沒有意義表達，例如如果想用英文顯示 <code>updated x minutes ago</code> 可能希望顯示 <code>jest now</code>、<code>one minute ago</code> 或 <code>x minutes ago</code>，可以使用下面的例子</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">i18n</span>&gt;</span>Updated &#123;minutes, plural, =0 &#123;just now&#125; =1 &#123;one minute ago&#125; other &#123;&#123;&#123;minutes&#125;&#125; minutes ago&#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>第一個參數 <code>minutes</code> 綁定了 component 的 property，她決定了顯示的分鐘數</li>
+<li>第二個參數將這個標記為 <code>plural</code> 翻譯類型</li>
+<li>第三個參數定義了複數類別及其匹配值的模式<ul>
+<li>當 property minutes 為 0 時會使用 <code>=0 &#123; just now &#125;</code></li>
+<li>當 property minutes 為 1 時會使用 <code>=1  &#123; one minute ago &#125;</code></li>
+<li>如果不匹配前面兩個則會顯示 property 的值</li>
+</ul>
+</li>
+</ul>
+<h2 id="Mark-alternates-and-nested-expressions"><a href="#Mark-alternates-and-nested-expressions" class="headerlink" title="Mark alternates and nested expressions"></a>Mark alternates and nested expressions</h2><p>如果要根據變量的值來決定替代的文本時則需要翻譯所又替代文本，<code>select</code> 子句類似 <code>plural</code> 子句，根據定義的字串值標記替代文本的選擇，舉例來說 template 綁定了 component 的 property，透過 property 的值決定要翻譯 <code>male</code>、<code>female</code> 或 <code>other</code></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">i18n</span>&gt;</span>The author is &#123;gender, select, male &#123;male&#125; female &#123;female&#125; other &#123;other&#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span> </span><br></pre></td></tr></table></figure>
+
+<p>也可以將兩種不的子句嵌套再一起</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">i18n</span>&gt;</span>Updated: &#123;minutes, plural,</span><br><span class="line">  =0 &#123;just now&#125;</span><br><span class="line">  =1 &#123;one minute ago&#125;</span><br><span class="line">  other &#123;&#123;&#123;minutes&#125;&#125; minutes ago by &#123;gender, select, male &#123;male&#125; female &#123;female&#125; other &#123;other&#125;&#125;&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="Learn-by-example"><a href="#Learn-by-example" class="headerlink" title="Learn by example"></a>Learn by example</h1><p>上面介紹了一堆 i18n 的概念與用法後，接這直接來建立一個例子吧</p>
+<h2 id="Create-component"><a href="#Create-component" class="headerlink" title="Create component"></a>Create component</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate component form</span><br></pre></td></tr></table></figure>
+
+<h2 id="Complete-the-form-component"><a href="#Complete-the-form-component" class="headerlink" title="Complete the form component"></a>Complete the form component</h2><ol>
+<li><p>在 form.component.ts 中新增 Form Model </p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-form&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./form.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./form.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">FormComponent</span> </span>&#123;</span><br><span class="line">  form = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">    <span class="attr">username</span>: [<span class="string">&#x27;&#x27;</span>, Validators.required],</span><br><span class="line">    <span class="attr">password</span>: [<span class="string">&#x27;&#x27;</span>, Validators.required],</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder</span>)</span> &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 form.component.html 中綁定 FormControl 並在要翻譯的元素上加上 <code>i18n</code></p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;form&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;content&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;username&quot;</span> <span class="attr">i18n</span>&gt;</span>Username<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">id</span>=<span class="string">&quot;name&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;username&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;password&quot;</span> <span class="attr">i18n</span>&gt;</span>Password<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">id</span>=<span class="string">&quot;name&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;password&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;optionBtn&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-success&quot;</span> <span class="attr">i18n</span>&gt;</span>Login<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210828/20124767IvMMcvJsHE.png" alt="https://ithelp.ithome.com.tw/upload/images/20210828/20124767IvMMcvJsHE.png"></p>
+<h2 id="Generate-language-files"><a href="#Generate-language-files" class="headerlink" title="Generate language files"></a>Generate language files</h2><p>準備好要翻譯的 template 後請使用 Angular CLI <code>extract-i18n</code> command 將 template 中標記的文本提取到 source language file</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng extract-i18n</span><br></pre></td></tr></table></figure>
+
+<p>extract-i18n 使用 <code>XML</code> 本地化交換文件格式，在項目的根目錄中創建一個名為 <code>messages.xlf</code> 的 source language file，可以使用一些 option 選項</p>
+<ul>
+<li>-output-path： 更改 source language file 位置</li>
+<li>—format：更改 source language file 格式</li>
+<li>—outFile：更改 source language file 名稱</li>
+</ul>
+<p>可以使用 <code>--format</code> 將  source language file 的格式更改為以下幾種格式</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ng extract-i18n  --format=xlf</span><br><span class="line">ng extract-i18n  --format=xlf2</span><br><span class="line">ng extract-i18n  --format=xmb</span><br><span class="line">ng extract-i18n  --format=json</span><br><span class="line">ng extract-i18n  --format=arb</span><br></pre></td></tr></table></figure>
+
+<h2 id="Translate-various-languages"><a href="#Translate-various-languages" class="headerlink" title="Translate various languages"></a>Translate various languages</h2><p>產生了 source language file 後接著來將他們翻譯為各國的語言，由於 Angular 預設語言就是英文，所以不需要對英文進行翻譯</p>
+<h3 id="Translate-chinese"><a href="#Translate-chinese" class="headerlink" title="Translate chinese"></a>Translate chinese</h3><p>將 source language file 複製一份後更改他的檔名，更改為 <code>messages.zh.hant.xlf</code>，並加上翻譯</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">xliff</span> <span class="attr">version</span>=<span class="string">&quot;1.2&quot;</span> <span class="attr">xmlns</span>=<span class="string">&quot;urn:oasis:names:tc:xliff:document:1.2&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">file</span> <span class="attr">source-language</span>=<span class="string">&quot;en-US&quot;</span> <span class="attr">datatype</span>=<span class="string">&quot;plaintext&quot;</span> <span class="attr">original</span>=<span class="string">&quot;ng2.template&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">trans-unit</span> <span class="attr">id</span>=<span class="string">&quot;5248717555542428023&quot;</span> <span class="attr">datatype</span>=<span class="string">&quot;html&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>Username<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">target</span>&gt;</span>使用者名稱<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">context-group</span> <span class="attr">purpose</span>=<span class="string">&quot;location&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;sourcefile&quot;</span>&gt;</span>src/app/form/form.component.html<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;linenumber&quot;</span>&gt;</span>3<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">context-group</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">trans-unit</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">trans-unit</span> <span class="attr">id</span>=<span class="string">&quot;1431416938026210429&quot;</span> <span class="attr">datatype</span>=<span class="string">&quot;html&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>Password<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">target</span>&gt;</span>密碼<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">context-group</span> <span class="attr">purpose</span>=<span class="string">&quot;location&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;sourcefile&quot;</span>&gt;</span>src/app/form/form.component.html<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;linenumber&quot;</span>&gt;</span>5<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">context-group</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">trans-unit</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">trans-unit</span> <span class="attr">id</span>=<span class="string">&quot;2454050363478003966&quot;</span> <span class="attr">datatype</span>=<span class="string">&quot;html&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>Login<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">target</span>&gt;</span>登陸<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">context-group</span> <span class="attr">purpose</span>=<span class="string">&quot;location&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;sourcefile&quot;</span>&gt;</span>src/app/form/form.component.html<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;linenumber&quot;</span>&gt;</span>9<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">context-group</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">trans-unit</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">file</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">xliff</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在要翻譯的名稱 <code>&lt;source&gt;</code> 下方加上 <code>&lt;target&gt;</code> 並把要翻譯的內容填入</p>
+<h3 id="Translate-Japanese"><a href="#Translate-Japanese" class="headerlink" title="Translate Japanese"></a>Translate Japanese</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">xliff</span> <span class="attr">version</span>=<span class="string">&quot;1.2&quot;</span> <span class="attr">xmlns</span>=<span class="string">&quot;urn:oasis:names:tc:xliff:document:1.2&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">file</span> <span class="attr">source-language</span>=<span class="string">&quot;en-US&quot;</span> <span class="attr">datatype</span>=<span class="string">&quot;plaintext&quot;</span> <span class="attr">original</span>=<span class="string">&quot;ng2.template&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">trans-unit</span> <span class="attr">id</span>=<span class="string">&quot;5248717555542428023&quot;</span> <span class="attr">datatype</span>=<span class="string">&quot;html&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>Username<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">target</span>&gt;</span>ユーザー名<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">context-group</span> <span class="attr">purpose</span>=<span class="string">&quot;location&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;sourcefile&quot;</span>&gt;</span>src/app/form/form.component.html<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;linenumber&quot;</span>&gt;</span>3<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">context-group</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">trans-unit</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">trans-unit</span> <span class="attr">id</span>=<span class="string">&quot;1431416938026210429&quot;</span> <span class="attr">datatype</span>=<span class="string">&quot;html&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>Password<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">target</span>&gt;</span>パスワード<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">context-group</span> <span class="attr">purpose</span>=<span class="string">&quot;location&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;sourcefile&quot;</span>&gt;</span>src/app/form/form.component.html<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;linenumber&quot;</span>&gt;</span>5<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">context-group</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">trans-unit</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">trans-unit</span> <span class="attr">id</span>=<span class="string">&quot;2454050363478003966&quot;</span> <span class="attr">datatype</span>=<span class="string">&quot;html&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>Login<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">target</span>&gt;</span>ログイン<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">context-group</span> <span class="attr">purpose</span>=<span class="string">&quot;location&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;sourcefile&quot;</span>&gt;</span>src/app/form/form.component.html<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">context</span> <span class="attr">context-type</span>=<span class="string">&quot;linenumber&quot;</span>&gt;</span>9<span class="tag">&lt;/<span class="name">context</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">context-group</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">trans-unit</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">file</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">xliff</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Merge-translations-into-the-app"><a href="#Merge-translations-into-the-app" class="headerlink" title="Merge translations into the app"></a>Merge translations into the app</h2><p>將需要翻譯的文本設定好後，接著更改 angular.json 的內容讓 Angular 知道該使用哪一個語言</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="attr">&quot;projects&quot;</span>: &#123;</span><br><span class="line">		<span class="attr">&quot;project-name&quot;</span>: &#123;</span><br><span class="line">		<span class="attr">&quot;i18n&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;locales&quot;</span>: &#123;</span><br><span class="line">          <span class="attr">&quot;tw&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;translation&quot;</span>: <span class="string">&quot;messages.zh.hant.xlf&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;baseHref&quot;</span>: <span class="string">&quot;/tw/&quot;</span></span><br><span class="line">          &#125;,</span><br><span class="line">          <span class="attr">&quot;jp&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;translation&quot;</span>: <span class="string">&quot;messages.jp.xlf&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;baseHref&quot;</span>: <span class="string">&quot;/jp/&quot;</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改 build 的設定</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;architect&quot;</span>: &#123;</span><br><span class="line">	<span class="attr">&quot;build&quot;</span>: &#123;</span><br><span class="line">	   ...</span><br><span class="line">	   <span class="attr">&quot;options&quot;</span>: &#123;</span><br><span class="line">       <span class="attr">&quot;localize&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">       <span class="attr">&quot;aot&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">			...</span><br><span class="line">		&#125;,</span><br><span class="line">		<span class="attr">&quot;configurations&quot;</span>: &#123;</span><br><span class="line">		  <span class="attr">&quot;tw&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;localize&quot;</span>: [<span class="string">&quot;tw&quot;</span>]</span><br><span class="line">          &#125;,</span><br><span class="line">          <span class="attr">&quot;jp&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;localize&quot;</span>: [<span class="string">&quot;jp&quot;</span>]</span><br><span class="line">          &#125;,</span><br><span class="line">	    &#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改 serve 的設定</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;serve&quot;</span>: &#123;</span><br><span class="line">	<span class="attr">&quot;builder&quot;</span>: <span class="string">&quot;@angular-devkit/build-angular:dev-server&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;configurations&quot;</span>: &#123;</span><br><span class="line">		<span class="attr">&quot;production&quot;</span>: &#123;</span><br><span class="line">       <span class="attr">&quot;browserTarget&quot;</span>: <span class="string">&quot;Angular-blog:build:production&quot;</span></span><br><span class="line">     &#125;,</span><br><span class="line">     <span class="attr">&quot;tw&quot;</span>: &#123;</span><br><span class="line">       <span class="attr">&quot;browserTarget&quot;</span>: <span class="string">&quot;Angular-blog:build:tw&quot;</span></span><br><span class="line">     &#125;,</span><br><span class="line">     <span class="attr">&quot;jp&quot;</span>: &#123;</span><br><span class="line">       <span class="attr">&quot;browserTarget&quot;</span>: <span class="string">&quot;Angular-blog:build:jp&quot;</span></span><br><span class="line">            &#125;,</span><br><span class="line">	   <span class="attr">&quot;development&quot;</span>: &#123;</span><br><span class="line">       <span class="attr">&quot;browserTarget&quot;</span>: <span class="string">&quot;Angular-blog:build:development&quot;</span></span><br><span class="line">     &#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Test-i18n"><a href="#Test-i18n" class="headerlink" title="Test  i18n"></a>Test  i18n</h2><p>使用 Angular CLI 將專案跑起來，來看看是否完成翻譯</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng serve --configuration=tw --open</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210828/20124767LkrRPBsZbj.png" alt="https://ithelp.ithome.com.tw/upload/images/20210828/20124767LkrRPBsZbj.png"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng serve --configuration=jp --open</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210828/20124767V3j0Qi41tg.png" alt="https://ithelp.ithome.com.tw/upload/images/20210828/20124767V3j0Qi41tg.png"></p>
+<p>當完成翻譯後可以在表單上面新增一個 select 用於選擇要顯示什麼語言，可以做到這種效果</p>
+<p><img src="https://i.imgur.com/WQY5zIG.gif" alt="img"></p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章中介紹了如何使用 Angular 的 i18n 功能做出國際化的應用程式，先在 template 中將要翻譯的內容加上 i18n attribute，之後使用 Angular CLI  Command <code>ng extract-i18n</code> 產生 source langrage file，獲得 source langrage file 之後就可以對不同的語言進行翻譯，在 <code>&lt;soruce&gt;</code> 的下方加上 <code>&lt;target&gt;</code> 並在其中填入翻譯的內容，最後在 angular.json 中進行 i18n 的設定就完成了，是不是很簡單呢。</p>
+<p>下一篇會介紹 Angular 中一個重要的觀念那就是 <code>Module</code>，在前面很多篇中都會看到要引入某某 module 到 app.module.ts 中，這個 Module 可以看成是將各個功能進行模組化分割，這樣比較方便管理與測試，詳細的內容就留到明天講解吧，明天見</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/i18n#plurals-alternates">Angular.io - Localizing your app</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day28-Control-Value-Accessor-CVA/" rel="prev" title="Day28. Control Value Accessor (CVA)">
+      <i class="fa fa-chevron-left"></i> Day28. Control Value Accessor (CVA)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day30-Angular-Module-1/" rel="next" title="Day30. Angular Module（一）">
+      Day30. Angular Module（一） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Add-the-localize-package"><span class="nav-number">1.</span> <span class="nav-text">Add the localize package</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Refer-to-locales-by-ID"><span class="nav-number">2.</span> <span class="nav-text">Refer to locales by ID</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Prepare-templates-for-translations"><span class="nav-number">3.</span> <span class="nav-text">Prepare templates for translations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mark-text-for-translations"><span class="nav-number">3.1.</span> <span class="nav-text">Mark text for translations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Add-helpful-descriptions-and-meanings"><span class="nav-number">3.2.</span> <span class="nav-text">Add helpful descriptions and meanings</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Translate-text-not-for-display"><span class="nav-number">3.3.</span> <span class="nav-text">Translate text not for display</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mark-element-attributes-for-translations"><span class="nav-number">3.4.</span> <span class="nav-text">Mark element attributes for translations</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mark-plurals-and-alternates-for-translation"><span class="nav-number">4.</span> <span class="nav-text">Mark plurals and alternates for translation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mark-plurals"><span class="nav-number">4.1.</span> <span class="nav-text">Mark plurals</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mark-alternates-and-nested-expressions"><span class="nav-number">4.2.</span> <span class="nav-text">Mark alternates and nested expressions</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Learn-by-example"><span class="nav-number">5.</span> <span class="nav-text">Learn by example</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Create-component"><span class="nav-number">5.1.</span> <span class="nav-text">Create component</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Complete-the-form-component"><span class="nav-number">5.2.</span> <span class="nav-text">Complete the form component</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Generate-language-files"><span class="nav-number">5.3.</span> <span class="nav-text">Generate language files</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Translate-various-languages"><span class="nav-number">5.4.</span> <span class="nav-text">Translate various languages</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Translate-chinese"><span class="nav-number">5.4.1.</span> <span class="nav-text">Translate chinese</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Translate-Japanese"><span class="nav-number">5.4.2.</span> <span class="nav-text">Translate Japanese</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Merge-translations-into-the-app"><span class="nav-number">5.5.</span> <span class="nav-text">Merge translations into the app</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Test-i18n"><span class="nav-number">5.6.</span> <span class="nav-text">Test  i18n</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">6.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">7.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

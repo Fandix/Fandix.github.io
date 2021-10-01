@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="從本章開始會進入 Angular Form 的部分，在現代網頁中與使用者互動的過程變得越來越重要，其中最主要的便是 Form，從一開始的登陸頁面到對商品或對網頁中元素的設定都需要使用到 Form 來取得使用者輸入的資料，也需要對使用者輸入的資料做驗證以防使用者輸入了非格式的數據導致出錯。 Angular 提供了兩種不同的方法來處理使用者的輸入，分別是 reactive 與 template-dri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day23. Introduction to forms in Angular">
+<meta property="og:url" content="https://fandix.github.io/2021/09/23/Angular/Day23-Introduction-to-forms-in-Angular/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="從本章開始會進入 Angular Form 的部分，在現代網頁中與使用者互動的過程變得越來越重要，其中最主要的便是 Form，從一開始的登陸頁面到對商品或對網頁中元素的設定都需要使用到 Form 來取得使用者輸入的資料，也需要對使用者輸入的資料做驗證以防使用者輸入了非格式的數據導致出錯。 Angular 提供了兩種不同的方法來處理使用者的輸入，分別是 reactive 與 template-dri">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767cYDUalx1rV.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767k4yN0zPmBx.png">
+<meta property="og:image" content="https://i.imgur.com/k4EhckL.gif">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/2012476752sXiPKza9.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767KNa7RJO17u.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767cOKhVGuSFk.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ZCtQxTcxVF.png">
+<meta property="article:published_time" content="2021-09-23T09:29:45.000Z">
+<meta property="article:modified_time" content="2021-09-23T09:30:37.625Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210821/20124767cYDUalx1rV.png">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/23/Angular/Day23-Introduction-to-forms-in-Angular/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day23. Introduction to forms in Angular | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day23-Introduction-to-forms-in-Angular/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day23. Introduction to forms in Angular
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-23 17:29:45 / Modified: 17:30:37" itemprop="dateCreated datePublished" datetime="2021-09-23T17:29:45+08:00">2021-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>從本章開始會進入 Angular Form 的部分，在現代網頁中與使用者互動的過程變得越來越重要，其中最主要的便是 Form，從一開始的登陸頁面到對商品或對網頁中元素的設定都需要使用到 Form 來取得使用者輸入的資料，也需要對使用者輸入的資料做驗證以防使用者輸入了非格式的數據導致出錯。</p>
+<p>Angular 提供了兩種不同的方法來處理使用者的輸入，分別是 <code>reactive</code> 與 <code>template-driven</code>，兩種方法都是從 view 中捕獲使用者輸入事件、驗證用戶輸入、創建表單模型或更新數據模型，本篇會大概介紹這兩種方法以及他們之間的差別，那就繼續往下看吧！</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767cYDUalx1rV.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767cYDUalx1rV.png"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Choosing-an-approach"><a href="#Choosing-an-approach" class="headerlink" title="Choosing an approach"></a>Choosing an approach</h1><p><code>Reactive forms</code> 和 <code>template-driven forms</code> 以不同的方式處理和管理表單數據，他們各有各自的優勢：</p>
+<ul>
+<li><strong>Reactive forms</strong>：提供對底層表單 object 的最直接且明顯的訪問，具有更高的可擴展性、可重用性和可測試性。</li>
+<li><strong>Template-driven forms</strong>：依賴 template 中的 directive 來創建或操作底層表單 object，常用於添加<code>簡單</code>的表單，他很容易被添加到專案中但他的擴展性與可測試性比較差。</li>
+</ul>
+<h3 id="Key-differences"><a href="#Key-differences" class="headerlink" title="Key differences"></a>Key differences</h3><p>可以透過一張表單來總結 <code>Reactive forms</code> 和 <code>template-driven forms</code> 之間的主要區別</p>
+<p> ‘’| Reactive | Template<br>————- | ————-<br>Setup of form model | 明顯的，在 Component 中創建 | 隱式的，由 directive 創建<br>Data model | 結構化和不可變 | 非結構化且可變<br>Data flow | 同步 | 非同步<br>Form validation | 透過 function | 透過 directive</p>
+<h3 id="Scalability"><a href="#Scalability" class="headerlink" title="Scalability"></a>Scalability</h3><p>如果 Form 是你專案中的核心部分的話，那麼就需要將整個 Form 模型重複使用於各個不同的 Component，所以可伸縮性就非常重要。</p>
+<p>Reactive forms 比 template-driven forms <code>更具有可擴展性</code> ，他提供了對底層表單 API 的直接訪問，並在 view 和數據模型之間使用<code>同步</code>的數據流，這讓你創建大型的表單變得更加容易，他也需要比較少的測試設置，並且測試不需要深入了解就可以正確的測試表單的更新和驗證。</p>
+<p>相較於 Reactive forms 而言 Template-driven forms 比較常用在 <code>簡單且不可重複使用的場景</code>，他對底層表單 API 的訪問比較抽象，並在 view 與數據模型之間使用<code>非同步</code>的數據流，由於他的對 API 的訪問較為抽象所以對於測試來說比較不好撰寫，非常需要依賴手動更改檢測執行才能成功，需要非常多的設置。</p>
+<hr>
+<h1 id="Setting-up-the-form-model"><a href="#Setting-up-the-form-model" class="headerlink" title="Setting up the form model"></a>Setting up the form model</h1><p><code>Reactive forms</code> 和 <code>template-driven forms</code> 都會追蹤使用者與畫面中的表單和 Component 中表單數據之間的變化，他們在底層來說是共享同一個地層構建模塊，但在創建和管理表單控制實例的方法不同。</p>
+<h3 id="Common-form-foundation-classes"><a href="#Common-form-foundation-classes" class="headerlink" title="Common form foundation classes"></a>Common form foundation classes</h3><p>Reactive forms 與 template-driven forms 都建立在以下的 base classes 之上：</p>
+<ul>
+<li><strong>FormControl</strong>：會追蹤<code>單個</code>表單控制元件的值和驗證狀態，簡單來說他會負責追蹤畫面中一個綁定的 <code>&lt;input&gt;</code> 元素的內容。</li>
+<li><strong>FormGroup</strong>：會追蹤<code>多個</code>表單控制元件的值和狀態，簡單來說他像是 javascript 的 object，裡面包含了很多個不同的表單控制元件，可能由多個 FormControl 或 FormArray 所組成，甚至裡面在包含一個 FormGroup。</li>
+<li><strong>FormArray</strong>： 會追蹤表單控制陣列中的值和狀態，簡單來說可以想像是 FormControl 的陣列。</li>
+<li><strong>ControlValueAccessor</strong>：在 Angular FormControl instnce 與 DOM 之間建立了一個溝通的橋樑。</li>
+</ul>
+<h2 id="Setup-in-reactive-forms"><a href="#Setup-in-reactive-forms" class="headerlink" title="Setup in reactive forms"></a>Setup in reactive forms</h2><p>使用 reactive forms 可以直接在 component 中定義你的表單模型，<code>[formControl]</code>  directive 會使用 <code>internal value accessor</code> 將創建的 FormControl intance 鏈結到 view 中被綁定的單個輸入元素，來舉個例子吧</p>
+<ol>
+<li><p>首先先在 app.module.ts 中引入 Form module</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; BrowserModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/platform-browser&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; AppRoutingModule &#125; <span class="keyword">from</span> <span class="string">&#x27;./app-routing.module&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AppComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./app.component&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormsModule, ReactiveFormsModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    AppComponent,</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    AppRoutingModule,</span><br><span class="line">    FormsModule,</span><br><span class="line">    ReactiveFormsModule</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [],</span><br><span class="line">  <span class="attr">bootstrap</span>: [AppComponent]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.ts 中建立 FormControl</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormControl &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;                 <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  favoriteColorControl = <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>);                 <span class="comment">// (2)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 從 <code>@angular/forms</code> 中引入 FormControl</li>
+<li>(2): 將 FormControl 實例化並賦予給 component 的 property</li>
+</ul>
+</li>
+<li><p>在 app.component.html 中綁定表單控制元件</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">      Favorite Color: <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> [<span class="attr">formControl</span>]=<span class="string">&quot;favoriteColorControl&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">![https://ithelp.ithome.com.tw/upload/images/20210821/20124767foRImuOGGA.png](https://ithelp.ithome.com.tw/upload/images/20210821/20124767foRImuOGGA.png)</span><br><span class="line"></span><br><span class="line">![img](https://i.imgur.com/TOrJdYH.gif)</span><br><span class="line"></span><br><span class="line">將 `<span class="tag">&lt;<span class="name">input</span>&gt;</span>` 元件與 formControl 綁定後，他會追蹤畫面中 `<span class="tag">&lt;<span class="name">input</span>&gt;</span>` 內容的變化並將它傳遞給 component 中被綁定的 property ( favoriteColorControl )，其實跟著上面的範例是無法在 console 中獲得輸入的值，要怎麼獲得我之後會詳細講解。</span><br><span class="line"></span><br><span class="line">## Setup in template-driven forms</span><br><span class="line"></span><br><span class="line">接著來看如何建立 template-dirven forms 的表單控制模型，在 template-dirven forms 中的控制模型是隱性的，使用 directive `MgModel` 為給定的表單元素創建和管理一個 formControl 實例，一樣舉個例子</span><br><span class="line"></span><br><span class="line">1. 在 app.component.ts 中新增一個 property</span><br><span class="line"></span><br><span class="line">    ```typescript</span><br><span class="line">    import &#123; Component &#125; from &#x27;@angular/core&#x27;;</span><br><span class="line"></span><br><span class="line">    @Component(&#123;</span><br><span class="line">      selector: &#x27;app-template-favorite-color&#x27;,</span><br><span class="line">      templateUrl: &#x27;./app.component.html&#x27;,</span><br><span class="line">    &#125;)</span><br><span class="line">    export class FavoriteColorComponent &#123;</span><br><span class="line">      favoriteColor = &#x27;&#x27;;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.html 中使用 <code>NgModel</code> 綁定剛剛建立的 property</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  Favorite Color: <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> [(<span class="attr">ngModel</span>)]=<span class="string">&quot;favoriteColor&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767k4yN0zPmBx.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767k4yN0zPmBx.png"></p>
+<p><img src="https://i.imgur.com/k4EhckL.gif" alt="img"></p>
+<p>在畫面中可以看到透過 <code>NgModel</code> 將指定的 property 綁定，當畫面中的表單元素內容發生變化時會傳遞給 component 中被綁定的 property，一樣上面的範例是無法看到 console 的內容之後會講解。</p>
+<hr>
+<h1 id="Data-flow-in-forms"><a href="#Data-flow-in-forms" class="headerlink" title="Data flow in forms"></a>Data flow in forms</h1><p>介紹完如何綁定表單的控制元件後，接著要來看看 Form 的數據流，當你的專案中有使用表單時，Angular 必須保持 view 與 component 模型內容的同步，當使用者更改畫面中的值時這個新的值需要立即的反映在數據模型中，相同的當數據模型的值更新時也需要立馬反映在畫面中，而兩種不同的 form 有著不同的處理數據與更改畫面的方式。</p>
+<h2 id="Data-flow-in-reactive-forms"><a href="#Data-flow-in-reactive-forms" class="headerlink" title="Data flow in reactive forms"></a>Data flow in reactive forms</h2><p>在 reactive forms 中 view 的每一個表單元素都直接鏈結到 component 中的表單模型（formControl instance），從 view 到表單模型以及表單模型到 view 的更新是<code>同步</code>的，不依賴於 UI 的呈現方式。</p>
+<p>view 到表單模型顯示了當在畫面中輸入字串後從 view 通過以下步驟流向表單模型：</p>
+<ol>
+<li>使用者在 <code>&lt;input&gt;</code> 中輸入了一個值，例子中是輸入了喜歡的顏色（blue）。</li>
+<li>表單輸入元素（<code>&lt;input&gt;</code>）發送了帶有最新值（blue） 的<code>輸入事件</code>。</li>
+<li><code>control value accessor</code> 會監聽輸入元素的事件，當接收到事件後會立即將最新的值中繼到 FormControl 實例上</li>
+<li>FormControl 實例會通過 <code>valueChanges</code> 這個 <code>observable</code> 發出最新的值（ valueChange.subscribe(val =&gt; { … }) ）。</li>
+<li>valueChanges observable 的任何訂閱者都會收到這個最新的值。</li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/2012476752sXiPKza9.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/2012476752sXiPKza9.png"></p>
+<p>而表單模型到 view 顯示了對表單模型進行編成更改後如何通過以下步驟更新 view 的值：</p>
+<ol>
+<li>調用 <code>setValue()</code> method 用於更新 FormControl 的內容。</li>
+<li>FormControl 實例通過 valueChanges observable 發出新的值。</li>
+<li>valueChanges observable 的任何訂閱者都會收到新的值。</li>
+<li><code>control value accessor</code> 使用這個最新的值更新畫面表單元素</li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767KNa7RJO17u.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767KNa7RJO17u.png"></p>
+<h2 id="Data-flow-in-template-driven-forms"><a href="#Data-flow-in-template-driven-forms" class="headerlink" title="Data flow in template-driven forms"></a>Data flow in template-driven forms</h2><p>在 template-driven forms 中每個表單元素都鏈結到一個內部管理表單模型的 directive，從 view 到模型顯示了當在畫面中輸入字串後從 view 通過以下步驟流向表單模型：</p>
+<ol>
+<li>使用者在畫面中的 <code>&lt;input&gt;</code> 中輸入新的值（blue）。</li>
+<li><code>&lt;input&gt;</code> 元素發出一個帶有 blue 的 <code>input 事件</code>。</li>
+<li> 附加在 <code>&lt;input&gt;</code> 的 <code>control value accessor</code> 會觸發 FormControl 實例上的 setValue() method。</li>
+<li>FormControl 實例通過 <code>valueChanges observable</code> 發出新的值。</li>
+<li>valueChanges observable 的任何訂閱者都會收到新的值。</li>
+<li>control value accessor 還會調用 <code>NgModel.viewToModelUpdater()</code>，這個 method 會發出一個 <code>ngModelChange</code> 的事件。</li>
+<li>因為 component 的 template 對 <code>favoriteColor</code> property 使用雙向屬性綁定 (Two-way binding) ，所以 component 中的 favoriteColor property 被更新為 <code>ngModelChange</code> 事件發出的值 （blue）。</li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767cOKhVGuSFk.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767cOKhVGuSFk.png"></p>
+<p>表單模型到 view 顯示了當 favoriteColor 從藍色變為紅色時，數據會如何從表單模型流向 view，通果以下步驟：</p>
+<ol>
+<li>在 component 中更新 property favoriteColor 的值。</li>
+<li>變更檢測開始。</li>
+<li>在變更檢測期間，Lifecycle method <code>ngOnChanges</code> 在 <code>NgModel</code> directive 實例上被調用，因為他的 input binding 發生更改。</li>
+<li>ngOnChanges() 透過<code>非同步</code>的方式設置 FormControl 實例的值</li>
+<li>變更檢測完成。</li>
+<li>FormControl 實例通過 valueChanges observable 發出最新的值。</li>
+<li>valueChanges observable 的任何訂閱者都會收到新的值。</li>
+<li><code>control value accessor</code> 會使用最新的 favoriteColor 值更新 view 中的表單輸入元素</li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ZCtQxTcxVF.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ZCtQxTcxVF.png"></p>
+<h2 id="Mutability-of-the-data-model"><a href="#Mutability-of-the-data-model" class="headerlink" title="Mutability of the data model"></a>Mutability of the data model</h2><p>更改和追蹤的 method 在兩種不同的 form 會有不同的作用：</p>
+<ul>
+<li><strong>Reactive forms</strong>：通過將表單數據模型作為<code>不可更改</code>的數據結構用來保持表單數據模型的純淨，每次在表單數據模型上觸發更改時，FormControl 實例都會返回一個<code>新的</code>表單數據模型而不是更改現有的模型，這使你可以通過 FormControl 的 <code>Observable</code> 追蹤表單數據模型的更改，讓更改檢測更有效，因為他只要追蹤 FormControl 的更改，由於數據的更新遵循 reactive 的模式，所以可以使用 observable 的操作符改變表單數據。</li>
+<li><strong>Template-driven forms</strong>：依靠<code>雙向數據綁定</code>的可變性在 template 中進行更改後也更改 component 中的 property，由於在使用雙向數據綁定時沒有辦法只跟蹤表單數據模型，所以效率較低。</li>
+</ul>
+<p>以上面例子而言兩種不同的 form 對於數據的變更處理：</p>
+<ul>
+<li>對於 reactive forms 來說，當 FormControl 的值更新時，會返回一個新的值。</li>
+<li>對於 template-driven forms 來說當更新值時會將上一個內容取代為新的值。</li>
+</ul>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本篇中介紹了 Angular 的兩種不同的 Form，分別是 <code>Reactive forms</code> 與 <code>template-driven forms</code>，雖然兩種方法都可以做到與使用者的互動，但是還是有些的不同，<code>Reactive forms</code> 有更高的可擴展性、可重用性和可測試性，而 <code>template-driven forms </code> 則是使用雙向綁定的方式將 component 的 property 與 template 的輸入元件綁定，所以常用在比較簡單的 Form 結構上。</p>
+<p>雖然在本篇中簡單的介紹了該如何使用 <code>Reactive forms</code> 與 <code>template-driven forms</code>，不過只有稍微提到而已，接下來會分別對他們兩個做比較詳細的介紹與如何使用，那就明天見吧！</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/forms-overview">Angular.io - Introduction to forms in Angular</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day22-Common-Routing-Tasks2/" rel="prev" title="Day22. Common Routing Tasks（二）">
+      <i class="fa fa-chevron-left"></i> Day22. Common Routing Tasks（二）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day24-Template-driven-forms/" rel="next" title="Day24. Template-driven forms">
+      Day24. Template-driven forms <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Choosing-an-approach"><span class="nav-number">1.</span> <span class="nav-text">Choosing an approach</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Key-differences"><span class="nav-number">1.0.1.</span> <span class="nav-text">Key differences</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scalability"><span class="nav-number">1.0.2.</span> <span class="nav-text">Scalability</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Setting-up-the-form-model"><span class="nav-number">2.</span> <span class="nav-text">Setting up the form model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Common-form-foundation-classes"><span class="nav-number">2.0.1.</span> <span class="nav-text">Common form foundation classes</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setup-in-reactive-forms"><span class="nav-number">2.1.</span> <span class="nav-text">Setup in reactive forms</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Data-flow-in-forms"><span class="nav-number">3.</span> <span class="nav-text">Data flow in forms</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-flow-in-reactive-forms"><span class="nav-number">3.1.</span> <span class="nav-text">Data flow in reactive forms</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-flow-in-template-driven-forms"><span class="nav-number">3.2.</span> <span class="nav-text">Data flow in template-driven forms</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mutability-of-the-data-model"><span class="nav-number">3.3.</span> <span class="nav-text">Mutability of the data model</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

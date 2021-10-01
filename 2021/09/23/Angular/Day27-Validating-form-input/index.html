@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在前幾篇中介紹了 Template-driven forms 和 reactive forms 的用法與概念，雖然建立的方式不同但在根本上都是可以建立一個表單的，而兩種表單中都會需要驗證使用者輸入的資料的準確性與完整性來保持整體數據的質量，本章中將會介紹如何驗證使用者輸入的內容。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day27. Validating form input">
+<meta property="og:url" content="https://fandix.github.io/2021/09/23/Angular/Day27-Validating-form-input/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在前幾篇中介紹了 Template-driven forms 和 reactive forms 的用法與概念，雖然建立的方式不同但在根本上都是可以建立一個表單的，而兩種表單中都會需要驗證使用者輸入的資料的準確性與完整性來保持整體數據的質量，本章中將會介紹如何驗證使用者輸入的內容。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210826/20124767oGJRbnjfIU.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210826/20124767admY7u506b.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210826/20124767oNm1D5Kayu.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210826/20124767ltGgbqbE4G.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210826/20124767NDiGEUEh4U.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210826/20124767lyWNYBJbAf.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210826/20124767wlh2Pe5yek.png">
+<meta property="article:published_time" content="2021-09-23T09:35:03.000Z">
+<meta property="article:modified_time" content="2021-09-23T09:36:25.332Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210826/20124767oGJRbnjfIU.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/23/Angular/Day27-Validating-form-input/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day27. Validating form input | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day27-Validating-form-input/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day27. Validating form input
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-23 17:35:03 / Modified: 17:36:25" itemprop="dateCreated datePublished" datetime="2021-09-23T17:35:03+08:00">2021-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在前幾篇中介紹了 Template-driven forms 和 reactive forms 的用法與概念，雖然建立的方式不同但在根本上都是可以建立一個表單的，而兩種表單中都會需要驗證使用者輸入的資料的準確性與完整性來保持整體數據的質量，本章中將會介紹如何驗證使用者輸入的內容。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210826/20124767oGJRbnjfIU.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210826/20124767oGJRbnjfIU.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Validating-input-in-template-driven-forms"><a href="#Validating-input-in-template-driven-forms" class="headerlink" title="Validating input in template-driven forms"></a>Validating input in template-driven forms</h1><p>首先先介紹 template-driven forms 中的 validator，要在 template-driven forms 中添加驗證可以添加與原生 HTML 表單驗證相同的驗證 attribute，比如說可以在 <code>&lt;input&gt;</code> 中添加 <code>required</code> attribute 這樣這個輸入框就不能為空，又或是可以填入 <code>max</code> 代表填入的數字不能大於指定的數字等等，Angular 會使用 directive 將這些 attribute 和框架中的 validator functions 做匹配。</p>
+<p>每次表單控制元件的值發生變化時，Angular 都會運行驗證並生成導致 <code>INVALID</code> 狀態的錯誤列表或是生成 <code>VALID</code> 狀態的 <code>null</code>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;content&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span></span></span><br><span class="line"><span class="tag">    <span class="attr">type</span>=<span class="string">&quot;text&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">id</span>=<span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">name</span>=<span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">required</span></span></span><br><span class="line"><span class="tag">    <span class="attr">minlength</span>=<span class="string">&quot;4&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">appForbiddenName</span>=<span class="string">&quot;bob&quot;</span></span></span><br><span class="line"><span class="tag">    [(<span class="attr">ngModel</span>)]=<span class="string">&quot;hero.name&quot;</span></span></span><br><span class="line"><span class="tag">    #<span class="attr">name</span>=<span class="string">&quot;ngModel&quot;</span></span></span><br><span class="line"><span class="tag">  /&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngIf</span>=<span class="string">&quot;name.invalid &amp;&amp; (name.dirty || name.touched)&quot;</span> <span class="attr">class</span>=<span class="string">&quot;alert&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngIf</span>=<span class="string">&quot;name.errors?.required&quot;</span> <span class="attr">class</span>=<span class="string">&quot;alert alert-danger&quot;</span>&gt;</span>Name is required.<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngIf</span>=<span class="string">&quot;name.errors?.minlength&quot;</span> <span class="attr">class</span>=<span class="string">&quot;alert alert-danger&quot;</span>&gt;</span></span><br><span class="line">      Name must be at least 4 characters long.</span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngIf</span>=<span class="string">&quot;name.errors?.forbiddenName&quot;</span> <span class="attr">class</span>=<span class="string">&quot;alert alert-danger&quot;</span>&gt;</span>Name cannot be Bob.<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在一個 <code>&lt;input&gt;</code> 中加入 <code>required</code>、<code>minlength</code> 和 <code>appForbiddenName</code>，代表這個輸入框不能為空不能小於 4 個字且不能是 <code>bob</code>，可以利用  name ( template variable ) 的 errors 來判斷是哪一個驗證出錯進而顯示不同的提示，而使用 <code>*ngIf</code> 判斷當狀態為 <code>INVALID</code> 和<code>表單已經被觸碰過</code>或<code>更改過</code>時，才會顯示提示畫面。</p>
+<ul>
+<li><p>如果輸入框為空</p>
+<p>  <img src="https://ithelp.ithome.com.tw/upload/images/20210826/20124767admY7u506b.png" alt="https://ithelp.ithome.com.tw/upload/images/20210826/20124767admY7u506b.png"></p>
+</li>
+<li><p>如果輸入的內容字數小於４個</p>
+<p>  <img src="https://ithelp.ithome.com.tw/upload/images/20210826/20124767oNm1D5Kayu.png" alt="https://ithelp.ithome.com.tw/upload/images/20210826/20124767oNm1D5Kayu.png"></p>
+<p>  至於名字不能是 <code>bob</code> 由於這個是客製化驗證的部分，留到後面再補上。</p>
+</li>
+</ul>
+<hr>
+<h1 id="Validating-input-in-reactive-forms"><a href="#Validating-input-in-reactive-forms" class="headerlink" title="Validating input in reactive forms"></a>Validating input in reactive forms</h1><p>在 Reactive forms 中的驗證是通過直接在 component 中的 FormControl 添加驗證，每當 FormControl 發生變化 Angular 就會調用這些函數，而 reactive forms 的驗證器可以是同步也可以是非同步的</p>
+<ul>
+<li>Sync validators：此用 FormControl 的實例並立即返回一組驗證錯誤或是驗證成功（null） 的<code>同步函數</code>，可以在實例化 FormControl 的時候將驗證函數作為<code>第二個</code>參數傳入。</li>
+<li>Async validators：非同步驗證函數接收一個 FormControl 並返回一個 <code>promise</code> 或 <code>Observable</code>，隨後會發出一組驗證錯誤或是驗證成功（null），可以在實例化 FormControl 的時候將驗證函數作為<code>第三個</code>參數傳入。</li>
+</ul>
+<p>設置同步與非同步驗證器時需要注意，Angular 因為出於性能的問題，如果所有 Sync validators 都通過，Angular 就只會運行 Async validators。</p>
+<h2 id="Built-in-validator-functions"><a href="#Built-in-validator-functions" class="headerlink" title="Built-in validator functions"></a>Built-in validator functions</h2><p>要設置 reactive forms 的驗證器可以和 template-driven forms 在 template 中添加的驗證器一樣，比如使用 <code>required</code> 制定這個表單不能為空等等，以下列一個 validators 的表單</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>min</td>
+<td>輸入的內容要大於等於 validator 設定的值</td>
+</tr>
+<tr>
+<td>max</td>
+<td>輸入的內容要小於等於 validator 設定的值</td>
+</tr>
+<tr>
+<td>required</td>
+<td>輸入的值不能為空</td>
+</tr>
+<tr>
+<td>requiredTrue</td>
+<td>輸入的值必須為 true，常用在複選框中的<code>必選欄位</code></td>
+</tr>
+<tr>
+<td>email</td>
+<td>輸入的值需要通過電子郵件驗證測試，常用<code>正則表達式</code>驗證</td>
+</tr>
+<tr>
+<td>minLength</td>
+<td>要求輸入的長度需要大於等於 validator 設置的值，他僅用於舉有數字長度 property 的類型（字串或陣列）</td>
+</tr>
+<tr>
+<td>maxLength</td>
+<td>要求輸入的長度需要小於等於 validator 設置的值，規則與 minLength 一樣</td>
+</tr>
+<tr>
+<td>pattern</td>
+<td>輸入的值需要匹配正則表達式的設定</td>
+</tr>
+<tr>
+<td>nullValidator</td>
+<td>不執行任何操作的 validator</td>
+</tr>
+<tr>
+<td>compose</td>
+<td>將多個 validator 合成一個函數，該函數返回提供 FormControl 的各個錯誤映射的聯合</td>
+</tr>
+<tr>
+<td>composeAsync</td>
+<td>將多個 Async validator 合成一個函數，該函數返回提供 FormControl 的各個錯誤映射的聯合</td>
+</tr>
+</tbody></table>
+<ol>
+<li><p>在 reactive.component.ts 中建立 FormControl</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormControl, FormGroup, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-reactive&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./reactive.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./reactive.component.css&#x27;</span>],</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ReactiveComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  hero = <span class="keyword">new</span> FormGroup(&#123;                                                 <span class="comment">// (1)</span></span><br><span class="line">    <span class="attr">name</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>, [Validators.required, Validators.minLength(<span class="number">4</span>)]),</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">errorDetect</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.name?.invalid &amp;&amp; (<span class="built_in">this</span>.name.touched || <span class="built_in">this</span>.name.dirty); <span class="comment">// (2)</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  getErrorType (): <span class="built_in">string</span> &#123;                                              <span class="comment">// (3)</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">this</span>.name?.errors !== <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="built_in">this</span>.name?.errors.required) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;required&#x27;</span>;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">this</span>.name?.errors.minlength) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;minlength&#x27;</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">get</span> <span class="title">name</span>() &#123;                                                           <span class="comment">// (4)</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.hero.get(<span class="string">&#x27;name&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 使用 FormGroup 和 FormControl 建立表單控制元件</li>
+<li>(2): 新增一個 method 用於獲得 name 的狀態（是否是無效的內容、使否被處碰與是否被更改）</li>
+<li>(3):  新增一個 method 用於獲得 name 的錯誤類型</li>
+<li>(4): 新增一個 get property 用於獲得 name 的 FormControl 實例</li>
+</ul>
+</li>
+<li><p>在 reactive.component.html 中綁定 FormControl</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;hero&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;name&quot;</span>&gt;</span>Hero Name<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">id</span>=<span class="string">&quot;name&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;name&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngIf</span>=<span class="string">&quot;errorDetect()&quot;</span> <span class="attr">class</span>=<span class="string">&quot;alert alert-danger&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ng-container</span> [<span class="attr">ngSwitch</span>]=<span class="string">&quot;getErrorType()&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngSwitchCase</span>=<span class="string">&quot;&#x27;required&#x27;&quot;</span>&gt;</span>Name is required.<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngSwitchCase</span>=<span class="string">&quot;&#x27;minlength&#x27;&quot;</span>&gt;</span></span><br><span class="line">          Name must be at least 4 characters long.</span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngSwitchDefault</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">ng-container</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p> 在 tempalte 中綁定 component 中的 FormControl，這邊我的寫法會跟 Angular 官方文檔的寫法不一樣，因為個人喜歡把顯示的邏輯放在 component 中，所以無論是判斷 name 是否 <code>INVALID</code> 或判斷 name error 的型態都是綁定 component 中的 method。</p>
+</li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210826/20124767ltGgbqbE4G.png" alt="https://ithelp.ithome.com.tw/upload/images/20210826/20124767ltGgbqbE4G.png"></p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210826/20124767NDiGEUEh4U.png" alt="https://ithelp.ithome.com.tw/upload/images/20210826/20124767NDiGEUEh4U.png"></p>
+<hr>
+<h1 id="Defining-custom-validators"><a href="#Defining-custom-validators" class="headerlink" title="Defining custom validators"></a>Defining custom validators</h1><p>除了上面介紹的預設 Validator function 之外還可以客製化自己的 Validator 用於驗證各種表單內容，template-driven forms 和 reactive forms 都可以客製化自己的 Validator 但他們的方式不一樣，首先先介紹 template-driven forms 的方式。</p>
+<h2 id="template-driven-forms-custom-validators"><a href="#template-driven-forms-custom-validators" class="headerlink" title="template-driven forms custom validators"></a>template-driven forms custom validators</h2><p>在上面的例子中有使用一個 <code>appForbiddenName</code> 名稱不能為 <code>bob</code> 的 validator，但上面目前不會對 bob 這個名字進行驗證，是因為還沒建立屬於他的 validator，那麼就來創建這個客製化的驗證器吧</p>
+<ol>
+<li><p>使用 Angular CLI 建立一個 directive</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate directive forbidden-name</span><br></pre></td></tr></table></figure></li>
+<li><p>在 forbidden-name.directive.ts 中加入 validator function</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Directive, Input &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;                     <span class="comment">// (1)</span></span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">  AbstractControl,</span><br><span class="line">  NG_VALIDATORS,</span><br><span class="line">  ValidationErrors,</span><br><span class="line">  Validator,</span><br><span class="line">  ValidatorFn,</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;                                              <span class="comment">// (2)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Directive</span>(&#123;                                                          <span class="comment">// (3)</span></span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;[appForbiddenName]&#x27;</span>,</span><br><span class="line">  <span class="attr">providers</span>: [&#123;<span class="attr">provide</span>: NG_VALIDATORS, <span class="attr">useExisting</span>: ForbiddenNameDirective, <span class="attr">nulti</span>: <span class="literal">true</span>&#125;]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ForbiddenNameDirective</span> <span class="title">implements</span> <span class="title">Validator</span> </span>&#123;            <span class="comment">// (4)</span></span><br><span class="line">  <span class="meta">@Input</span>(<span class="string">&#x27;appForbiddenName&#x27;</span>) forbiddenName = <span class="string">&#x27;&#x27;</span>;                      <span class="comment">// (5)</span></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  forbiddenNameValidator(nameRe: <span class="built_in">RegExp</span>): ValidatorFn &#123;               <span class="comment">// (6)</span></span><br><span class="line">    <span class="keyword">return</span> (control: AbstractControl): ValidationErrors | <span class="function"><span class="params">null</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> forbidden = nameRe.test(control.value);</span><br><span class="line">      <span class="keyword">return</span> forbidden ? &#123; <span class="attr">forbiddenName</span>: &#123; <span class="attr">value</span>: control.value &#125; &#125; : <span class="literal">null</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  validate(control: AbstractControl): ValidationErrors | <span class="literal">null</span> &#123;       <span class="comment">// (7)</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.forbiddenName</span><br><span class="line">      ? <span class="built_in">this</span>.forbiddenNameValidator(<span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="built_in">this</span>.forbiddenName, <span class="string">&#x27;i&#x27;</span>))(</span><br><span class="line">          control</span><br><span class="line">        )</span><br><span class="line">      : <span class="literal">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 從 <code>@angular/core</code> 中引入 <code>Input</code></li>
+<li>(2): 從 <code>@angular/forms</code> 中引入<ul>
+<li><code>AbstractControl</code> 用於為傳入 validate function 的 input 定義型態</li>
+<li><code>NG_VALIDATORS</code> 用於註冊與 <code>AbstractControl</code> 一起使用的 sync validators InjectionToken</li>
+<li><code>ValidationErrors</code> 用於定義失敗的驗證檢查返回錯誤的映射</li>
+<li><code>Validator</code> 是執行 sync validator 的 class 的 Interface</li>
+<li><code>ValidatorFn</code> 用於接收 FormControl 並 sync 的返回驗證錯誤的映射或返回 null</li>
+</ul>
+</li>
+<li>(3): <code>NG_VALIDATORS</code> 使用 <code>useExisting</code> 以 <code>ForbiddenNameDirective</code> 為模板創建一個實例</li>
+<li>(4): 使用 implements 來實踐抽象的 interface ( Validator )</li>
+<li>(5): 使用 <code>@Input()</code> 裝飾 <code>forbiddenName</code> property 為輸入，並取別名為 <code>appForbiddenName</code></li>
+<li>(6): 新增一個 method 用於接收字串後判斷字串是否符合驗證規定，返回驗證錯誤的映照或 null</li>
+<li>(7): 新增一個一個 method 用於驗證輸入的字串是否符合驗證規定</li>
+</ul>
+</li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210826/20124767lyWNYBJbAf.png" alt="https://ithelp.ithome.com.tw/upload/images/20210826/20124767lyWNYBJbAf.png"></p>
+<h2 id="reactive-forms-custom-validators"><a href="#reactive-forms-custom-validators" class="headerlink" title="reactive forms custom validators"></a>reactive forms custom validators</h2><p>介紹完 template-driven forms 的客製化驗證器後，接著介紹 reactive forms 的客製化驗證，他不像 template-driven forms  一樣需要建立一個 directive，只需要在 component 中的 FormControl 加入客製化驗證函數即可。</p>
+<ol>
+<li><p>先在 reactive.component.ts 中新增一個客製化驗證函數</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">forbiddenNameValidator(nameRe: <span class="built_in">RegExp</span>): ValidatorFn &#123;</span><br><span class="line">  <span class="keyword">return</span> (control: AbstractControl): ValidationErrors | <span class="function"><span class="params">null</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> forbidden = nameRe.test(control.value);</span><br><span class="line">    <span class="keyword">return</span> forbidden ? &#123; <span class="attr">forbiddenName</span>: &#123; <span class="attr">value</span>: control.value &#125; &#125; : <span class="literal">null</span>;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 reactive.component.ts 中 FormGroup 的 name (FormControl) 的 Validator 中添加客製化驗證函數</p>
+</li>
+</ol>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">hero = <span class="keyword">new</span> FormGroup(&#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>, [</span><br><span class="line">    Validators.required,</span><br><span class="line">    Validators.minLength(<span class="number">4</span>),</span><br><span class="line">    <span class="built_in">this</span>.forbiddenNameValidator(<span class="regexp">/hank/i</span>),</span><br><span class="line">  ]),</span><br><span class="line">  <span class="attr">alterEgo</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>),</span><br><span class="line">  <span class="attr">power</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>, Validators.required),</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210826/20124767wlh2Pe5yek.png" alt="https://ithelp.ithome.com.tw/upload/images/20210826/20124767wlh2Pe5yek.png"></p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章介紹了如何在 template-driven forms 和 reactive forms 中添加預設的 validators function，也介紹了如何建立客製化的 validators function 然後加入到兩種不同的 forms 中，表單驗證在開發表單時非常重要，可以確保資料的確定性。</p>
+<p>明天將會介紹 Form 的另一種使用方法，雖然再開發大型表單時可以使用 FormGroup 將類似的 FormControl 分組管理，但真的很大型的表單時還是會顯得非常雜亂難以維護，這時就需要使用 Control Value Accessor 這個功能，可以把它想像成 component 中的父子層，在上層的 Component 中定義大概的 Form Model，將細節放在子層的 component 中，這樣將整個表單內容以 Component 分割，可以更好的維護與測試，詳細該怎麼使用就明天再詳細講解吧，那麼明天見</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/form-validation#defining-custom-validators">Angular.io - Validating form input</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day26-Reactive-forms-2/" rel="prev" title="Day26. Reactive forms (二)">
+      <i class="fa fa-chevron-left"></i> Day26. Reactive forms (二)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day28-Control-Value-Accessor-CVA/" rel="next" title="Day28. Control Value Accessor (CVA)">
+      Day28. Control Value Accessor (CVA) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Validating-input-in-template-driven-forms"><span class="nav-number">1.</span> <span class="nav-text">Validating input in template-driven forms</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Validating-input-in-reactive-forms"><span class="nav-number">2.</span> <span class="nav-text">Validating input in reactive forms</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Built-in-validator-functions"><span class="nav-number">2.1.</span> <span class="nav-text">Built-in validator functions</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Defining-custom-validators"><span class="nav-number">3.</span> <span class="nav-text">Defining custom validators</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#template-driven-forms-custom-validators"><span class="nav-number">3.1.</span> <span class="nav-text">template-driven forms custom validators</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reactive-forms-custom-validators"><span class="nav-number">3.2.</span> <span class="nav-text">reactive forms custom validators</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

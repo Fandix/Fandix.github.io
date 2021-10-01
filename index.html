@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Typescript/get-started/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/24/Typescript/The-Basics/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Typescript/get-started/" class="post-title-link" itemprop="url">TypeScript - Get started</a>
+            <a href="/2021/09/24/Typescript/The-Basics/" class="post-title-link" itemprop="url">TypeScript - Narrowing</a>
         </h2>
 
         <div class="post-meta">
@@ -169,10 +169,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-09-13 15:50:31 / Modified: 17:40:36" itemprop="dateCreated datePublished" datetime="2021-09-13T15:50:31+08:00">2021-09-13</time>
+              <time title="Created: 2021-09-24 10:06:20" itemprop="dateCreated datePublished" datetime="2021-09-24T10:06:20+08:00">2021-09-24</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-10-01 10:21:52" itemprop="dateModified" datetime="2021-10-01T10:21:52+08:00">2021-10-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -194,11 +200,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>在去年轉職成為前端工程師後就開始使用了 Angular 這個框架，這個框架與其他兩個主流框架最大的不同點在於他預設就是使用 <code>Typescript</code> 作為開發語言，雖然在進公司前完全沒有聽過這個是什麼東西，不過隨著時間的推移漸漸發現 Typescript 的魅力，可以很好的避免很多 Javascript 的地雷，尤其是對於 Javascript 這個<code>弱型別</code>的語言來說，常常會出一些非常奇怪的錯誤，所以在編寫程式的時候要時常注意有沒有冒犯到 Javascript 的逆鱗導致錯誤，不過有了 Typescript 後就可以有效的避免一些奇怪的錯誤，它賦予了 Javascript <code>型別</code>並可以對變量的內容進行檢查，從而使變量的內容更加明確與可追蹤，不過我也是使用了這麼久也沒有仔細的看 Typescript 的官方文檔，趁著最近專案比較輕鬆來從投讀一次官分文檔並做個紀錄，希望可幫助到剛接觸到 Typescript 的夥伴。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210913/201247671I0G1XJIk4.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210913/201247671I0G1XJIk4.jpg"></p>
+          <p> 在使用 Typescript 協助我們開發專案時，由於 Typescript 可以將參數或變量定義為 <code>Union</code> 的形式，所以有時候當我們使用 Union 將參數與變量定義為多種型別時， Typescript 可能會不知道我們需要的是哪一種類型的數據，所以這時候就需要將參數或變量的類型進行縮小，好讓 Typescript 更清楚的知道傳入的參數是什麼類型，已進行正確的操作。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210914/20124767n3u6xCyYOB.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210914/20124767n3u6xCyYOB.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Typescript/get-started/#more" rel="contents">
+              <a class="btn" href="/2021/09/24/Typescript/The-Basics/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -222,7 +228,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day20-Angular-Routing/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day33-Communicating-with-backend-services-using-HTTP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -236,7 +242,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Angular/Day20-Angular-Routing/" class="post-title-link" itemprop="url">Day20. Angular Routing</a>
+            <a href="/2021/09/23/Angular/Day33-Communicating-with-backend-services-using-HTTP/" class="post-title-link" itemprop="url">Day33. Communicating with backend services using HTTP</a>
         </h2>
 
         <div class="post-meta">
@@ -247,16 +253,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-13 15:35:39 / Modified: 15:36:45" itemprop="dateCreated datePublished" datetime="2021-09-13T15:35:39+08:00">2021-09-13</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
-                </span>
+              <time title="Created: 2021-09-23 17:48:38 / Modified: 17:49:19" itemprop="dateCreated datePublished" datetime="2021-09-23T17:48:38+08:00">2021-09-23</time>
             </span>
 
           
@@ -270,11 +267,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>在現代網頁中常會使用一種稱為 <code>single page application（SPA）</code>的技術，可以通過顯示或隱藏特定的 component 來更改用戶看到的畫面，而不是像伺服器重新請求整個頁面的數據對其重新加載，可以使用 <code>Angular router</code> 來處理當你需要處理從一個畫面到另一個畫面的任務，Router 通過將瀏覽器的 URL 解析為更改畫面的指令，將使用者導航到指定的畫面。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767VAxO4x8GEi.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767VAxO4x8GEi.jpg"></p>
+          <p>在現代的網頁中絕大部分會需要與 server 互相溝通，無論是從 server 獲取商品的資料用於顯示在畫面中，還是畫面中的設定要儲存回 server 的設定都需與後端 server 互相溝通，Angular 提供了一個 client 端的 HTTP API，那便是 <code>@angular/common/http</code> 中的 <code>HttpClient</code> service class，該怎麼使用就繼續往下看吧<img src="/images/emoticon/emoticon37.gif" alt="/images/emoticon/emoticon37.gif">。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/201247675b7AjP33Yf.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210905/201247675b7AjP33Yf.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Angular/Day20-Angular-Routing/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day33-Communicating-with-backend-services-using-HTTP/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -298,7 +295,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day19-Dependency-providers/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day32-Lazy-loading-feature-modules/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -312,7 +309,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Angular/Day19-Dependency-providers/" class="post-title-link" itemprop="url">Day19. Dependency providers</a>
+            <a href="/2021/09/23/Angular/Day32-Lazy-loading-feature-modules/" class="post-title-link" itemprop="url">Day32. Lazy-loading feature modules</a>
         </h2>
 
         <div class="post-meta">
@@ -323,7 +320,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-13 15:34:15 / Modified: 15:35:18" itemprop="dateCreated datePublished" datetime="2021-09-13T15:34:15+08:00">2021-09-13</time>
+              <time title="Created: 2021-09-23 17:47:30 / Modified: 17:49:32" itemprop="dateCreated datePublished" datetime="2021-09-23T17:47:30+08:00">2021-09-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -346,11 +343,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>在上一篇中提到了如何建立與使用一個 Service，也大概介紹了什麼是 Dependency Injection，在介紹使用 @Injectable() 裝飾 service 的 class 的時候提到了要在他的 metadata 中設定 <code>providedIn</code>，如果將它設定為 <code>root</code> 的話代表這個 service 在整個專案中都是可被使用的，但如果沒有設定這個 property，則要在 component 中注入這個 service 時需要在 @Component() 的 metadata 中設定 providers ，將要注入的 service 放進去，在上一章中的用法是 <code>providers: [ProductService]</code>，這其實是一個縮寫，本篇就是要來詳細的介紹他，那我們就繼續往下看吧！</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ZpsjOVE7SU.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ZpsjOVE7SU.jpg"></p>
+          <p>在默認情況下 NgModules 都是<code>急切加載</code>的，這意味著一但應用程式加載，所有的 NgModules 無論是否需要都會被載入，但對於許多大型的應用程式而言可以考慮使用<code>延遲加載</code>功能，他是一種根據<code>需要才加載</code> NgModules 的設計模式，延遲加載有助於讓初始化的檔案保持為較小的大小，從而<code>減少加載的時間</code>，下面就來介紹該如何使用延遲加載模式吧。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/201247675kZ9WQlQIh.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210905/201247675kZ9WQlQIh.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Angular/Day19-Dependency-providers/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day32-Lazy-loading-feature-modules/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -374,7 +371,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day18-Introduction-to-services-and-dependency-injection/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day31-Angular-Module-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -388,7 +385,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Angular/Day18-Introduction-to-services-and-dependency-injection/" class="post-title-link" itemprop="url">Day18. Introduction to services and dependency injection</a>
+            <a href="/2021/09/23/Angular/Day31-Angular-Module-2/" class="post-title-link" itemprop="url">Day31. Angular Module（二）</a>
         </h2>
 
         <div class="post-meta">
@@ -399,7 +396,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-13 15:32:32 / Modified: 15:33:37" itemprop="dateCreated datePublished" datetime="2021-09-13T15:32:32+08:00">2021-09-13</time>
+              <time title="Created: 2021-09-23 17:45:17 / Modified: 17:46:41" itemprop="dateCreated datePublished" datetime="2021-09-23T17:45:17+08:00">2021-09-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -422,14 +419,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>在開發專案時你一定會使用到 <code>Service</code> 的技巧，Service 是一個廣泛的類別，包括 app 所需要的任何功能、數據或特性，而通常一個 service 是一個具有狹窄且明確定義目的的 class，簡單來説可以想像成一個 service 只會對一個明確的目的提供所以有服務。</p>
-<p>Angular 將 component 與 service 拆分開以增加模塊化與可重用性，將處理 component view 的功能與其他類型的功能拆發開來可以讓你在開發 component 時更精簡高效，所以理想的情況下 component 中的邏輯只用來處理使用者的操作，component 應該提供 property binding 的 property 與 event binding 的 method 僅此而已。</p>
-<p>而較為複雜的邏輯任務就應該委託給 service，比如<code>從 server 中獲取數據</code>、<code>驗證用戶輸入</code>或<code>直接登陸到控制台</code>等等複雜的邏輯處理都應該在 service 中處理掉，將這些複雜的邏輯寫在 service 中就可以讓他們被任何 component 使用。</p>
-<p>不過說了這麼多，其實 Angular 是不強制你做這些動作的，不過建議再開發大型專案時還是將複雜的邏輯從 component 中移到 service 中，保持你的 component 單純乾淨也讓 service 可以透過 inject 提供給其他 component 使用。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210813/20124767bKqlcXTE3g.png" alt="https://ithelp.ithome.com.tw/upload/images/20210813/20124767bKqlcXTE3g.png"></p>
+          <p>在上一篇中介紹了 Angular 中 Module 的一部分，接著要繼續介紹還沒講完的部分，那就往下看吧</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767WkLGbCrgWU.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767WkLGbCrgWU.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Angular/Day18-Introduction-to-services-and-dependency-injection/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day31-Angular-Module-2/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -453,7 +447,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day17-Dynamic-component-loader/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day30-Angular-Module-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -467,7 +461,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Angular/Day17-Dynamic-component-loader/" class="post-title-link" itemprop="url">Day17. Dynamic component loader</a>
+            <a href="/2021/09/23/Angular/Day30-Angular-Module-1/" class="post-title-link" itemprop="url">Day30. Angular Module（一）</a>
         </h2>
 
         <div class="post-meta">
@@ -478,7 +472,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-13 15:30:08 / Modified: 15:31:49" itemprop="dateCreated datePublished" datetime="2021-09-13T15:30:08+08:00">2021-09-13</time>
+              <time title="Created: 2021-09-23 17:42:04 / Modified: 17:49:45" itemprop="dateCreated datePublished" datetime="2021-09-23T17:42:04+08:00">2021-09-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -501,11 +495,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>介紹完什麼是 template 與 structural directive 後，接著回來介紹 component 中被跳過的章節，那就是動態仔入 component，再開發專案時可能會遇到 component template 需要被動態載入的情況，比如說常見的網頁廣告或是當捲軸轉到某個地方時才會顯示出只定 component 的 template，那麼就繼續看下去吧。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210818/20124767jPdUbmDQQh.png" alt="https://ithelp.ithome.com.tw/upload/images/20210818/20124767jPdUbmDQQh.png"></p>
+          <p>在 Angular 中應用程式是模塊化的，Angular 有自己的模塊化系統稱為 <code>NgModule</code>，他可以包含 <code>component</code>、<code>service providers</code> 和其他程式的文件，還可以導入從其他 NgModules 導出的功能，並導出顯訂的功能以提供給其他 NgModules 使用，每一個 Angular app 都至少有一個 NgModule 他被稱為 root module，通常會叫做 <code>AppModule</code>。</p>
+<p>雖然一個小的專案中可能會只有一個 module (root module)，但在大多數大型的專案中都會建立多個 modules 用於將功能分割，達到將專案模塊化的目的。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210829/20124767ZK4CbvmUSc.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210829/20124767ZK4CbvmUSc.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Angular/Day17-Dynamic-component-loader/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day30-Angular-Module-1/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -529,7 +524,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day16-Writing-structural-directives/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day29-Internationalization-i18n/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -543,7 +538,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Angular/Day16-Writing-structural-directives/" class="post-title-link" itemprop="url">Day16. Writing structural directives</a>
+            <a href="/2021/09/23/Angular/Day29-Internationalization-i18n/" class="post-title-link" itemprop="url">Day29. Internationalization (i18n)</a>
         </h2>
 
         <div class="post-meta">
@@ -554,7 +549,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-13 15:28:56 / Modified: 15:29:43" itemprop="dateCreated datePublished" datetime="2021-09-13T15:28:56+08:00">2021-09-13</time>
+              <time title="Created: 2021-09-23 17:39:24 / Modified: 17:41:27" itemprop="dateCreated datePublished" datetime="2021-09-23T17:39:24+08:00">2021-09-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -577,11 +572,24 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>在上一章中介紹了如何建立客製化的 attribute directive 與使用，而本章將會介紹如何建立 structural directives，那就接著往下看吧！</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767xY1I5d66k3.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767xY1I5d66k3.jpg"></p>
+          <p>Angular 提供了 <code>i18n</code> 功能讓我們開發專案時可以讓我們的專案應在不同的國家中被使用，<code>Localization</code> 是為不同語言環境構建應用程式版本的過程，包過提取文本已翻譯成不同語言以及為特定語言環境設置數據格式。</p>
+<p>使用 Angular i18n 為應用程式進行國際化：</p>
+<ul>
+<li>使用 <code>pipes</code> 顯示本地化的日期、數字、百分比和貨幣</li>
+<li>在 template 中標記文本以進行翻譯</li>
+<li>標複數形式的表達方式以提供翻譯</li>
+<li>標記替代文本進行翻譯</li>
+</ul>
+<p>要使用 Angular i18n 的前提下需要準備好 Angular CLI，因為幾乎全部的任務都需要使用 Angular CLI</p>
+<ul>
+<li>使用 Angular CLI 將標記的文本提取到 source language file</li>
+<li>為每種語言製作此文本的副本，將這些翻譯文件發送給相關的翻譯人員，對文本內的語言進行翻譯</li>
+<li>在為一種會多種語言環境構建應用程序時，使用 Angular CLI 合併完成的翻譯文件</li>
+</ul>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210828/20124767LCHVMC00vy.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210828/20124767LCHVMC00vy.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Angular/Day16-Writing-structural-directives/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day29-Internationalization-i18n/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -605,7 +613,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day15-Attribute-directives/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day28-Control-Value-Accessor-CVA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -619,7 +627,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Angular/Day15-Attribute-directives/" class="post-title-link" itemprop="url">Day15. Attribute directives</a>
+            <a href="/2021/09/23/Angular/Day28-Control-Value-Accessor-CVA/" class="post-title-link" itemprop="url">Day28. Control Value Accessor (CVA)</a>
         </h2>
 
         <div class="post-meta">
@@ -630,7 +638,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-13 15:26:35 / Modified: 15:27:23" itemprop="dateCreated datePublished" datetime="2021-09-13T15:26:35+08:00">2021-09-13</time>
+              <time title="Created: 2021-09-23 17:37:59 / Modified: 17:39:01" itemprop="dateCreated datePublished" datetime="2021-09-23T17:37:59+08:00">2021-09-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -653,11 +661,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>在前幾天中有介紹了 Angular 中內建的一些 attribute directive，但是在實際開發專案時可能會遇到內建 attribute directive 無法處理的問題，這時候就需要建立客製化 attribute directive，本章就會介紹如何建立屬於自己的 attribute directive。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/201247672vA3mJw784.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/201247672vA3mJw784.jpg"></p>
+          <p>前幾篇介紹了 Form 的基本操作與概念，也介紹了如何在表單中加入驗證，最後要來介紹 Angular Form 中一個我滿喜歡的功能，<code>Control Value Accessor</code> 簡稱 <code>CVA</code>，就像開發 component 一樣，當這個 component 太大的時候我們會選擇將這個大的 component 拆解成一個一個小的 component，這樣比較方便撰寫維護與測試，CVA 就有是這種概念，當要開發一個超大的表單時，每一個 FormControl 都有自己的設定和各自的 Validator function，這樣整個 component 都會充滿不同的表單設定，除了 component 之外 template 也會非常龐大，要找一個 formControlName 就會找半天，所以需要使用 CVA 將龐大的表單分割成一個一個小的 component，這樣可維護性與可測試性就會提高。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210827/20124767DJLXplGZxf.png" alt="https://ithelp.ithome.com.tw/upload/images/20210827/20124767DJLXplGZxf.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Angular/Day15-Attribute-directives/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day28-Control-Value-Accessor-CVA/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -681,7 +689,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day14-Built-in-directives-structural/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day27-Validating-form-input/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -695,7 +703,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Angular/Day14-Built-in-directives-structural/" class="post-title-link" itemprop="url">Day14. Built-in directives - structural</a>
+            <a href="/2021/09/23/Angular/Day27-Validating-form-input/" class="post-title-link" itemprop="url">Day27. Validating form input</a>
         </h2>
 
         <div class="post-meta">
@@ -706,7 +714,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-13 15:23:40 / Modified: 15:25:23" itemprop="dateCreated datePublished" datetime="2021-09-13T15:23:40+08:00">2021-09-13</time>
+              <time title="Created: 2021-09-23 17:35:03 / Modified: 17:36:25" itemprop="dateCreated datePublished" datetime="2021-09-23T17:35:03+08:00">2021-09-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -729,17 +737,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>在上一章中介紹了 attribute directive 的用法，接著要來介紹另一種 Angular 中內建的 directive 那就是 structural directive。</p>
-<p>它的用途主要是用來<code>改變 DOM 的結構</code>，他會塑造或重構 DOM 的結構，通常是添加、刪除和操作他所附加的 element，本章中將會介紹介紹最常見的三種 structural directive : </p>
-<ol>
-<li><strong>NgIf</strong>: 有條件的從 template 裝創建或處置 sub-template，就跟 javascript 的 if 一樣，當滿足某個條件時顯示、隱藏或操作一個新的 sub-template。</li>
-<li><strong>NgFor</strong>: 為列表中的每個項目重複一個節點，和 javascript 的 for loop 一樣，利用迭代的方式創建多個 DOM 的 node。</li>
-<li><strong>NgSwitch</strong>: 一組在各個 view 中切換的指令，簡單來說和 javascript 的 switch case 一樣，接收到各種不同的 case 而顯示對應的 view</li>
-</ol>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767vgqzFOQpcc.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767vgqzFOQpcc.png"></p>
+          <p>在前幾篇中介紹了 Template-driven forms 和 reactive forms 的用法與概念，雖然建立的方式不同但在根本上都是可以建立一個表單的，而兩種表單中都會需要驗證使用者輸入的資料的準確性與完整性來保持整體數據的質量，本章中將會介紹如何驗證使用者輸入的內容。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210826/20124767oGJRbnjfIU.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210826/20124767oGJRbnjfIU.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Angular/Day14-Built-in-directives-structural/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day27-Validating-form-input/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -763,7 +765,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day13-Built-in-directives-attribute/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day26-Reactive-forms-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -777,7 +779,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Angular/Day13-Built-in-directives-attribute/" class="post-title-link" itemprop="url">Day13. Built-in directives - attribute</a>
+            <a href="/2021/09/23/Angular/Day26-Reactive-forms-2/" class="post-title-link" itemprop="url">Day26. Reactive forms (二)</a>
         </h2>
 
         <div class="post-meta">
@@ -788,7 +790,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-13 15:20:57 / Modified: 15:22:37" itemprop="dateCreated datePublished" datetime="2021-09-13T15:20:57+08:00">2021-09-13</time>
+              <time title="Created: 2021-09-23 17:33:28 / Modified: 17:34:43" itemprop="dateCreated datePublished" datetime="2021-09-23T17:33:28+08:00">2021-09-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -811,18 +813,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>在介紹完 component 與 template 後，接著要來介紹什麼是 directive，可能在前面的章節中多多少少都有提到，但是可能都沒有詳細的講解過，也有遇過實際上已經有在使用了但卻不知道這個其實就是 directive，不過沒關係接下來會詳細的介紹什麼是 directive。</p>
-<p>directive 是 Angular 中為了應用程序元素額外添加行為的 class，可以使用 Angular 內建的 directive 來管理 <code>form</code> 、<code>lists</code>、 <code>style</code> 和 <code>使用者看到的內容</code>。</p>
-<p>而 directive 有不同類性的用法，以下分為三種：</p>
-<ol>
-<li><strong>Component</strong>: 帶有 template 的 directive，這種是最常見的 directive</li>
-<li><strong>Attribute directive</strong>: 改變 element, component 或其他 directive 的外觀或行為的 directive</li>
-<li><strong>Structural directive</strong>: 通過添加或刪除 DOM element 來改變 DOM 的佈局</li>
-</ol>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210807/20124767SxBTFn4QZA.png" alt="https://ithelp.ithome.com.tw/upload/images/20210807/20124767SxBTFn4QZA.png"></p>
+          <p>上一篇中介紹了如何使用 FormControl 建立單個表單控制元件，也介紹了如何使用 FormGroup 將多個相關控制元件分組到單個輸入表單中，可以讓複雜的表單分割為一個一個小小的，對其精準的控制，最後再將它們合為一個大的 Group，而本篇將會介紹如何使用 <code>FormBuilder</code> 他可以讓建表單控制模型更簡單與更好閱讀，也會介紹怎麼使用 <code>FormArray</code> 建立一個動態的表單，詳細的內容就繼續看下去吧。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210824/20124767h3EynlCvSX.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210824/20124767h3EynlCvSX.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Angular/Day13-Built-in-directives-attribute/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day26-Reactive-forms-2/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -846,7 +841,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day12-Template-variables/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day25-Reactive-forms-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -860,7 +855,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Angular/Day12-Template-variables/" class="post-title-link" itemprop="url">Day12. Template variables</a>
+            <a href="/2021/09/23/Angular/Day25-Reactive-forms-1/" class="post-title-link" itemprop="url">Day25. Reactive forms (一)</a>
         </h2>
 
         <div class="post-meta">
@@ -871,7 +866,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-13 15:18:44 / Modified: 15:19:57" itemprop="dateCreated datePublished" datetime="2021-09-13T15:18:44+08:00">2021-09-13</time>
+              <time title="Created: 2021-09-23 17:33:20 / Modified: 17:34:26" itemprop="dateCreated datePublished" datetime="2021-09-23T17:33:20+08:00">2021-09-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -894,11 +889,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Template variable 可以讓你在 template 的任意一處使用被標記過的 HTML 元件的數據，例如響應使用者的輸入或微調應用程序的表單，簡單來說當你在畫面中有一個 <code>&lt;input&gt;</code>，除了透過 Form 獲得使用者在這個 <code>&lt;input&gt;</code> 所以輸入的數據之外，也可以透過將這個 <code>&lt;input&gt;</code> 設定為 template variable，這樣就可以讓在別的地方的 <code>&lt;button&gt;</code> 中的 event binding 獲得這個 <code>&lt;input&gt;</code> 的數據，詳細的內容讓我們繼續看下去吧。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767lMmC7T1IVB.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767lMmC7T1IVB.png"></p>
+          <p>上一篇中介紹完 Template-driven forms 後，接著再介紹 Angular 的另一種 form，那就是 <code>Reactive forms</code>，它提供了一種 <code>model-driven</code> 的方法來處理隨時間變化的表單輸入，本章中會介紹如何創建本章中會介紹如何創建和更新基本的表單控制元件、如何在 component 中使用多個控制元件、驗證表單的值以及創建動態表單，隨著需求新增換刪除控制元件。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210824/20124767y8s0ESM8UR.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210824/20124767y8s0ESM8UR.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Angular/Day12-Template-variables/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day25-Reactive-forms-1/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -921,7 +916,7 @@
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -987,7 +982,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

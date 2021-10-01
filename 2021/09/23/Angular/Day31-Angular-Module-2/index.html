@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在上一篇中介紹了 Angular 中 Module 的一部分，接著要繼續介紹還沒講完的部分，那就往下看吧">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day31. Angular Module（二）">
+<meta property="og:url" content="https://fandix.github.io/2021/09/23/Angular/Day31-Angular-Module-2/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在上一篇中介紹了 Angular 中 Module 的一部分，接著要繼續介紹還沒講完的部分，那就往下看吧">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767WkLGbCrgWU.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767ARHtAppSCa.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767iOqiZ2ePK4.png">
+<meta property="og:image" content="https://i.imgur.com/91Bga9D.gif">
+<meta property="article:published_time" content="2021-09-23T09:45:17.000Z">
+<meta property="article:modified_time" content="2021-09-23T09:46:41.772Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767WkLGbCrgWU.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/23/Angular/Day31-Angular-Module-2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day31. Angular Module（二） | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day31-Angular-Module-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day31. Angular Module（二）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-23 17:45:17 / Modified: 17:46:41" itemprop="dateCreated datePublished" datetime="2021-09-23T17:45:17+08:00">2021-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在上一篇中介紹了 Angular 中 Module 的一部分，接著要繼續介紹還沒講完的部分，那就往下看吧</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767WkLGbCrgWU.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767WkLGbCrgWU.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Entry-components"><a href="#Entry-components" class="headerlink" title="Entry components"></a>Entry components</h1><p>在上一張的 <code>NgModule metadata</code> 中提到了 <code>bootstrap</code> 這個 Property，設置他的主要目的是為了讓應用程式透過這個指定的這個 component 創建最基礎的 DOM 元素，插入這個 bootstrapped component 後會觸發一連串的子層 component 來填充這個應用程式的 component tree，而這個被指定的 component 就稱為 <code>Entry components</code>。</p>
+<p>Entry components 是 Angular 按類型命令加載的 component，這意味者你不需要在任何 template 中引用他，可以通過 NgModule 中的 bootstrap 中這定他，也可以通過將它包含在 <code>rooting</code> 中來指定 Entry components。</p>
+<p>所以 Entry components 主要可以分為兩種</p>
+<ul>
+<li>bootstrapped component：metadata 中 bootstrap 的 component</li>
+<li>在 route 中指定的 component</li>
+</ul>
+<h2 id="A-bootstrapped-entry-component"><a href="#A-bootstrapped-entry-component" class="headerlink" title="A bootstrapped entry component"></a>A bootstrapped entry component</h2><p>bootstrapped component 是 Angular 在引導過程（應用程序啟動）期間加載到 DOM 的 Entry component，一個最基本的 bootstrapped component 就是在 app.module.ts 中設定的 Entry component</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    AppComponent</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    FormsModule,</span><br><span class="line">    HttpClientModule,</span><br><span class="line">    AppRoutingModule</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [],</span><br><span class="line">  <span class="attr">bootstrap</span>: [AppComponent] <span class="comment">// bootstrapped entry component</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>以上面的例子來說，Angular 會動態加載 root AppComponent，因為他被設置在 bootstrap 中。</p>
+<p><code>@NgModule.bootstrap</code> property 告訴編譯器這是一個 <code>entry component</code>，應該生成戴法來用這個 component 啟動應用程序，所以 bootstrapped component 必須要是 entry component，因為 bootstrapping 是一個命令式的過程，所唷需要一個 entry component。</p>
+<h2 id="A-routed-entry-component"><a href="#A-routed-entry-component" class="headerlink" title="A routed entry component"></a>A routed entry component</h2><p>第二種 entry component 會出現在 route 的定義中，比如</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> routes: Routes = [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">path</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">    <span class="attr">component</span>: CustomerListComponent</span><br><span class="line">  &#125;</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+
+<p>所有 router components 必須是 entry component，因為這需要在兩個地方（router 和 entryComponents） 添加 component，所以編譯器可以識別這是一個 router 定義並自動將它添加到 entryComponent 中。</p>
+<h2 id="The-entryComponents-array"><a href="#The-entryComponents-array" class="headerlink" title="The entryComponents array"></a>The entryComponents array</h2><p>雖然 @NgModule 裝飾器有一個 property 是 entryComponent 的陣列，但大多數<code>不需要</code>設置任何 entryComponent，因為 Angular 添加了 @NgModule.bootstrap 中添加的 component 和 route 定義中的那些自動進入的 component，儘管這兩種機制佔了大多數的  entry components，但如果你的應用程序需要引導或動態加載 component，則也可以將 component 添加到 entryComponent 中。</p>
+<hr>
+<h1 id="Feature-modules"><a href="#Feature-modules" class="headerlink" title="Feature modules"></a>Feature modules</h1><p>feature module 是用於組織程式的 NgModules，隨著應用程式著增長，可以將特定功能的相關程式組織在一起，這有助於增加應用程式中每個功能之間的邊界，使用 feature modules 將特定功能或相關的程式與其他部分拆開，這樣的分割有助於開發人員與團隊人員的合作，將不同的 feature modules 交由不同人進行維護與開發，可以更好的保障這個功能的完整性與安全性。</p>
+<h2 id="Feature-modules-vs-root-modules"><a href="#Feature-modules-vs-root-modules" class="headerlink" title="Feature modules vs. root modules"></a>Feature modules vs. root modules</h2><p>feature modules 是一種<code>組織相關程式</code>的最佳實踐，他與 Angular 核心的 API 概念相反，feature module 提供了一組內聚的功能，專注於特定的應用程式<code>功能</code>或<code>需求</code>，例如 form 或 routing 等等，雖然這些動作都可以在 root module 中做到，但使用 feature modules 可以幫助你將應用程式以功能而言劃分為不同的重點區域。</p>
+<h2 id="How-to-make-a-feature-module"><a href="#How-to-make-a-feature-module" class="headerlink" title="How to make a feature module"></a>How to make a feature module</h2><p>可以在應用程式中使用 Angular CLI 建立一個新的 feature module</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate module CustomerDashboard</span><br></pre></td></tr></table></figure>
+
+<p>輸入上面的 CLI Command 後 Angular 會建立一個名為 customer-dashboard 的資料夾，其中會包含一個名為 customer-dashboard.module.ts 的文件，文件內容會是</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CommonModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    CommonModule</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomerDashboardModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>無論是 root module 或是 feature module 他們的 NgModule 結構都會是一樣的，在 CLI 產生的 feature module 中，在它的頂部 import 了兩個東西，第一個是導入 <code>NgModule</code> 他與 root module 一樣允許你使用 @NgModule 裝飾器，第二個導入的事 <code>CommonModule</code> 他用於提供與多常用的 directive，比如 <code>ngIf</code> 或 <code>ngFor</code>， feature module 導入的是 <code>CommonModule</code> 而不是像 root module 中引入 <code>BrowserModule</code>， 因為他只會<code>被引入一次</code>，CommonModule 只包含常見的 directive 而 BrowserModule 是會為瀏覽器配置 Angular 應用程式，這個過程只需要完成一次。</p>
+<p>module 中的 declarations 陣列可以用來定義屬於這個 module 的 component、pipe 或 directive，要添加屬於這個 module 的 component 的話，可以使用下面的 CLI Command</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate component customer-dashboard/CustomerDashboard</span><br></pre></td></tr></table></figure>
+
+<p>或</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate component customer-dashboard --<span class="built_in">module</span> customer-dashboard.module</span><br></pre></td></tr></table></figure>
+
+<p>都可以建立一個屬於 customer-dashboard.module 的 component</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CommonModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CustomerDashboardComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./customer-dashboard.component&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    CustomerDashboardComponent</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    CommonModule</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomerDashboardModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>CustomerDashboardComponent 會透過 Import 引入 module 中，並將它添加到 <code>declarations</code> 中，這樣會讓 Angular 知道這個 Component 與這個 module 有關聯。</p>
+<h2 id="Importing-a-feature-module"><a href="#Importing-a-feature-module" class="headerlink" title="Importing a feature module"></a>Importing a feature module</h2><p>要將其他的 feature modules 合併到應用程式中，需要讓 root module 知道這件事，可以看到 customer-dashboard.module 的最下方有使用 <code>export</code> 將此 module 導出，這樣可以讓其他 module 使用，要將其添加到 AppModule 中的 <code>imports</code> 中。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; BrowserModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/platform-browser&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; AppRoutingModule &#125; <span class="keyword">from</span> <span class="string">&#x27;./app-routing.module&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AppComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./app.component&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CustomerDashboardModule &#125; <span class="keyword">from</span> <span class="string">&#x27;./customer-dashboard/customer-dashboard.module&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    AppComponent</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    AppRoutingModule,</span><br><span class="line">    CustomerDashboardModule</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [],</span><br><span class="line">  <span class="attr">bootstrap</span>: [AppComponent]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Rendering-a-feature-module’s-component-template"><a href="#Rendering-a-feature-module’s-component-template" class="headerlink" title="Rendering a feature module’s component template"></a>Rendering a feature module’s component template</h2><p>要在 AppComponent 中的 template 中使用 CustomerDashboardComponent 的 selector，首先需要將在 CustomerDashboardModule 中導出 CustomerDashboardComponent</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CommonModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CustomerDashboardComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./customer-dashboard.component&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    CustomerDashboardComponent</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    CommonModule</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">exports</span>: [</span><br><span class="line">    CustomerDashboardComponent</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomerDashboardModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>將它導出後就可以在 AppComponent 中的 template 中使用這個 selector</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;h1&gt;&#123;&#123;title&#125;&#125;&lt;/h1&gt;</span><br><span class="line"></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">app-customer-dashboard</span>&gt;</span><span class="tag">&lt;/<span class="name">app-customer-dashboard</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767ARHtAppSCa.png" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767ARHtAppSCa.png"></p>
+<hr>
+<h1 id="Providing-dependencies-in-modules"><a href="#Providing-dependencies-in-modules" class="headerlink" title="Providing dependencies in modules"></a>Providing dependencies in modules</h1><p>provider 是 Dependency Injection 系統關於如何獲取 dependency 的指令。</p>
+<h2 id="Providing-a-service"><a href="#Providing-a-service" class="headerlink" title="Providing a service"></a>Providing a service</h2><p>可以使用 Angular CLI 建立一個新的 service</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate service User</span><br></pre></td></tr></table></figure>
+
+<p>用這個 CLI Command 創建出來的 servce.ts 會長成下面這樣</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Injectable &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Injectable</span>(&#123;</span><br><span class="line">  <span class="attr">providedIn</span>: <span class="string">&#x27;root&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有了這個 service 後就可以在應用程式的任何一個位置注入 <code>UserService</code>。</p>
+<p>service 本身是由 Angular CLI 所建立出來的一個 class，他使用了 <code>@Injectable()</code> 進行修飾，默認情況下這個裝飾器有一個 property 名為 <code>providedIn</code>，他會為 service 創建一個 <code>provider</code>，在上面的例子中 <code>provideIn: &#39;root&#39;</code> 代表它他是注入在 root injector 中，代表所有地方都可以將它注入並且使用。</p>
+<h2 id="Provider-scope"><a href="#Provider-scope" class="headerlink" title="Provider scope"></a>Provider scope</h2><p>當在 root module 中提供 service 時 Angular 會將它建立成一個<code>單一的</code>、<code>共享的</code> service 實例，並注入到任何需要他的 class 中，除了這樣之外 Angular 還會將沒有被使用到的 service 移除進而優化整個應用程式，所以將 service provider 添加到 root module 後，代表所有地方都可以將它注入並且使用，這意味著如果兩個 module 都在使用這個 service 的內容時，他們使用的是相同的 service 實例<code>（singleton pattern）</code>，所以記得當添加 service 到 root module 時，他會變成整個應用程式都可以使用，並且大家都是放問到<code>同一個實例</code>，除非 module 是使用延遲載入。</p>
+<p>當有兩個不同 module 中（這邊舉例 AppModule 和 FeatureModule）的 component 使用同一個 service（這邊舉例 VoteService）所提供的服務時會發生以下的事件</p>
+<ol>
+<li>AppModule 和 FeatureModule 的 providers 都有 VoteService</li>
+<li>因為在 AppModule 中有將 FeatureModule 導入，並且這兩個 module 都有著同一個 <code>token</code>（相同的 service）的 provider，所以最上層的 AppModule 會獲勝，因為 Angular 所使用的 injector 系統在應用程式啟動後載入 root module 時，所有被導入的 module 中的 providers 都會被添加到 <code>root injector</code> 中。 </li>
+<li>所以當 FeatureModule 中的 component 要使用 VoteService 所提供的內容時，會因為在 <code>root injector</code> 中找到了被創建實例的 VoteService，所以就會直接使用它而不會創建一個新的 VoteService 實例。</li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767iOqiZ2ePK4.png" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767iOqiZ2ePK4.png"></p>
+<h2 id="Limiting-provider-scope-by-lazy-loading-modules"><a href="#Limiting-provider-scope-by-lazy-loading-modules" class="headerlink" title="Limiting provider scope by lazy loading modules"></a>Limiting provider scope by lazy loading modules</h2><p>一般來說透過 Angular CLI 所建立的 Module 中都是被<code>急切載入</code>的，這意味著當應用程式啟動的話就會立馬加載這些 module，Angular 使用 injector 系統使 module 之間的 service 可以互相使用，但在急切加載的應用程式中 root injector 會讓所有 module 的 providers 在整個應用程式中可以使用，這意味著剛剛介紹的方法變得無法使用。</p>
+<p>不過當你使用延遲加載的話就不會出現這種行為，延遲加載是指僅在需要的時候才載入某一個 Module，例如 route 變化的時候，他不會像急切加載一樣立即加載所有的 module，這意味著延遲載入的 module 中 <code>providers</code> 的 service 變得無法被其他地方使用，因為 root injector 不知知道這些 module（ 尚未被載入 ）。</p>
+<p>當 router 延遲加載一個 module 時會創建一個新的 injector，這個 injector 是 root injector 的小孩，每一個延遲加載的 module 都會有一個 <code>root injector</code> 和 <code>child injector</code>，router 會將所有 providers 從 root injector 添加到 child injector，所以當 router 透過延遲加載的 module 創建 component 時，會將延遲加載的 module 的 providers 創建成 service 實例，可能有點抽象這邊舉個個例子</p>
+<ol>
+<li><p>使用 Angular CLI 創建新的 service</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Injectable &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Injectable</span>(&#123;</span><br><span class="line">  <span class="attr">providedIn</span>: <span class="string">&#x27;root&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">VoteService</span> </span>&#123;</span><br><span class="line">  votes = <span class="number">10</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">getVotes</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.votes;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">setVotes</span>(<span class="params">vote: <span class="built_in">number</span></span>)</span> &#123;</span><br><span class="line">     <span class="built_in">this</span>.votes = vote;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component 中注入 service 並將獲得的數據顯示在畫面中</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; VoteService &#125; <span class="keyword">from</span> <span class="string">&#x27;./vote.service&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">    app component - &#123;&#123;votes&#125;&#125;</span></span><br><span class="line"><span class="string">    &lt;button (click)=&quot;onClick()&quot;&gt;get vote again&lt;/button&gt;</span></span><br><span class="line"><span class="string">    &lt;button routerLink=&quot;/orders&quot;&gt;Orders&lt;/button&gt;</span></span><br><span class="line"><span class="string">    &lt;router-outlet&gt;&lt;/router-outlet&gt;</span></span><br><span class="line"><span class="string">  `</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  votes!: <span class="built_in">number</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> voteService: VoteService</span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">ngOnInit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.votes = <span class="built_in">this</span>.voteService.getVotes();</span><br><span class="line">    <span class="built_in">this</span>.voteService.setVotes(<span class="number">25</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onClick</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.votes = <span class="built_in">this</span>.voteService.getVotes();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>接著使用 Angular CLI 創建一個延遲載入了 module 與他的 component</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate module customers --route customers --module app.module</span><br></pre></td></tr></table></figure>
+
+<p> 這邊可能會有點看不懂，但沒關係之後會詳細介紹 Angular 的延遲載入 module</p>
+</li>
+<li><p>使用上的 CLI Command 後，在 order.component 中注入 VoteService，並將獲得的數據顯示在畫面上</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; VoteService &#125; <span class="keyword">from</span> <span class="string">&#x27;../vote.service&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-orders&#x27;</span>,</span><br><span class="line">  <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;div&gt;app-orders - &#123;&#123;vote&#125;&#125;&lt;/div&gt;</span></span><br><span class="line"><span class="string">  `</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">OrdersComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  vote!: <span class="built_in">number</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> voteService: VoteService</span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.vote = <span class="built_in">this</span>.voteService.getVotes();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/91Bga9D.gif" alt="img"></p>
+<p>在 app.component 中已經將 VoteService 中的 votes 更改為 25，但是在 orders.component 中所獲得的依然是初始的 10，這代表 app.component 中所使用的 service 實例與 orders.component 中使用的 service 實例是不一樣的。</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章介紹了什麼是 Entry components，設置他的主要目的是為了讓應用程式透過這個指定的這個 component 創建最基礎的 DOM 元素，而設定這個 entry component 可以透過在 AppModule 中的bootstrap 中設定，也可以在 routed 中設定，這兩種方法都可以設定應用程式的 Entry components。</p>
+<p>介紹了什麼是 Feature module 與該如何建立與使用，通常會因為應用程式著增長，而將特定功能的相關程式組織在一起，這有助於增加應用程式中每個功能之間的邊界。</p>
+<p>最後介紹了 Providing dependencies，provider 是 Dependency Injection 系統關於如何獲取 dependency 的指令，而當在 root module 中提供 service 時 Angular 會將它建立成一個<code>單一的</code>、<code>共享的</code> service 實例，所以當不同 module 中的 component 注入並且使用同一個 Service 時，其實他們是會使用同一個 Service 的實例，這就是 Angular 的 singleton pattern 模式。</p>
+<p>但是如果是在延遲載入的 module 中使用相同的 Service 的話就會跟上面說的不一樣，延遲載入的 module 會為自己的 component 創建一個<code>新的</code> Service 實例。</p>
+<p>本章中利用延遲載入來測試延遲載入的 module 是否會跟其他立即載入的 module 共用同一個 service 實例，不過卻沒有詳細的講解這個方法，不過沒關係明天將會詳細的介紹 Angular 的延遲載入功能，那就明天見吧</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/entry-components">Angular.io - Entry components</a></li>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/feature-modules">Angular.io - Feature modules</a></li>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/providers">Angular.io - Providing dependencies in modules</a></li>
+<li><a target="_blank" rel="noopener" href="https://itnext.io/understanding-provider-scope-in-angular-4c2589de5bc">Understanding provider scope in Angular</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day30-Angular-Module-1/" rel="prev" title="Day30. Angular Module（一）">
+      <i class="fa fa-chevron-left"></i> Day30. Angular Module（一）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day32-Lazy-loading-feature-modules/" rel="next" title="Day32. Lazy-loading feature modules">
+      Day32. Lazy-loading feature modules <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Entry-components"><span class="nav-number">1.</span> <span class="nav-text">Entry components</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-bootstrapped-entry-component"><span class="nav-number">1.1.</span> <span class="nav-text">A bootstrapped entry component</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-routed-entry-component"><span class="nav-number">1.2.</span> <span class="nav-text">A routed entry component</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-entryComponents-array"><span class="nav-number">1.3.</span> <span class="nav-text">The entryComponents array</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Feature-modules"><span class="nav-number">2.</span> <span class="nav-text">Feature modules</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Feature-modules-vs-root-modules"><span class="nav-number">2.1.</span> <span class="nav-text">Feature modules vs. root modules</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-make-a-feature-module"><span class="nav-number">2.2.</span> <span class="nav-text">How to make a feature module</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Importing-a-feature-module"><span class="nav-number">2.3.</span> <span class="nav-text">Importing a feature module</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Rendering-a-feature-module%E2%80%99s-component-template"><span class="nav-number">2.4.</span> <span class="nav-text">Rendering a feature module’s component template</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Providing-dependencies-in-modules"><span class="nav-number">3.</span> <span class="nav-text">Providing dependencies in modules</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Providing-a-service"><span class="nav-number">3.1.</span> <span class="nav-text">Providing a service</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Provider-scope"><span class="nav-number">3.2.</span> <span class="nav-text">Provider scope</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Limiting-provider-scope-by-lazy-loading-modules"><span class="nav-number">3.3.</span> <span class="nav-text">Limiting provider scope by lazy loading modules</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

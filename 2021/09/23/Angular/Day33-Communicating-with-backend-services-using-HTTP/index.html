@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在現代的網頁中絕大部分會需要與 server 互相溝通，無論是從 server 獲取商品的資料用於顯示在畫面中，還是畫面中的設定要儲存回 server 的設定都需與後端 server 互相溝通，Angular 提供了一個 client 端的 HTTP API，那便是 @angular&#x2F;common&#x2F;http 中的 HttpClient service class，該怎麼使用就繼續往下看吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day33. Communicating with backend services using HTTP">
+<meta property="og:url" content="https://fandix.github.io/2021/09/23/Angular/Day33-Communicating-with-backend-services-using-HTTP/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在現代的網頁中絕大部分會需要與 server 互相溝通，無論是從 server 獲取商品的資料用於顯示在畫面中，還是畫面中的設定要儲存回 server 的設定都需與後端 server 互相溝通，Angular 提供了一個 client 端的 HTTP API，那便是 @angular&#x2F;common&#x2F;http 中的 HttpClient service class，該怎麼使用就繼續往下看吧。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://fandix.github.io/images/emoticon/emoticon37.gif">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/201247675b7AjP33Yf.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767FRlBCLRtNR.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767SQIcmtqBlD.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767Bqun7G1JtE.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767NnxhXx7B2g.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767AVDHOaTtMH.png">
+<meta property="og:image" content="https://i.imgur.com/EgXMfKL.gif">
+<meta property="og:image" content="https://i.imgur.com/K8lTVkw.gif">
+<meta property="og:image" content="https://i.imgur.com/cAovjJr.gif">
+<meta property="article:published_time" content="2021-09-23T09:48:38.000Z">
+<meta property="article:modified_time" content="2021-09-23T09:49:19.446Z">
+<meta property="article:author" content="Fandix Huang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fandix.github.io/images/emoticon/emoticon37.gif">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/23/Angular/Day33-Communicating-with-backend-services-using-HTTP/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day33. Communicating with backend services using HTTP | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day33-Communicating-with-backend-services-using-HTTP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day33. Communicating with backend services using HTTP
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-23 17:48:38 / Modified: 17:49:19" itemprop="dateCreated datePublished" datetime="2021-09-23T17:48:38+08:00">2021-09-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在現代的網頁中絕大部分會需要與 server 互相溝通，無論是從 server 獲取商品的資料用於顯示在畫面中，還是畫面中的設定要儲存回 server 的設定都需與後端 server 互相溝通，Angular 提供了一個 client 端的 HTTP API，那便是 <code>@angular/common/http</code> 中的 <code>HttpClient</code> service class，該怎麼使用就繼續往下看吧<img src="/images/emoticon/emoticon37.gif" alt="/images/emoticon/emoticon37.gif">。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/201247675b7AjP33Yf.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210905/201247675b7AjP33Yf.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="An-overview-of-HTTP"><a href="#An-overview-of-HTTP" class="headerlink" title="An overview of HTTP"></a>An overview of HTTP</h1><p>HTTP 是一種允許<code>獲得數據</code>（例如 HTML 文檔）的協議，他是一種 client 端與 server 端的協議是數據交換的基礎，這意味著通常 request 是由接收方（ client 端）發起的，從而獲得不同的數據或檔案，從 client 發送的消息稱為 <code>request</code> 而 server 端回傳的數據稱為 <code>response</code>。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767FRlBCLRtNR.png" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767FRlBCLRtNR.png"></p>
+<h2 id="HTTP-request-methods"><a href="#HTTP-request-methods" class="headerlink" title="HTTP request methods"></a>HTTP request methods</h2><p>HTTP 定義了一組 request method 用於 client 端對 server 端的所有操作，他們分別是</p>
+<ul>
+<li><strong>GET</strong>：GET request 用於<code>請求數據</code></li>
+<li><strong>HEAD</strong>：和 GET request 一樣用於請求數據，但 response 沒有內容</li>
+<li><strong>POST</strong>：用於向指定 server 提交數據，會導致狀態更改或對 server 產稱副作用（更改數據）</li>
+<li><strong>PUT</strong>：用於將有效的數據替換掉目標資源的當前值</li>
+<li><strong>DELETE</strong>：用於刪除指定資源</li>
+<li><strong>CONNECT</strong>：用於建立到目標資源的 server 通道</li>
+<li><strong>OPTION</strong>：用於描述目標資源的通選項</li>
+</ul>
+<hr>
+<h1 id="Setup-for-server-communication"><a href="#Setup-for-server-communication" class="headerlink" title="Setup for server communication"></a>Setup for server communication</h1><p>大概介紹完 HTTP 與 HTTP method 後，接著回到 Angular 的內容，要在 Angular 中使用 HttpClient 之前需要先導入 <code>HttpClientModule</code>，大多數操作都會將他到入到 AppModule 中。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; BrowserModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/platform-browser&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClientModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    HttpClientModule,</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    AppComponent,</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">bootstrap</span>: [ AppComponent ]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接著可以在需要使用到 httpClient 的地方將它注入到 component 中</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Injectable &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClient &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Injectable</span>()</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ConfigService</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> http: HttpClient</span>)</span> &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="Requesting-data-from-a-server"><a href="#Requesting-data-from-a-server" class="headerlink" title="Requesting data from a server"></a>Requesting data from a server</h1><p>首先介紹的是使用 HttpClient.get() method 從 server 中獲取數據，這個同步的 method 會發送一個 HTTP request，並在收到 responses 後會返回一個 <code>Observable</code>，responses 的類型會依據 request 中的 <code>observe</code> 和 <code>responseType</code> 決定，他接收兩個參數，一個是 server 的路徑 url 第二個是用於設置 request 的 option object。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">options: &#123;</span><br><span class="line">  headers?: HttpHeaders | &#123;[header: <span class="built_in">string</span>]: <span class="built_in">string</span> | <span class="built_in">string</span>[]&#125;,</span><br><span class="line">  observe?: <span class="string">&#x27;body&#x27;</span> | <span class="string">&#x27;events&#x27;</span> | <span class="string">&#x27;response&#x27;</span>,</span><br><span class="line">  params?: HttpParams|&#123;[param: <span class="built_in">string</span>]: <span class="built_in">string</span> | <span class="built_in">number</span> | <span class="built_in">boolean</span> | ReadonlyArray&lt;<span class="built_in">string</span> | <span class="built_in">number</span> | <span class="built_in">boolean</span>&gt;&#125;,</span><br><span class="line">  reportProgress?: <span class="built_in">boolean</span>,</span><br><span class="line">  responseType?: <span class="string">&#x27;arraybuffer&#x27;</span>|<span class="string">&#x27;blob&#x27;</span>|<span class="string">&#x27;json&#x27;</span>|<span class="string">&#x27;text&#x27;</span>,</span><br><span class="line">  withCredentials?: <span class="built_in">boolean</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中重要的是 <code>observe</code> 與 <code>responseType</code>，<code>observe</code> 會決定要返回多少 response，<code>responseType</code> 會指定返回 response 的格式。</p>
+<p>所以如果要接收一個 JSON 形式的數據的話，需要將 <code>get()</code> 的 option 設置為 <code>&#123; observe: &#39;body&#39;, responseType: &#39;json&#39; &#125;</code> ，不過這些選項是預設值就算不加也會傳遞一樣的設置，下面來舉個例子，目標是獲得這一組數據</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;heroesUrl&quot;</span>: <span class="string">&quot;api/heroes&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;textfile&quot;</span>: <span class="string">&quot;assets/textfile.txt&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;date&quot;</span>: <span class="string">&quot;2021-09-03&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>在 app.component.ts 中注入 HttpClient service</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClient &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./app.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  heros!: <span class="built_in">any</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> http: HttpClient</span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">ngOnInit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>接著在 app.component.ts 的 <code>ngOnInit()</code> 中使用 get 獲取數據，這邊我是有建一個 server，如果不想建的話也可以跟官方文檔一樣把假數據放在專案的別的位置</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClient &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./app.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  heros!: <span class="built_in">any</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> http: HttpClient</span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">ngOnInit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.http.get(<span class="string">&#x27;http://localhost:3000/heros&#x27;</span>).subscribe(<span class="function">(<span class="params">res: <span class="built_in">any</span></span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.heros = res[<span class="number">0</span>];</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>接著在 template 中把獲得的數據顯示在上面</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;content&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h4</span>&gt;</span>HeroUrl: &#123;&#123;heros.herosUrl&#125;&#125;<span class="tag">&lt;/<span class="name">h4</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h4</span>&gt;</span>textFile: &#123;&#123;heros.textFile&#125;&#125;<span class="tag">&lt;/<span class="name">h4</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h4</span>&gt;</span>date: &#123;&#123;heros.date&#125;&#125;<span class="tag">&lt;/<span class="name">h4</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767SQIcmtqBlD.png" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767SQIcmtqBlD.png"></p>
+<h2 id="Requesting-a-typed-response"><a href="#Requesting-a-typed-response" class="headerlink" title="Requesting a typed response"></a>Requesting a typed response</h2><p>可以構造 HttpClient request 來聲明獲得的 reponse 數據類型，可以更好的對獲得的數據進行處理，收先先定義 responses 的資料型態</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> Config &#123;</span><br><span class="line">  <span class="attr">heroesUrl</span>: <span class="built_in">string</span>;</span><br><span class="line">  textfile: <span class="built_in">string</span>;</span><br><span class="line">  date: <span class="built_in">any</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>將這個資料型態定義給 HttpClient.get() </p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">ngOnInit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>.http.get&lt;Config[]&gt;(<span class="string">&#x27;http://localhost:3000/heros&#x27;</span>).subscribe(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.heros = res[<span class="number">0</span>];</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Reading-the-full-response"><a href="#Reading-the-full-response" class="headerlink" title="Reading the full response"></a>Reading the full response</h2><p>在前面的範例中沒有設定 HttpClient.get() 的 option object，因為他預設就會獲得 <code>JSON</code> 格式的資料，不過有時候 server 會返回特殊的 header 或狀態用於指定某些特殊的條件，可以使用 <code>observe</code> 設定需要獲取完整的數據</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="title">ngOnInit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>.http</span><br><span class="line">    .get&lt;Config[]&gt;(<span class="string">&#x27;http://localhost:3000/heros&#x27;</span>, &#123; <span class="attr">observe</span>: <span class="string">&#x27;response&#x27;</span> &#125;)</span><br><span class="line">    .subscribe(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(res);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果要獲取完整數據的話，就會連 header, status…. 都會獲得</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767Bqun7G1JtE.png" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767Bqun7G1JtE.png"></p>
+<h2 id="Requesting-non-JSON-data"><a href="#Requesting-non-JSON-data" class="headerlink" title="Requesting non-JSON data"></a>Requesting non-JSON data</h2><p>除了向上面一樣 get 一組 <code>JSON</code> 型態的檔案之外，還可以隨著後端 server 回傳的數據類型不同 get 的 option 進行操作，比如今天後端傳遞的是一個 <code>string</code> 類型的數據，如果不去設定 request 的 option 的話就會出錯，因為預設你是會獲得 <code>JSON</code> 格式的數據但實際上拿到的卻是 <code>String</code>，這時就需要更改 option</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.http</span><br><span class="line">  .get(<span class="string">&#x27;http://localhost:3000/heroName&#x27;</span>, &#123; <span class="attr">responseType</span>: <span class="string">&#x27;text&#x27;</span> &#125;)</span><br><span class="line">  .subscribe(<span class="function">(<span class="params">res</span>) =&gt;</span> <span class="built_in">console</span>.log(res));</span><br></pre></td></tr></table></figure>
+
+<p>將 <code>responseType</code> 更改為 <code>text</code> 代表獲得的 responses 會是 string 形式。</p>
+<hr>
+<h1 id="Handling-request-errors"><a href="#Handling-request-errors" class="headerlink" title="Handling request errors"></a>Handling request errors</h1><p>向 server 發送 request 的行為一定不會每一次都成功，所以當 request 失敗的話 HttpClient 將會返回一個 <code>error object</code> 而不是成功的 response，所以在我們撰寫處理 response 的 method 時也應該要同時加入<code>處理錯誤</code>的動作，所以當發生錯誤時可以獲得<code>失敗的原因</code>，這一方面可以讓我們開發者知道哪裡出了問題，也可以通知使用者發生了錯誤而不是空白畫面給他，甚至某些情況下還得再次發送 request 等等的錯誤處理。</p>
+<h2 id="Getting-error-details"><a href="#Getting-error-details" class="headerlink" title="Getting error details"></a>Getting error details</h2><p>當 request 數據失敗的話，應用程式應該向使用者提供有用的反饋告入使用這發生了什麼事，是不是操作不當或是系統有問題等等，通常必較常會發生兩種錯誤：</p>
+<ul>
+<li>Server 後端可能會拒絕 client 的 request，這時會返回帶有<code>狀態</code> 的代碼（ 404, 500… ）的 HTTP response，這就是 error response</li>
+<li>Client 端可能會出錯，比如說阻止 request 完成的網路錯誤或 RxJS 拋出的錯誤，這屬於前端的錯誤，這類型的錯誤狀態會是 <code>0</code>，error obejct 的 property 會包含一個 <code>ProgressEvent</code>，他可以提供更多的錯誤信息。</li>
+</ul>
+<p>HttpClient 在其 HttpErrorResponse 中會捕獲這兩種錯誤，可以檢查錯誤的原因，所以將剛剛的 get() 加上錯誤處理</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.http</span><br><span class="line">  .get(<span class="string">&#x27;http://localhost:3000/heros&#x27;</span>, &#123; <span class="attr">observe</span>: <span class="string">&#x27;response&#x27;</span> &#125;)</span><br><span class="line">  .pipe(</span><br><span class="line">    catchError(<span class="built_in">this</span>.handleError)</span><br><span class="line">).subscribe(<span class="function">(<span class="params">res: <span class="built_in">any</span></span>) =&gt;</span> <span class="built_in">this</span>.heros = res.body[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">handleError</span>(<span class="params">error: HttpErrorResponse</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (error.status === <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="built_in">console</span>.error(<span class="string">&#x27;An error occurred&#x27;</span>, error.error);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.error(<span class="string">`Back-end returned code <span class="subst">$&#123;error.status&#125;</span>, body was: <span class="subst">$&#123;error.error&#125;</span>`</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> throwError (<span class="string">&#x27;Something bad happened; Please try again later.&#x27;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Retrying-a-failed-request"><a href="#Retrying-a-failed-request" class="headerlink" title="Retrying a failed request"></a>Retrying a failed request</h2><p>有時候遇到 response 錯誤只是暫時的，可以再試一次說不定就會恢復正常，例如網路中斷就會導致 request 失敗，但是一但網路回歸正常後便可以再次 request，這時就可以使用 RxJS 提供的重試操作符 <code>retry()</code> 將會自動重新 request，次數可以隨意設定</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.http</span><br><span class="line">  .get(<span class="string">&#x27;http://localhost:3000/heros&#x27;</span>, &#123; <span class="attr">observe</span>: <span class="string">&#x27;response&#x27;</span> &#125;)</span><br><span class="line">  .pipe(</span><br><span class="line">    catchError(<span class="built_in">this</span>.handleError),</span><br><span class="line">    retry(<span class="number">3</span>)</span><br><span class="line">).subscribe(<span class="function">(<span class="params">res: <span class="built_in">any</span></span>) =&gt;</span> <span class="built_in">this</span>.heros = res.body[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="Sending-data-to-a-server"><a href="#Sending-data-to-a-server" class="headerlink" title="Sending data to a server"></a>Sending data to a server</h1><p>除了從 server 獲得數據之外，HttpClinet 還支持其他 HTTP method，比如 PUT, POST 和 DELETE，可以使用它們來修改 server 的數據，下面將會做一個 Todo 的範例，UI 會填入代辦事項並將待辦事項寫入 server 中，也可以對他進行更改與刪除。</p>
+<h2 id="Post-todo-data-to-server"><a href="#Post-todo-data-to-server" class="headerlink" title="Post todo data to server"></a>Post todo data to server</h2><p>第一步要建立一個 Todo 的畫面並將在畫面中輸入的內容利用 <code>HttpClient.post</code> 傳遞給 server</p>
+<ol>
+<li><p>首先利用 Angular CLI 創建一個 component</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate component todo-form</span><br></pre></td></tr></table></figure></li>
+<li><p>在 todo-form.component.ts 中建立 todo 的 form model（記得要在 AppModule 中添加 <code>ReactiveFormsModule</code> 喔）</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-todo-form&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./todo-form.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./todo-form.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">TodoFormComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  myForm = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">    <span class="attr">title</span>: [<span class="string">&#x27;&#x27;</span>, Validators.required],</span><br><span class="line">    <span class="attr">description</span>: [<span class="string">&#x27;&#x27;</span>, Validators.required]</span><br><span class="line">  &#125;)</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder</span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>接著在 todo-form.component.html 中添加輸入元件並綁定 FormControl</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;myForm&quot;</span> (<span class="attr">submit</span>)=<span class="string">&quot;onSubmit()&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;input-area&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;title&quot;</span>&gt;</span>Title <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span></span></span><br><span class="line"><span class="tag">      <span class="attr">id</span>=<span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">type</span>=<span class="string">&quot;text&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">formControlName</span>=<span class="string">&quot;title&quot;</span></span></span><br><span class="line"><span class="tag">    /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;input-area&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;description&quot;</span>&gt;</span>Description <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">textarea</span></span></span><br><span class="line"><span class="tag">      <span class="attr">id</span>=<span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">type</span>=<span class="string">&quot;text&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">formControlName</span>=<span class="string">&quot;description&quot;</span></span></span><br><span class="line"><span class="tag">    &gt;</span><span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-success&quot;</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span>&gt;</span>Add Todo<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767NnxhXx7B2g.png" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767NnxhXx7B2g.png"></p>
+<ol>
+<li><p>在 todo-form.component.ts 中注入 HttpClient 並新增 post methdo</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClient, HttpHeaders &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-todo-form&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./todo-form.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./todo-form.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">TodoFormComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  myForm = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">    <span class="attr">title</span>: [<span class="string">&#x27;&#x27;</span>, Validators.required],</span><br><span class="line">    <span class="attr">description</span>: [<span class="string">&#x27;&#x27;</span>, Validators.required]</span><br><span class="line">  &#125;)</span><br><span class="line">  id = <span class="number">0</span>;</span><br><span class="line">  httpOptions = &#123;</span><br><span class="line">    <span class="attr">headers</span>: <span class="keyword">new</span> HttpHeaders(&#123;</span><br><span class="line">      <span class="string">&#x27;Access-Control-Allow-Origin&#x27;</span>: <span class="string">&#x27;*&#x27;</span>,</span><br><span class="line">      <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span></span><br><span class="line">    &#125;),</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder, <span class="keyword">private</span> http: HttpClient</span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onSubmit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> body = &#123;</span><br><span class="line">      <span class="attr">id</span>: <span class="built_in">this</span>.id,</span><br><span class="line">      <span class="attr">title</span>: <span class="built_in">this</span>.myForm.value.title,</span><br><span class="line">      <span class="attr">description</span>: <span class="built_in">this</span>.myForm.value.description</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">this</span>.http</span><br><span class="line">      .post(<span class="string">&#x27;http://localhost:3000/todo&#x27;</span>, body, <span class="built_in">this</span>.httpOptions)</span><br><span class="line">      .subscribe(<span class="function">(<span class="params">todo: <span class="built_in">any</span></span>) =&gt;</span> <span class="built_in">this</span>.todoList = todo);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">this</span>.id++;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 在 onSubmit() 中添加 <code>HttpClient.post</code> method，將 Todo 中的數據傳遞給 Server，這邊新增了一個 property <code>id</code>，用於後面要指定更改或刪除哪一個 todo item，現在點擊畫面中的 Add todo 不會有任何動作，不過可以打開瀏覽器的 Network 確實可以看到有一個 POST 的 method。</p>
+</li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767AVDHOaTtMH.png" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767AVDHOaTtMH.png"></p>
+<h2 id="Get-todo-list-from-server"><a href="#Get-todo-list-from-server" class="headerlink" title="Get todo list from server"></a>Get todo list from server</h2><p>要確認是否確實有將數據傳送給 server，可以使用上面介紹的 <code>HttpClient.get</code> method 取得 todo 的資料</p>
+<ol>
+<li><p>在 todo-form.component.ts 中的 OnInit() 中使用 HttpClient.get 獲得數據</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClient, HttpHeaders &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-todo-form&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./todo-form.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./todo-form.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">TodoFormComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  <span class="attr">todoList</span>: <span class="built_in">any</span>[] = [];                                    <span class="comment">// (1)</span></span><br><span class="line"> </span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder, <span class="keyword">private</span> http: HttpClient</span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.http.get(<span class="string">&#x27;http://localhost:3000/todo&#x27;</span>).subscribe(<span class="function">(<span class="params">todo: <span class="built_in">any</span></span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.todoList = todo;                                <span class="comment">// (2)</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 新增一個 property 用於存放從 server 獲得的數據</li>
+<li>(2): 在 ngOnInit 中使用 HttpClient.get 獲得 server 數據並存放在 todoList 中</li>
+</ul>
+</li>
+<li><p>使用 Angular CLI 創建一個 component 用於顯示獲得的 todo 數據</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate component todo-list</span><br></pre></td></tr></table></figure></li>
+<li><p>在 todo-list.component.ts 中使用 <code>@Input()</code> 裝飾 property 代表從父層傳遞的數據</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Input &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-todo-list&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./todo-list.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./todo-list.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">TodoListComponent</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Input</span>() todoList: <span class="built_in">any</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 todo-list.component.html 中把獲得的 todo 數據顯示在畫面中</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngFor</span>=<span class="string">&quot;let todo of todoList&quot;</span> <span class="attr">class</span>=<span class="string">&quot;todo-content&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;todo-item&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;title&quot;</span>&gt;</span>Title: &#123;&#123; todo.title &#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;desc&quot;</span>&gt;</span>Description: &#123;&#123; todo.description &#125;&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;optionBtn&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-success&quot;</span>&gt;</span>E<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-danger&quot;</span>&gt;</span>X<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p> 這邊先新增了兩個 <code>&lt;button&gt;</code> 用於對單一 todo item 進行刪除或更改</p>
+</li>
+<li><p>在 todo-form.component.html 中使用 todo-list 的 select 並使用 property binding 綁定 todo 數據</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;todo-list&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">app-todo-list</span> [<span class="attr">todoList</span>]=<span class="string">&quot;todoList&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-todo-list</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/EgXMfKL.gif" alt="img"></p>
+<h2 id="Delete-todo-item"><a href="#Delete-todo-item" class="headerlink" title="Delete todo item"></a>Delete todo item</h2><p>在畫面中可以順利看到傳遞給 server 的數據後，接著要對這些數據進行刪除</p>
+<ol>
+<li><p>將 todo-list.component.ts 中新增一個 <code>@Output</code> 用於將點擊刪除事件傳遞給父層，這邊我的設計是將所有 http 動作都放在同一個 component 中</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Input, Output, EventEmitter &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-todo-list&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./todo-list.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./todo-list.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">TodoListComponent</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Input</span>() todoList: <span class="built_in">any</span>;</span><br><span class="line">  <span class="meta">@Output</span>() deleteEvent = <span class="keyword">new</span> EventEmitter&lt;<span class="built_in">number</span>&gt;();</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onDelete</span>(<span class="params">todoItem: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.deleteEvent.emit(todoItem.id);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 這邊向父層傳遞被選中的 todo item 的 id，用於刪除指定 id 的數據</p>
+</li>
+<li><p>在 todo-form.component.ts 中新增 onDelete() method 用於調用 <code>HttpClient.delete</code> method</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClient, HttpHeaders &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-todo-form&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./todo-form.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./todo-form.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">TodoFormComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  httpOptions = &#123;</span><br><span class="line">    <span class="attr">headers</span>: <span class="keyword">new</span> HttpHeaders(&#123;</span><br><span class="line">      <span class="string">&#x27;Access-Control-Allow-Origin&#x27;</span>: <span class="string">&#x27;*&#x27;</span>,</span><br><span class="line">      <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span></span><br><span class="line">    &#125;),</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder, <span class="keyword">private</span> http: HttpClient</span>)</span> &#123; &#125;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">	</span><br><span class="line">  <span class="function"><span class="title">onDelete</span>(<span class="params">id: <span class="built_in">number</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.http</span><br><span class="line">      .delete(<span class="string">`http://localhost:3000/todo/<span class="subst">$&#123;id&#125;</span>`</span>, <span class="built_in">this</span>.httpOptions)</span><br><span class="line">      .subscribe(<span class="function">(<span class="params">todo: <span class="built_in">any</span></span>) =&gt;</span> <span class="built_in">this</span>.todoList = todo);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p> 將被選中的 todo item 的 id 做為參數加在 url 上，讓 server 端可以獲得指定的 Id 並對刪除指定的 todo item。</p>
+</li>
+<li><p>在 todo-form.component.html 中綁定 <code>@Output()</code> 事件</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;todo-list&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">app-todo-list</span> </span></span><br><span class="line"><span class="tag">		[<span class="attr">todoList</span>]=<span class="string">&quot;todoList&quot;</span> </span></span><br><span class="line"><span class="tag">		(<span class="attr">deleteEvent</span>)=<span class="string">&quot;onDelete($event)&quot;</span></span></span><br><span class="line"><span class="tag">	&gt;</span><span class="tag">&lt;/<span class="name">app-todo-list</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/K8lTVkw.gif" alt="img"></p>
+<h2 id="Put-todo-data-to-update-server"><a href="#Put-todo-data-to-update-server" class="headerlink" title="Put todo data to update server"></a>Put todo data to update server</h2><p>完成刪除功能後，接著要利用 <code>HttpClient.put</code> method 更改 server 中的 todo 數據，不過要做到這一點首先要先建立一個畫面，用來顯示目前的 todo 內容，對他的內容更改後才能送出 PUT 更新 server 中的數據</p>
+<ol>
+<li><p>利用 Angular CLI 創建一個 component 用於顯示被選中的 todo item 內容</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate component edit-panel</span><br></pre></td></tr></table></figure></li>
+<li><p>在 edit-panel.component.ts 中建立 Todo 的 form model</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit, Input &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-edit-panel&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./edit-panel.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./edit-panel.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">EditPanelComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  myForm = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">    <span class="attr">id</span>: [<span class="string">&#x27;&#x27;</span>],</span><br><span class="line">    <span class="attr">title</span>: [<span class="string">&#x27;&#x27;</span>, Validators.required],</span><br><span class="line">    <span class="attr">description</span>: [<span class="string">&#x27;&#x27;</span>, Validators.required]</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder</span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 todo-list.component.ts 中建立 onEdit() method，他和 onDelete() 一樣傳遞被選中的 Todo id 給父層</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, Input, Output, EventEmitter &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-todo-list&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./todo-list.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./todo-list.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">TodoListComponent</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Input</span>() todoList: <span class="built_in">any</span>;</span><br><span class="line">  <span class="meta">@Output</span>() openPanelEvent = <span class="keyword">new</span> EventEmitter&lt;<span class="built_in">number</span>&gt;();</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">	<span class="comment">//... </span></span><br><span class="line">	</span><br><span class="line">  <span class="function"><span class="title">onEdit</span>(<span class="params">todoItem: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.openPanelEvent.emit(todoItem.id);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 todo-form.component.ts 中建立 onOpenEditPanel() method，這邊使用 <code>HttpClient.get</code> 獲取被選中的 todo item 數據，這邊多加入一個 property 用於決定是否開啟 edit-panel 畫面</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClient, HttpHeaders &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-todo-form&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./todo-form.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./todo-form.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">TodoFormComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  <span class="attr">todoItem</span>: <span class="built_in">any</span>;                                          <span class="comment">// (1)</span></span><br><span class="line">  isEditPanelOpen = <span class="literal">false</span>;                                <span class="comment">// (2)</span></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder, <span class="keyword">private</span> http: HttpClient</span>)</span> &#123; &#125;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="title">onOpenEditPanel</span>(<span class="params">id: <span class="built_in">number</span></span>)</span> &#123;                           <span class="comment">// (3)</span></span><br><span class="line">    <span class="built_in">this</span>.http.get(<span class="string">`http://localhost:3000/todo/<span class="subst">$&#123;id&#125;</span>`</span>)</span><br><span class="line">    .subscribe(<span class="function">(<span class="params">todo: <span class="built_in">any</span></span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.todoItem = todo;</span><br><span class="line">      <span class="built_in">this</span>.isEditPanelOpen = <span class="literal">true</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 新增一個 property 用於獲得指定的 todo item 數據</li>
+<li>(2): 新增一個 property 用於決定是否開啟 edit-panel 畫面</li>
+<li>(3): 新增一個 method 用於調用 <code>HttpClient.get</code>，這邊和 delete 一樣將 id 傳遞給 url 做為參數，server 會利用 url 的參數回傳指定 id 的數據</li>
+</ul>
+<p> 這邊記得要在 todo-form.component.html 中將 Output event 綁定</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;todo-list&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">app-todo-list</span> </span></span><br><span class="line"><span class="tag">		[<span class="attr">todoList</span>]=<span class="string">&quot;todoList&quot;</span> </span></span><br><span class="line"><span class="tag">		(<span class="attr">deleteEvent</span>)=<span class="string">&quot;onDelete($event)&quot;</span> </span></span><br><span class="line"><span class="tag">		(<span class="attr">openPanelEvent</span>)=<span class="string">&quot;onOpenEditPanel($event)&quot;</span></span></span><br><span class="line"><span class="tag">	&gt;</span><span class="tag">&lt;/<span class="name">app-todo-list</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>將獲得的 todo 數據透過 property binding 綁定給 edit-panel </p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> *<span class="attr">ngIf</span>=<span class="string">&quot;isEditPanelOpen &amp;&amp; todoItem&quot;</span> <span class="attr">class</span>=<span class="string">&quot;edit-panel&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">app-edit-panel</span> [<span class="attr">todoItem</span>]=<span class="string">&quot;todoItem&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-edit-panel</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p> 這邊加上 <code>*ngIf</code> 只有在 isEditPanelOpen 為 true 和 todoItem 有數據時才會顯示畫面</p>
+</li>
+<li><p>由於需要將被選中的 todo 數據顯示在畫面中，所以要在 edit-panel.component.ts 的 ngOnInit() 中使用 <code>setValue</code> 設定表單的預設值</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit, Input, Output, EventEmitter &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-edit-panel&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./edit-panel.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./edit-panel.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">EditPanelComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Input</span>() todoItem: <span class="built_in">any</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder</span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.myForm.setValue(<span class="built_in">this</span>.todoItem);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/cAovjJr.gif" alt="img"></p>
+<ol>
+<li><p>和 delete 一樣在 edit-panel.component.ts 中利用 <code>Output()</code>  將更改後的數據傳遞給父層</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit, Input, Output, EventEmitter &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-edit-panel&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./edit-panel.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./edit-panel.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">EditPanelComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Output</span>() editEvent = <span class="keyword">new</span> EventEmitter&lt;<span class="built_in">any</span>&gt;();</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder</span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">  <span class="function"><span class="title">onSubmit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.editEvent.emit(<span class="built_in">this</span>.myForm.value);</span><br><span class="line">  &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 todo-form.component.ts 中新增一個 method 用於調用 <code>HttpClient.put</code> 將更新的數據傳遞給 server 更新數據</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder, Validators &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClient, HttpHeaders &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common/http&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-todo-form&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./todo-form.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./todo-form.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">TodoFormComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  isEditPanelOpen = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder, <span class="keyword">private</span> http: HttpClient</span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">  <span class="function"><span class="title">onEdit</span>(<span class="params">todoItem: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.http.put(<span class="string">`http://localhost:3000/todo/<span class="subst">$&#123;todoItem.id&#125;</span>`</span>, todoItem, <span class="built_in">this</span>.httpOptions)</span><br><span class="line">    .subscribe(<span class="function">(<span class="params">todo: <span class="built_in">any</span></span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.todoList = todo;</span><br><span class="line">      <span class="built_in">this</span>.isEditPanelOpen = <span class="literal">false</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 這邊和 delete 一樣將 id 傳遞給 url 做為參數，server 會利用 url 的參數更改指定的數據內容</p>
+</li>
+</ol>
+<p>gif</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章介紹了基本的 HTTP 概念與 HTTP method 這是 client 與 server 溝通的方法，可以使用 get 從 server 端獲得數據、可以使用 post 將 client 端的數據傳給 server、可以使用 delete 刪除 server 的數據也可以使用 Put 更改 server 的數據。</p>
+<p>最後介紹了如何利用 Angular 提供的 HttpClient 達成上面提到的所有功能，由於上面提到的範例與官方文檔的不一樣，我是自己寫 back-end server，所以有些地方可能會比較複雜，如果有看不懂的問題可以在下面留言問我喔！</p>
+<p>Angular 的 HTTP 因為篇章也比較長，所以也會拆成兩部分講解，所以明天還會介紹 Angular Http 的一些其他功能與細節，那就明天見吧！</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/http#adding-and-updating-headers">Angular.io - Communicating with backend services using HTTP</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview">An overview of HTTP</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">HTTP request methods</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day32-Lazy-loading-feature-modules/" rel="prev" title="Day32. Lazy-loading feature modules">
+      <i class="fa fa-chevron-left"></i> Day32. Lazy-loading feature modules
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/24/Typescript/The-Basics/" rel="next" title="TypeScript - Narrowing">
+      TypeScript - Narrowing <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#An-overview-of-HTTP"><span class="nav-number">1.</span> <span class="nav-text">An overview of HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-request-methods"><span class="nav-number">1.1.</span> <span class="nav-text">HTTP request methods</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Setup-for-server-communication"><span class="nav-number">2.</span> <span class="nav-text">Setup for server communication</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Requesting-data-from-a-server"><span class="nav-number">3.</span> <span class="nav-text">Requesting data from a server</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Requesting-a-typed-response"><span class="nav-number">3.1.</span> <span class="nav-text">Requesting a typed response</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reading-the-full-response"><span class="nav-number">3.2.</span> <span class="nav-text">Reading the full response</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Requesting-non-JSON-data"><span class="nav-number">3.3.</span> <span class="nav-text">Requesting non-JSON data</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Handling-request-errors"><span class="nav-number">4.</span> <span class="nav-text">Handling request errors</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Getting-error-details"><span class="nav-number">4.1.</span> <span class="nav-text">Getting error details</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Retrying-a-failed-request"><span class="nav-number">4.2.</span> <span class="nav-text">Retrying a failed request</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sending-data-to-a-server"><span class="nav-number">5.</span> <span class="nav-text">Sending data to a server</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Post-todo-data-to-server"><span class="nav-number">5.1.</span> <span class="nav-text">Post todo data to server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Get-todo-list-from-server"><span class="nav-number">5.2.</span> <span class="nav-text">Get todo list from server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Delete-todo-item"><span class="nav-number">5.3.</span> <span class="nav-text">Delete todo item</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Put-todo-data-to-update-server"><span class="nav-number">5.4.</span> <span class="nav-text">Put todo data to update server</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">6.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">7.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

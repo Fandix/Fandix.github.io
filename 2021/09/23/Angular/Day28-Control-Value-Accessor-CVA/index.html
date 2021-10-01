@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前幾篇介紹了 Form 的基本操作與概念，也介紹了如何在表單中加入驗證，最後要來介紹 Angular Form 中一個我滿喜歡的功能，Control Value Accessor 簡稱 CVA，就像開發 component 一樣，當這個 component 太大的時候我們會選擇將這個大的 component 拆解成一個一個小的 component，這樣比較方便撰寫維護與測試，CVA 就有是這種概念">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day28. Control Value Accessor (CVA)">
+<meta property="og:url" content="https://fandix.github.io/2021/09/23/Angular/Day28-Control-Value-Accessor-CVA/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="前幾篇介紹了 Form 的基本操作與概念，也介紹了如何在表單中加入驗證，最後要來介紹 Angular Form 中一個我滿喜歡的功能，Control Value Accessor 簡稱 CVA，就像開發 component 一樣，當這個 component 太大的時候我們會選擇將這個大的 component 拆解成一個一個小的 component，這樣比較方便撰寫維護與測試，CVA 就有是這種概念">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210827/20124767DJLXplGZxf.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210827/20124767H8MEdPe5hC.png">
+<meta property="og:image" content="https://i.imgur.com/aSaF9ac.gif">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210827/20124767aFhKxAHBIW.png">
+<meta property="og:image" content="https://i.imgur.com/rz234q6.gif">
+<meta property="article:published_time" content="2021-09-23T09:37:59.000Z">
+<meta property="article:modified_time" content="2021-09-23T09:39:01.831Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210827/20124767DJLXplGZxf.png">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/23/Angular/Day28-Control-Value-Accessor-CVA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day28. Control Value Accessor (CVA) | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day28-Control-Value-Accessor-CVA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day28. Control Value Accessor (CVA)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-23 17:37:59 / Modified: 17:39:01" itemprop="dateCreated datePublished" datetime="2021-09-23T17:37:59+08:00">2021-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前幾篇介紹了 Form 的基本操作與概念，也介紹了如何在表單中加入驗證，最後要來介紹 Angular Form 中一個我滿喜歡的功能，<code>Control Value Accessor</code> 簡稱 <code>CVA</code>，就像開發 component 一樣，當這個 component 太大的時候我們會選擇將這個大的 component 拆解成一個一個小的 component，這樣比較方便撰寫維護與測試，CVA 就有是這種概念，當要開發一個超大的表單時，每一個 FormControl 都有自己的設定和各自的 Validator function，這樣整個 component 都會充滿不同的表單設定，除了 component 之外 template 也會非常龐大，要找一個 formControlName 就會找半天，所以需要使用 CVA 將龐大的表單分割成一個一個小的 component，這樣可維護性與可測試性就會提高。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210827/20124767DJLXplGZxf.png" alt="https://ithelp.ithome.com.tw/upload/images/20210827/20124767DJLXplGZxf.png"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Learn-by-example"><a href="#Learn-by-example" class="headerlink" title="Learn by example"></a>Learn by example</h1><p>本篇會透過一個建立一個 CVA 的例子來講解如何從零開始建立屬於你的 CVA component，那麼就往下看吧。</p>
+<h2 id="Create-new-Component"><a href="#Create-new-Component" class="headerlink" title="Create new Component"></a>Create new Component</h2><p>首先先使用 Angular CLI 建立一個新的 component</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate component single-control-cva</span><br></pre></td></tr></table></figure>
+
+<h2 id="Setting-NG-VALUE-ACCESSOR"><a href="#Setting-NG-VALUE-ACCESSOR" class="headerlink" title="Setting NG_VALUE_ACCESSOR"></a>Setting NG_VALUE_ACCESSOR</h2><p>接著在 single-control-cva.component.ts 中加入 CVA 的設定</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit, forwardRef &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-single-control-cva&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./single-control-cva.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./single-control-cva.component.css&#x27;</span>],</span><br><span class="line">  <span class="attr">providers</span>: [</span><br><span class="line">    &#123;                                                                   <span class="comment">// (1)</span></span><br><span class="line">      <span class="attr">provide</span>: NG_VALUE_ACCESSOR,</span><br><span class="line">      <span class="attr">useExisting</span>: forwardRef(<span class="function">() =&gt;</span> SingleControlCvaComponent),</span><br><span class="line">      <span class="attr">multi</span>: <span class="literal">true</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">provide</span>: NG_VALIDATORS,                                           <span class="comment">// (2)</span></span><br><span class="line">      <span class="attr">useExisting</span>: forwardRef(<span class="function">() =&gt;</span> SingleControlCvaComponent),</span><br><span class="line">      <span class="attr">multi</span>: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">  ] </span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">SingleControlCvaComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先要先在 single-control-cva.component.ts 中建立 <code>NG_VALUE_ACCESSOR</code> 的設定，這樣當 Angular 在運行的時候會檢查這個 component 是否有這個設置，如果有就會將這個 component 視為一個 FormControl。</p>
+<ul>
+<li>(1): 將 <code>NG_VALUE_ACCESSOR</code> 以 SingleControlCvaComponent 為模板創建一個實例，用於將這個 component 定義為 <code>NG_VALUE_ACCESSOR</code>，讓 Angular 將這個 component 當作 FormControl，而這邊使用 <code>forwardRef</code> 代表允許引用尚未定義的 reference</li>
+<li>(2): 將 <code>NG_VALIDATORS</code> 以 SingleControlCvaComponent 為模板創建一個實例，用於建立這個 component 的 validator</li>
+</ul>
+<h2 id="Implements-ControlValueAccessor"><a href="#Implements-ControlValueAccessor" class="headerlink" title="Implements ControlValueAccessor"></a>Implements ControlValueAccessor</h2><p>接著要將 <code>ControlValueAccessor</code> 利用 <code>implements</code> 將它繼承給 SingleControlCvaComponent，將這個虛擬 interface 繼承給 component 後會需要在 component 中添加幾個 method 分別是：</p>
+<ul>
+<li>**writeValue(value: any)**：當父層傳給子層新值時會觸發，簡單來說就是當有新的值傳進來時就會觸發</li>
+<li>**registerOnChange(fn: any)**：當 CVA component 中的 FormControl 內容發生更改時觸發</li>
+<li>**registerOnTouched(fn: any)**：當 CVA component 中的 FormControl 被處碰時觸發</li>
+<li>**setDisabledState(isDisable: boolean)?**：當 CVA component 為 disable 狀態時觸發</li>
+</ul>
+<p>接著將他們加入到 single-control-cva.component.ts 中</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">SingleControlCvaComponent</span> <span class="title">implements</span> <span class="title">OnInit</span>, <span class="title">ControlValueAccessor</span> </span>&#123;</span><br><span class="line">  <span class="attr">onChanged</span>: <span class="built_in">any</span> = <span class="function">() =&gt;</span> &#123;&#125;;</span><br><span class="line">  onTouched: <span class="built_in">any</span> = <span class="function">() =&gt;</span> &#123;&#125;;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">writeValue</span>(<span class="params">value: <span class="built_in">any</span></span>)</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">registerOnChange</span>(<span class="params">fn: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.onChanged = fn;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">registerOnTouched</span>(<span class="params">fn: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.onTouched = fn;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">	validate(): ValidationErrors | <span class="literal">null</span> &#123;</span><br><span class="line">	  <span class="keyword">return</span> <span class="built_in">this</span>.form.valid ? <span class="literal">null</span> : &#123; <span class="attr">invalidValue</span>: <span class="string">&#x27;single-control-cva error&#x27;</span> &#125;;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Bind-to-parent-layer"><a href="#Bind-to-parent-layer" class="headerlink" title="Bind to parent layer"></a>Bind to parent layer</h2><p>設定好基本的 CVA 架構後，接著回到 app.component.ts 中建立最上層的表單結構</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormBuilder &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./app.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  form = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">    <span class="attr">singleControlCva</span>: [<span class="string">&#x27;&#x27;</span>]</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder</span>)</span> &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 app.component.ts 中利用 <code>FormBuilder</code> 建立一個 FormGroup，裡面有一個名為 <code>singleControlCva</code> 的 FormControl。</p>
+<p>接著將這個 FormGroup 與 FormControl 綁定到 template 中</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- app.component.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;form&quot;</span> <span class="attr">class</span>=<span class="string">&quot;content&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;item&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h2</span>&gt;</span>Single Control CVA Component<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">app-single-control-cva</span> <span class="attr">formControlName</span>=<span class="string">&quot;singleControlCva&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-single-control-cva</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>綁定 FormGroup 的方法與之前一樣，不同的點在於之前的 <code>formControlName</code> 是綁定一個輸入元素 ( <code>&lt;input&gt;</code>, <code>&lt;select&gt;</code> … ) 但是這邊卻不一樣，CVA 的特色就在這邊，他可以將一個 component 的 selector 當作一個輸入元素，因為在 CVA component 中設定了 <code>NG_VALUE_ACCESSOR</code> 那麼 Angular 就會將這個 component 看作一個 FormControl，所以可以達到上面這樣的效果。</p>
+<h2 id="Pass-new-Value-to-CVA-component-and-display-it"><a href="#Pass-new-Value-to-CVA-component-and-display-it" class="headerlink" title="Pass new Value to CVA component and display it"></a>Pass new Value to CVA component and display it</h2><p>設定完 CVA component 和綁定父層後，藉著來從父層傳遞新的值給 CVA component</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">form = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">  <span class="attr">singleControlCva</span>: [<span class="string">&#x27;Fandix&#x27;</span>]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>傳遞數據非常簡單，就跟之前傳遞預設值給 FormControl 一樣，作為 FormControl 的第一個參數即可。</p>
+<p>接著在 single-control-cva.component.ts 中建立屬於他的 FormControl 並在 writeValue() 中將獲得的值賦予給它</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">SingleControlCvaComponent</span> <span class="title">implements</span> <span class="title">OnInit</span>, <span class="title">ControlValueAccessor</span> </span>&#123;</span><br><span class="line">  <span class="attr">onChanged</span>: <span class="built_in">any</span> = <span class="function">() =&gt;</span> &#123;&#125;;</span><br><span class="line">  onTouched: <span class="built_in">any</span> = <span class="function">() =&gt;</span> &#123;&#125;;</span><br><span class="line">  name = <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>);                      <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">writeValue</span>(<span class="params">value: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.name?.setValue(value);                    <span class="comment">// (2)</span></span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">registerOnChange</span>(<span class="params">fn: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.onChanged = fn;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">registerOnTouched</span>(<span class="params">fn: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.onTouched = fn;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">	validate(): ValidationErrors | <span class="literal">null</span> &#123;</span><br><span class="line">	  <span class="keyword">return</span> <span class="built_in">this</span>.name.valid ? <span class="literal">null</span> : &#123; <span class="attr">invalidValue</span>: <span class="string">&#x27;single-control-cva error&#x27;</span> &#125;;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 建立 single-control-cva.component.ts 的 FormControl</li>
+<li>(2): 將獲得的值賦予給 name (FormControl)</li>
+</ul>
+<p>接著在 single-control-cva.component.html 中添加輸入元素並綁定 FormControl</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;name&quot;</span>&gt;</span>Hero Name<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">id</span>=<span class="string">&quot;name&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> [<span class="attr">formControl</span>]=<span class="string">&quot;name&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210827/20124767H8MEdPe5hC.png" alt="https://ithelp.ithome.com.tw/upload/images/20210827/20124767H8MEdPe5hC.png"></p>
+<h2 id="Retrun-update-value-to-parent-layer"><a href="#Retrun-update-value-to-parent-layer" class="headerlink" title="Retrun update value to parent layer"></a>Retrun update value to parent layer</h2><p>可以從父層獲得值並顯示在 CVA Component 的 template 中後，接著就要做到當 CVA Component 的 FormControl 內容發生改變時，也要將這個結果往上傳回給父層，這就需要用到 <code>registerOnChange(fn: any)</code> 了</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit, forwardRef, OnDestroy &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; ControlValueAccessor, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Subscription &#125; <span class="keyword">from</span> <span class="string">&#x27;rxjs&#x27;</span>;                                  <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-single-control-cva&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./single-control-cva.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./single-control-cva.component.css&#x27;</span>],</span><br><span class="line">  <span class="attr">providers</span>: [</span><br><span class="line">    ...</span><br><span class="line">  ] </span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">SingleControlCvaComponent</span> <span class="title">implements</span> <span class="title">OnInit</span>, <span class="title">ControlValueAccessor</span>, <span class="title">OnDestroy</span> </span>&#123;</span><br><span class="line">  <span class="attr">onChanged</span>: <span class="built_in">any</span> = <span class="function">() =&gt;</span> &#123;&#125;;</span><br><span class="line">  onTouched: <span class="built_in">any</span> = <span class="function">() =&gt;</span> &#123;&#125;;</span><br><span class="line">  subscription!: Subscription;                                         <span class="comment">// (2)</span></span><br><span class="line">  name = <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.subscription = <span class="built_in">this</span>.name.valueChanges.subscribe(<span class="function">(<span class="params">val</span>) =&gt;</span>     <span class="comment">// (3)</span></span><br><span class="line">      <span class="built_in">this</span>.onChanged(val)</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">ngOnDestroy</span>(<span class="params"></span>)</span> &#123;                                                     <span class="comment">// (4)</span></span><br><span class="line">    <span class="built_in">this</span>.subscription.unsubscribe();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">writeValue</span>(<span class="params">value: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.name?.setValue(value);</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">registerOnChange</span>(<span class="params">fn: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.onChanged = fn;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">registerOnTouched</span>(<span class="params">fn: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.onTouched = fn;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  validate(): ValidationErrors | <span class="literal">null</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.name.valid ? <span class="literal">null</span> : &#123; <span class="attr">invalidValue</span>: <span class="string">&#x27;single-control-cva error&#x27;</span> &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 從 <code>rxjs</code> 中引入 <code>Subscription</code></li>
+<li>(2): 建立一個 property <code>subscription</code></li>
+<li>(3): 將 FormControl 實例提供的 valueChanges.subscribe() 所獲得的 FormControl 值的快照傳入 <code>this.onChanged()</code> 中，用於將值傳回父</li>
+<li>(4): 在 component 結束要銷毀時解除訂閱以免造成記憶體洩漏</li>
+</ul>
+<p><img src="https://i.imgur.com/aSaF9ac.gif" alt="img"></p>
+<hr>
+<h1 id="Send-different-types-of-data"><a href="#Send-different-types-of-data" class="headerlink" title="Send different types of data"></a>Send different types of data</h1><p>上面介紹了如何使用 CVA Component，但你可能覺得有只傳一個 FormControl 有必要使用 CVA Component 嗎？ 其實傳入 CVA Component 的值可以是 Object 或 Array，這樣就可以把 FormGroup 或 FormArray 寫在 CVA Component，保持最上層的 Form Model 都只有 FormControl，個舉個例子吧</p>
+<h2 id="Send-Object-in-cva-component"><a href="#Send-Object-in-cva-component" class="headerlink" title="Send Object in cva component"></a>Send Object in cva component</h2><ol>
+<li><p>首先新增一個新的 component</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate component group-control-cva</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app.component.ts 中的 Form Model 中新增一個 FormControl 並將一個 Object 傳給他做為預設值</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">form = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">  <span class="attr">singleControlCva</span>: [<span class="string">&#x27;Fandix&#x27;</span>],</span><br><span class="line">  <span class="attr">groupControlCva</span>: [&#123; <span class="attr">firstName</span>: <span class="string">&#x27;Lin&#x27;</span>, <span class="attr">lastName</span>: <span class="string">&#x27;Hank&#x27;</span> &#125;]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></li>
+<li><p>在 app-group-control-cva.ts 中將 CVA component 的設定寫好，和上面的方式一樣</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit, forwardRef, OnDestroy &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">  ControlValueAccessor,</span><br><span class="line">  NG_VALIDATORS,</span><br><span class="line">  NG_VALUE_ACCESSOR,</span><br><span class="line">  ValidationErrors,</span><br><span class="line">  FormBuilder</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Subscription &#125; <span class="keyword">from</span> <span class="string">&#x27;rxjs&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-group-control-cva&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./group-control-cva.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./group-control-cva.component.css&#x27;</span>],</span><br><span class="line">  <span class="attr">providers</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">provide</span>: NG_VALUE_ACCESSOR,</span><br><span class="line">      <span class="attr">useExisting</span>: forwardRef(<span class="function">() =&gt;</span> GroupControlCvaComponent),</span><br><span class="line">      <span class="attr">multi</span>: <span class="literal">true</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">provide</span>: NG_VALIDATORS,</span><br><span class="line">      <span class="attr">useExisting</span>: forwardRef(<span class="function">() =&gt;</span> GroupControlCvaComponent),</span><br><span class="line">      <span class="attr">multi</span>: <span class="literal">true</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">  ],</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">GroupControlCvaComponent</span> <span class="title">implements</span> <span class="title">OnInit</span>, <span class="title">ControlValueAccessor</span> </span>&#123;</span><br><span class="line">  <span class="attr">onChanged</span>: <span class="built_in">any</span> = <span class="function">() =&gt;</span> &#123;&#125;;</span><br><span class="line">  onTouched: <span class="built_in">any</span> = <span class="function">() =&gt;</span> &#123;&#125;;</span><br><span class="line">  subscription!: Subscription;</span><br><span class="line">  form = <span class="built_in">this</span>.fb.group(&#123;</span><br><span class="line">    <span class="attr">firstName</span>: [<span class="string">&#x27;&#x27;</span>],</span><br><span class="line">    <span class="attr">lastName</span>: [<span class="string">&#x27;&#x27;</span>]</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> fb: FormBuilder</span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">ngOnDestroy</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.subscription.unsubscribe();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">writeValue</span>(<span class="params">value: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(value);</span><br><span class="line">    <span class="built_in">this</span>.form?.setValue(value);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">registerOnChange</span>(<span class="params">fn: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.onChanged = fn;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">registerOnTouched</span>(<span class="params">fn: <span class="built_in">any</span></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.onTouched = fn;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  validate(): ValidationErrors | <span class="literal">null</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.form.valid</span><br><span class="line">      ? <span class="literal">null</span></span><br><span class="line">      : &#123; <span class="attr">invalidValue</span>: <span class="string">&#x27;group-control-cva error&#x27;</span> &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 在 writeValue() 中加上 console.log 後可以看到，父層傳遞的數據是一個 object</p>
+</li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210827/20124767aFhKxAHBIW.png" alt="https://ithelp.ithome.com.tw/upload/images/20210827/20124767aFhKxAHBIW.png"></p>
+<p><img src="https://i.imgur.com/rz234q6.gif" alt="img"></p>
+<p>除了傳 object 之外還可以傳 Array 進去，將 FormArray 寫在 CVA Component 中，將 FormArray 的動態新增或刪除 FormControl 都寫在 CVA Componet 中，這樣的話就算你的表單同時有 5, 6 個 FormArray 也不用擔心會將最上層的 Component 寫爆，因為對於最上層的 Component 來說他只是 FormControl，而他們各自的邏輯寫在各自的 CVA Component 就好。</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章介紹了如何使用 CVA Component 將龐大的表單項開發 Component 一樣分成數個 CVA Component，在面對非常龐大的表單時就可以使用這種技巧，將每一個 FormControl 的邏輯寫在自己的 CVA Component 中，這樣對於維護還是測試都比較簡單。</p>
+<p>本章是介紹 Angular Form 的最後一章，明天將會介紹 Angular 中提供的一種方便的工具 <code>i18n</code>，在這個越來越發達的網路世界中，國際化網站會越來越多，所以 Angular 提供了 i18n 讓我們可以開發支持多國語言的專案，詳細的內容就留到明天講解吧，那一樣明天見囉</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day27-Validating-form-input/" rel="prev" title="Day27. Validating form input">
+      <i class="fa fa-chevron-left"></i> Day27. Validating form input
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day29-Internationalization-i18n/" rel="next" title="Day29. Internationalization (i18n)">
+      Day29. Internationalization (i18n) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Learn-by-example"><span class="nav-number">1.</span> <span class="nav-text">Learn by example</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Create-new-Component"><span class="nav-number">1.1.</span> <span class="nav-text">Create new Component</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setting-NG-VALUE-ACCESSOR"><span class="nav-number">1.2.</span> <span class="nav-text">Setting NG_VALUE_ACCESSOR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Implements-ControlValueAccessor"><span class="nav-number">1.3.</span> <span class="nav-text">Implements ControlValueAccessor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bind-to-parent-layer"><span class="nav-number">1.4.</span> <span class="nav-text">Bind to parent layer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-new-Value-to-CVA-component-and-display-it"><span class="nav-number">1.5.</span> <span class="nav-text">Pass new Value to CVA component and display it</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Retrun-update-value-to-parent-layer"><span class="nav-number">1.6.</span> <span class="nav-text">Retrun update value to parent layer</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Send-different-types-of-data"><span class="nav-number">2.</span> <span class="nav-text">Send different types of data</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Send-Object-in-cva-component"><span class="nav-number">2.1.</span> <span class="nav-text">Send Object in cva component</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">3.</span> <span class="nav-text">結論</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

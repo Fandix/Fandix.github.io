@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在 Angular 中應用程式是模塊化的，Angular 有自己的模塊化系統稱為 NgModule，他可以包含 component、service providers 和其他程式的文件，還可以導入從其他 NgModules 導出的功能，並導出顯訂的功能以提供給其他 NgModules 使用，每一個 Angular app 都至少有一個 NgModule 他被稱為 root module，通常會叫做">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day30. Angular Module（一）">
+<meta property="og:url" content="https://fandix.github.io/2021/09/23/Angular/Day30-Angular-Module-1/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在 Angular 中應用程式是模塊化的，Angular 有自己的模塊化系統稱為 NgModule，他可以包含 component、service providers 和其他程式的文件，還可以導入從其他 NgModules 導出的功能，並導出顯訂的功能以提供給其他 NgModules 使用，每一個 Angular app 都至少有一個 NgModule 他被稱為 root module，通常會叫做">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210829/20124767ZK4CbvmUSc.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210829/20124767olOJtbHwPU.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210829/20124767Cmvc8VcS1N.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210829/20124767kFmuniMozj.png">
+<meta property="article:published_time" content="2021-09-23T09:42:04.000Z">
+<meta property="article:modified_time" content="2021-09-23T09:49:45.075Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210829/20124767ZK4CbvmUSc.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/23/Angular/Day30-Angular-Module-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day30. Angular Module（一） | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day30-Angular-Module-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day30. Angular Module（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-23 17:42:04 / Modified: 17:49:45" itemprop="dateCreated datePublished" datetime="2021-09-23T17:42:04+08:00">2021-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在 Angular 中應用程式是模塊化的，Angular 有自己的模塊化系統稱為 <code>NgModule</code>，他可以包含 <code>component</code>、<code>service providers</code> 和其他程式的文件，還可以導入從其他 NgModules 導出的功能，並導出顯訂的功能以提供給其他 NgModules 使用，每一個 Angular app 都至少有一個 NgModule 他被稱為 root module，通常會叫做 <code>AppModule</code>。</p>
+<p>雖然一個小的專案中可能會只有一個 module (root module)，但在大多數大型的專案中都會建立多個 modules 用於將功能分割，達到將專案模塊化的目的。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210829/20124767ZK4CbvmUSc.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210829/20124767ZK4CbvmUSc.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="NgModule-metadata"><a href="#NgModule-metadata" class="headerlink" title="NgModule metadata"></a>NgModule metadata</h1><p>NgModule 是由一個用 <code>@NgModule()</code> 裝飾的 class，@NgModule() 是一個接收單個 <code>metadata</code> 物件的函數，它具有以下的 properties：</p>
+<ul>
+<li><strong>declarations</strong>：屬於這個 NgModule 的 component、pipes 或 directive。</li>
+<li><strong>exports</strong>：要導出的功能，可以讓其他的 NgModules 引入並且使用</li>
+<li><strong>imports</strong>：引入來自其他 NgModules 所導出的功能</li>
+<li><strong>providers</strong>：在這個 NgModule 中所使用的所有 Service</li>
+<li><strong>bootstrap</strong>：主應用程序的 view 稱為 root component，他乘載著所有應用程式的 view，簡單來說就是定義應用程式中 view 的最上層 component</li>
+</ul>
+<p>metadata 提供了該如何編譯 component 的 template 以及如何在運行時創建注入器 ( injector )，它識別了 NgModule 的 component、pipe 或 directive，並通過 exports property 將需要給其他 NgModules 使用的部分公開，還可以使用 NgModule 為 service 添加 provide ，以便 serviec 在其那地方也可以被使用。</p>
+<p>可以在 metadata 中的 declarations 中定義哪些 component、pipes 或 directive 屬於這個 Module。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; BrowserModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/platform-browser&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; AppRoutingModule &#125; <span class="keyword">from</span> <span class="string">&#x27;./app-routing.module&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; AppComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./app.component&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    AppComponent,</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    AppRoutingModule,</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [],</span><br><span class="line">  <span class="attr">bootstrap</span>: [AppComponent]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>通常 root module 不需要設置 exports property，因為沒有其他的 NgModules 需要引入 root module。</p>
+<h2 id="The-declarations-array"><a href="#The-declarations-array" class="headerlink" title="The declarations array"></a>The declarations array</h2><p>在 NgModule 的 declarations 中定義了哪些 <code>component</code>、<code>pipes</code> 或 <code>directive</code> 屬於這個 Module，當你使用 Angular CLI 創建新的 component 時會<code>自動將新的 component 添加到這裡</code>，所以如果是手動建立新的 component 時要記得要把他添加到這裡，相對的如果移除一個 component 也要記得將它從 declarations 中移除。</p>
+<p>如果你使用一個沒有聲明的 component 則 Angular 會返回錯誤，而 declarations 只能接收可聲明的，可聲明的包括 <code>component</code>、<code>pipes</code> 或 <code>directive</code> ，Module 的所有聲明項都必須在 declarations 當中，而這個 declarations 只能屬於<code>一個</code> Module 不然會有多重宣告的錯誤，這些聲明項只有在 Module 中是可見的，除非將他們使用 <code>export</code> 導出，否則在其他地方是不可見的。</p>
+<h2 id="The-imports-array"><a href="#The-imports-array" class="headerlink" title="The imports array"></a>The imports array</h2><p>imports 只出現在 <code>@NgModule()</code> 的 metadata 中，它告訴 Angular 這個 Module 的運行需要使用到其他 Modules 的內容，當在此 Module 中引入其他 Module 所導出的內容時，該 Module 中的 component 就可以使用別的 Module 導出的 component、pipe 或 directive。</p>
+<h2 id="The-bootstrap-array"><a href="#The-bootstrap-array" class="headerlink" title="The bootstrap array"></a>The bootstrap array</h2><p>Angular 的應用程式透過 root module 啟動，也稱為 <code>entryComponent</code>，在創建應用程式的過程中會創建 bootstrap 中的 component 並將它插入瀏覽器的 DOM 中，每一個 bootstrapped component 都是本身 component tree 的<code>基礎（最上層的 component）</code>，所以當插入一個 bootstrapped component 後會觸發一連串的 component 創建然後填充本身 component tree。</p>
+<p>大多數應用程式都只有一個 component tree 並引導單個 root component，但是你也可以創建多個 component tree 來擴大你的應用程式，而這個 root component 通常稱為 <code>AppComponent</code> 並位於 root module 的 bootstrap 中。</p>
+<hr>
+<h1 id="NgModules-and-components"><a href="#NgModules-and-components" class="headerlink" title="NgModules and components"></a>NgModules and components</h1><p>NgModule 為 component 提供了 compilation context，簡單來說 NgModule 提供了創建 component 所需要的所有資訊，除了 root module 總是有一個 root component 之外，其他的任何 NgModules 都可以有任意數量的 component，而這個 NgModule 會為他底下的所有 component 提供 compilation context。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210829/20124767olOJtbHwPU.png" alt="https://ithelp.ithome.com.tw/upload/images/20210829/20124767olOJtbHwPU.png"></p>
+<p>一個 component 和他的 template 定義了一個 view，但是一個 component 可以包含一個有層次結構的 view，他允許你創建、修改或銷毀一個嵌入式 view，而層次結構的 view 可以混合在屬於不同 NgModules 的 component 中定義的 view，簡單來說就是你可以在 componentA 的 view 中創建一個屬於另一個 NgModule 的 componentB 的 view。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210829/20124767Cmvc8VcS1N.png" alt="https://ithelp.ithome.com.tw/upload/images/20210829/20124767Cmvc8VcS1N.png"></p>
+<p>當你嵌入一個 view 時，他會直接與一個稱為 <code>host view</code> 的 view 進行連接，host view 可以是這組 view 的 root，他可以包含所有嵌入的 view，就算這些 view 是來自別的 NgModules 也可以，而嵌入的 view 又可以在嵌入自己的 view，所以可以嵌套到任一深度。</p>
+<hr>
+<h1 id="JavaScript-modules-vs-NgModules"><a href="#JavaScript-modules-vs-NgModules" class="headerlink" title="JavaScript modules vs. NgModules"></a>JavaScript modules vs. NgModules</h1><p>在 Javascript ES6 中引入了屬於 Javascript 的 module 系統，雖然了解 Javascript 的 Module 對於了解 Angular 的 Module 很有幫助，但還是與 NgModule 有一些不同的地方，不過 Angular 同時使用了這兩種 Module 的概念</p>
+<h2 id="JavaScript-modules-Files-containing-code"><a href="#JavaScript-modules-Files-containing-code" class="headerlink" title="JavaScript modules: Files containing code"></a>JavaScript modules: Files containing code</h2><p>Javascript Module 是帶有 Javascript 程式的<code>單個文件</code>，通常包含用於應用程式中特定目的的 class 或 library，Javascript 的 Module 可以讓你將工作分散到多個檔案中。</p>
+<p>要讓  Module 中的內容提供給其他 Module 使用，要在這個 Module 的末尾使用 <code>export</code> 語法，比如說</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<p>而要使用其他 Module 中的內容時，要使用 <code>import</code> 將它導入到自身 Module 中</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; AppComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./app.component&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>每一個 Module 都有自己的 <code>top level variable</code>，簡單來說就是每一個 Module 中的 variable 或 method 在別的 Module 或地方是看不到的，每一個 Module 都有自己的命名空間以防止他們與其他 Module 中的內容發生衝突。</p>
+<hr>
+<h1 id="Frequently-used-modules"><a href="#Frequently-used-modules" class="headerlink" title="Frequently-used modules"></a>Frequently-used modules</h1><p>一個 Angular 應用程式至少需要一個 Module 作為 root module，當像應用程式添加新功能時，可以將這些功能對應的 Module 添加到你的 Module 中，下面介紹一些經常使用的 Angular module 以及他們所包含的一些內容</p>
+<p>NgModule | Import it from | Why you use it<br>————- | ————-<br>BrowserModule | @angular/platform-browser | 當你想在瀏覽器中運行你的專案<br>CommonModule | @angular/common | 當你需要使用 <code>NgIf</code> 或 <code>NgFor</code> 等等<br>FormsModule | @angular/forms | 當你想要構建 template-driven forms 時<br>ReactiveFormsModule | @angular/forms | 當你想要構建 reactive form 時<br>RouterModule | @angular/router | 當你要使用 <code>RouterLink</code>, <code>.forRoot()</code> 或 <code>.forChild()</code> 時<br>HttpClientModule | @angular/common/http | 當你需要與 server 溝通時</p>
+<h2 id="BrowserModule-and-CommonModule"><a href="#BrowserModule-and-CommonModule" class="headerlink" title="BrowserModule and CommonModule"></a>BrowserModule and CommonModule</h2><p>在 BrowserModule 中導入了 CommonModule，它提供了許多常用的 directive 例如 <code>ngIf</code>, <code>ngFor</code> 等等，此外 BrowserModule 重新的導出了 CommonModule 這使其所有的 directive 可以用於導入 BrowserModule 中。</p>
+<p>對於在瀏覽器中運行的應用程式而言，在 root module 中導入 <code>BrowserModule</code> 是必須的，因為它提供了啟動和運行瀏覽器應用程式必不可少的服務，他是為整個應用程序所提供的，所以他只應該在 <code>root module</code> 中被導入，所以不可以將它放在延遲加載的 feature module 中，因為會造成錯誤。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210829/20124767kFmuniMozj.png" alt="https://ithelp.ithome.com.tw/upload/images/20210829/20124767kFmuniMozj.png"></p>
+<hr>
+<h1 id="Guidelines-for-creating-NgModules"><a href="#Guidelines-for-creating-NgModules" class="headerlink" title="Guidelines for creating NgModules"></a>Guidelines for creating NgModules</h1><p>通常再開發 Angular 的應用程式時會因為不同的目的創建不同的 NgModule，NgModule 是組織程式並將與特定功能或特性相關的程式與其他部分分開，使用 NgModule 將 component、pipe 和 directive 合併回內聚的功能模組，將一個功能模組集中在服務某一個功能或業務上面，所以通常會建立下面幾種類型的 NgModule</p>
+<h2 id="Domain-NgModules"><a href="#Domain-NgModules" class="headerlink" title="Domain NgModules"></a>Domain NgModules</h2><p>使用 <code>Domain NgModule</code> 通常是為了專門提供於<code>特定功能或應用程序的用戶體驗</code>，比如說編輯客戶或下訂單，他組織與某個<code>功能</code>相關的程式，包括構建該功能的所有 component、routing 和 template。</p>
+<p>通常會將最上層的 component 或 root component 作為唯一導出的 component，Domain NgModule 主要由 <code>declarations</code> 所組成。</p>
+<h2 id="Routed-NgModules"><a href="#Routed-NgModules" class="headerlink" title="Routed NgModules"></a>Routed NgModules</h2><p>對所有 <code>lazy-loaded NgModule</code> 使用 <code>Routed NgModule</code>，使用 Routed NgModule 的最頂層 component 作為路由器導航的路徑，而 Routed NgModule <code>不會導出</code>任何內容，因為他們的 component 永遠不會出現在其他 component 的 template 中。</p>
+<p>還要注意不要將 <code>lazy-loaded NgModule</code> 導入另一個 NgModule 中，因為這樣會會立馬將這個 Module 載入到應用程式中，就失去了 lazy-loaded 的目的了。</p>
+<p>Routed NgModule 只需要很少的 <code>providers</code>，因為對於應用程式而言只有在需要的時候才會載入 Routed NgModule，所以如果在他的 providers 中填入 service 的話將會變得不可用，因為 injector 不知道 lazy-loaded NgModule。</p>
+<h2 id="Routing-NgModules"><a href="#Routing-NgModules" class="headerlink" title="Routing NgModules"></a>Routing NgModules</h2><p><code>Routing NgModule</code> 為 <code>Domain NgModule</code> 提供路由配置，通常會由 Routing NgModule 完成以下任務</p>
+<ul>
+<li>定義路由</li>
+<li>將路由器配置添加到 NgModule 的 imports 中</li>
+<li>向 NgModule 的 providers 提供 service</li>
+</ul>
+<p>Routing NgModule 的名稱應該與其同伴的 NgModule 名稱平行，比如說 contact.module.ts 中的 ContactModule 在 contact-routing.module.ts 中有一個名為 ContactRoutingModule 的 Routing NgModule。</p>
+<p>如果 Routing NgModule 是 root App Module 則 AppRoutingModule 是使用 <code>RouterModule.forRoot(routes)</code> 將路由器配置添加在 imports 中</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; RouterModule, Routes &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/router&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> routes: Routes = [];</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">imports</span>: [RouterModule.forRoot(routes)],</span><br><span class="line">  <span class="attr">exports</span>: [RouterModule]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppRoutingModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>而如果是其他 Routing NgModule 都是使用 <code>RouterModule.forChild(routes)</code> 將路由器配置添加到他們的 imports 中。</p>
+<p>要注意<code>不要</code>在 Routing NgModule 中使用 <code>declarations</code>，component、pipe 或 directive 的聲明是在伴隨的 <code>Domain NgModule</code> 中聲明的。</p>
+<h2 id="Service-NgModules"><a href="#Service-NgModules" class="headerlink" title="Service NgModules"></a>Service NgModules</h2><p><code>Service NgModule</code> 用於提供實用的服務，例如數據的訪問或消息的傳遞，理想的 Service NgModule 應該全由 providers 所組成，如果要創建 Service NgModule 可以查看 Angular 的 <code>HttpClientModule</code> 他是一個非常好的例子，要注意的是請只在 <code>root AppModule</code> 中導入所有的 Service NgModules</p>
+<h2 id="Widget-NgModules"><a href="#Widget-NgModules" class="headerlink" title="Widget NgModules"></a>Widget NgModules</h2><p>使用 Widget NgModule 使 component、pipe 或 directive 可被外部的 NgModule 給使用，當某個 NgModule 中的 component 需要使用到 Widget NgModule 中的某一個 component 或功能時，將</p>
+<p>Widget NgModule 到入到這個 NgModule 中即可，需多第三方 UI component libaray 都是作為 Widget NgModule 然後提供給各個 NgModule 中， 一個 Widget NgModule 應該<code>完全</code>由 <code>declarations</code> 所組成，其中大部分都是導出的這樣才能讓其他地方使用。</p>
+<h2 id="Shared-NgModules"><a href="#Shared-NgModules" class="headerlink" title="Shared NgModules"></a>Shared NgModules</h2><p>最後介紹 Shared NgModule 他是將常用的 directive、pipe 或 component 統一放入一個 NgModule 中，通常會命名為 <code>SharedModule</code>，然後再應用程式的其他部分需要時導入，這樣只導入一個 Module 就可以獲得許多功能。</p>
+<p>Shared NgModule 不應該包含 <code>providers</code>，任何其導入或導出的 NgModule 都不應該包含 providers。</p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本篇中介紹了 Angular 的 NgModule 的觀念，NgModule 中 metadata 是由 <code>declarations</code>、<code>exports</code>、<code>imports</code>、<code>providers</code> 與 <code>bootstrap</code> 所組成</p>
+<ul>
+<li><strong>declarations</strong> 是用於宣告屬於這個 NgModule 的 component、pipe 或 directive</li>
+<li><strong>exports</strong> 是用於將這個 NgModule 需要給其他 NgModule 使用的部分導出</li>
+<li><strong>imports</strong> 是用於引入其他 NgModule 導出的功能</li>
+<li><strong>providers</strong> 是用於提供 NgModule 所使用的 Services</li>
+<li><strong>bootstrap</strong> 是用於定義應用程式的 <code>entryComponent</code></li>
+</ul>
+<p>也介紹了 Angular 同時使用了 Javascript Module 與 NgModule 的概念，對於一個檔案中的內容要導出的給其他部分使用的話要使用 <code>export</code>，而要使用別的檔案中提供的內容時需要使用 <code>import</code> 將它導入。</p>
+<p>最後介紹了再開發 Angular 專案時會建立的幾種 NgModule</p>
+<ul>
+<li><strong>Domain</strong> 是圍繞功能或用戶體驗所組成的</li>
+<li><strong>Routed</strong> 中的頂部 component 充當路由器導航路徑的目的地</li>
+<li><strong>Routing</strong> 是為另一個 NgModule 提供路由配置的</li>
+<li><strong>Service</strong> 是提供實用服務的，例如數據訪問或消息傳達</li>
+<li><strong>Widget</strong> 是將某一部分的 component, pipe, directive 所組合起來讓其他 NgModule 可以使用，常用於第三方 UI library</li>
+<li><strong>Shared</strong> 是將共享的所有 component, pipe, directive 所組合，當其他 NgModule 要使用時引入它即可</li>
+</ul>
+<p>Angular Module 的觀念還有很多，由於文章長度的問題沒辦法一次講完，所以一樣將他分為兩段這樣可以介紹的比較完整，下半部的 NgModule 就明天見吧</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/module-types">Angular.io - Guidelines for creating NgModules</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day29-Internationalization-i18n/" rel="prev" title="Day29. Internationalization (i18n)">
+      <i class="fa fa-chevron-left"></i> Day29. Internationalization (i18n)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day31-Angular-Module-2/" rel="next" title="Day31. Angular Module（二）">
+      Day31. Angular Module（二） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#NgModule-metadata"><span class="nav-number">1.</span> <span class="nav-text">NgModule metadata</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-declarations-array"><span class="nav-number">1.1.</span> <span class="nav-text">The declarations array</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-imports-array"><span class="nav-number">1.2.</span> <span class="nav-text">The imports array</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-bootstrap-array"><span class="nav-number">1.3.</span> <span class="nav-text">The bootstrap array</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NgModules-and-components"><span class="nav-number">2.</span> <span class="nav-text">NgModules and components</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JavaScript-modules-vs-NgModules"><span class="nav-number">3.</span> <span class="nav-text">JavaScript modules vs. NgModules</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript-modules-Files-containing-code"><span class="nav-number">3.1.</span> <span class="nav-text">JavaScript modules: Files containing code</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Frequently-used-modules"><span class="nav-number">4.</span> <span class="nav-text">Frequently-used modules</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BrowserModule-and-CommonModule"><span class="nav-number">4.1.</span> <span class="nav-text">BrowserModule and CommonModule</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Guidelines-for-creating-NgModules"><span class="nav-number">5.</span> <span class="nav-text">Guidelines for creating NgModules</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Domain-NgModules"><span class="nav-number">5.1.</span> <span class="nav-text">Domain NgModules</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Routed-NgModules"><span class="nav-number">5.2.</span> <span class="nav-text">Routed NgModules</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Routing-NgModules"><span class="nav-number">5.3.</span> <span class="nav-text">Routing NgModules</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Service-NgModules"><span class="nav-number">5.4.</span> <span class="nav-text">Service NgModules</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Widget-NgModules"><span class="nav-number">5.5.</span> <span class="nav-text">Widget NgModules</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Shared-NgModules"><span class="nav-number">5.6.</span> <span class="nav-text">Shared NgModules</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">6.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">7.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

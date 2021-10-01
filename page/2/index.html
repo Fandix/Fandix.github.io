@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day11-Attribute-class-and-style-bindings-and-Two-way-binding/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day24-Template-driven-forms/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Angular/Day11-Attribute-class-and-style-bindings-and-Two-way-binding/" class="post-title-link" itemprop="url">Day11. Attribute, class, and style bindings and Two-way binding</a>
+            <a href="/2021/09/23/Angular/Day24-Template-driven-forms/" class="post-title-link" itemprop="url">Day24. Template-driven forms</a>
         </h2>
 
         <div class="post-meta">
@@ -171,7 +171,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-13 15:15:40 / Modified: 15:17:27" itemprop="dateCreated datePublished" datetime="2021-09-13T15:15:40+08:00">2021-09-13</time>
+              <time title="Created: 2021-09-23 17:31:35 / Modified: 17:32:51" itemprop="dateCreated datePublished" datetime="2021-09-23T17:31:35+08:00">2021-09-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -194,12 +194,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>在上一張中介紹了 property binding 是用來將 Component 中的 property 綁定給 HTML Tag 的 property，還介紹了 event binding 是用來將 Component 中的 method 綁定給 HTML Tag 用來監聽畫面事件，而本章將持續介紹兩種 binding 方式。</p>
-<p>Attribute binding 可以用來讓你在開發 Template 時直接設置 property 值，透過 attribute 可以提高訪問性、動態設置畫面樣式與可以同時管理多個 CSS Class 或樣式。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767uy096133tc.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767uy096133tc.png"></p>
+          <p>在上一篇中提到了 Angular 中的兩種不同的 Form，介紹了他們在使用上以及細節上的不同，接著在本篇中將會著重介紹 Template-driven forms，那就繼續看下去吧。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210823/20124767lIolI8gw9s.png" alt="https://ithelp.ithome.com.tw/upload/images/20210823/20124767lIolI8gw9s.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Angular/Day11-Attribute-class-and-style-bindings-and-Two-way-binding/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day24-Template-driven-forms/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -223,7 +222,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day10-Property-binding-and-Event-bindin/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day23-Introduction-to-forms-in-Angular/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -237,7 +236,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/13/Angular/Day10-Property-binding-and-Event-bindin/" class="post-title-link" itemprop="url">Day10. Property binding and Event binding</a>
+            <a href="/2021/09/23/Angular/Day23-Introduction-to-forms-in-Angular/" class="post-title-link" itemprop="url">Day23. Introduction to forms in Angular</a>
         </h2>
 
         <div class="post-meta">
@@ -248,7 +247,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-13 15:12:25 / Modified: 15:14:27" itemprop="dateCreated datePublished" datetime="2021-09-13T15:12:25+08:00">2021-09-13</time>
+              <time title="Created: 2021-09-23 17:29:45 / Modified: 17:30:37" itemprop="dateCreated datePublished" datetime="2021-09-23T17:29:45+08:00">2021-09-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -271,12 +270,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本篇中將介紹 Angular 的 <code>property binding</code> 與 <code>event binding</code>，property binding 可以讓你<code>設置 HTML Tag 或 directive 的屬性值</code>，可以利用 property binding 做到切換按鈕、以程式方式設置 url 路徑以及在各個 Component 之間共享數據等等。</p>
-<p>而 Event binding 則是可以<code>將事件綁定在 HTML 的元件上</code>，隨時監聽使用者的操作，例如按下按鍵、滑鼠移動、點擊以及觸摸，就先從 property binding 開始介紹吧。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ffyD1EUI66.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ffyD1EUI66.jpg"></p>
+          <p>從本章開始會進入 Angular Form 的部分，在現代網頁中與使用者互動的過程變得越來越重要，其中最主要的便是 Form，從一開始的登陸頁面到對商品或對網頁中元素的設定都需要使用到 Form 來取得使用者輸入的資料，也需要對使用者輸入的資料做驗證以防使用者輸入了非格式的數據導致出錯。</p>
+<p>Angular 提供了兩種不同的方法來處理使用者的輸入，分別是 <code>reactive</code> 與 <code>template-driven</code>，兩種方法都是從 view 中捕獲使用者輸入事件、驗證用戶輸入、創建表單模型或更新數據模型，本篇會大概介紹這兩種方法以及他們之間的差別，那就繼續往下看吧！</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767cYDUalx1rV.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767cYDUalx1rV.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/13/Angular/Day10-Property-binding-and-Event-bindin/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day23-Introduction-to-forms-in-Angular/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -300,7 +299,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/09/Angular/Day9-Transforming-Data-Using-Pipes/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day22-Common-Routing-Tasks2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -314,7 +313,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/09/Angular/Day9-Transforming-Data-Using-Pipes/" class="post-title-link" itemprop="url">Day9. Transforming Data Using Pipes</a>
+            <a href="/2021/09/23/Angular/Day22-Common-Routing-Tasks2/" class="post-title-link" itemprop="url">Day22. Common Routing Tasks（二）</a>
         </h2>
 
         <div class="post-meta">
@@ -325,7 +324,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-09 10:56:06 / Modified: 10:58:41" itemprop="dateCreated datePublished" datetime="2021-09-09T10:56:06+08:00">2021-09-09</time>
+              <time title="Created: 2021-09-23 17:28:03 / Modified: 17:28:47" itemprop="dateCreated datePublished" datetime="2021-09-23T17:28:03+08:00">2021-09-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -348,19 +347,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>在上一章中介紹了如何在 template 中插入 component 的變量，而本章節要介紹如何使用 angular 的 pipes 來轉換插入的值（字串、貨幣金額、日期或其他數據）， pipes 是在模板表達式中的簡單函數，用於接受輸入值並返迴轉換後的值，而 Angular 提供了幾個預設的 pipes 提供使用：</p>
-<ul>
-<li><strong>DatePipe</strong>：根據區域設置規則格式化日期值</li>
-<li><strong>UpperCasePipe</strong>：將內容都變更為大寫</li>
-<li><strong>LowerCasePipe</strong>：將內容都變更為小寫</li>
-<li><strong>CurrencyPipe</strong>：將數字轉換為貨幣字串，根據區域設置規則進行格式化。</li>
-<li><strong>DecimalPipe</strong>：將數字轉換為帶小數點的字串，並根據區域設置規則進行格式化。</li>
-<li><strong>PercentPipe</strong>：將數字轉換為百分比字串，根據區域設置規則進行格式化。</li>
-</ul>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767iCR0nyUNiR.png" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767iCR0nyUNiR.png"></p>
+          <p>在上一篇中介紹了如何透過 router 傳遞參數，也介紹了怎麼建立嵌套的 route 等等，在本篇中要繼續介紹 Angular route 的其他好用的用法與功能。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210820/20124767DXMhZhaqPe.png" alt="https://ithelp.ithome.com.tw/upload/images/20210820/20124767DXMhZhaqPe.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/09/Angular/Day9-Transforming-Data-Using-Pipes/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day22-Common-Routing-Tasks2/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -384,7 +375,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/09/Javascript/Scope%20&%20Closures/10-The-Module-Pattern/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day21-Common-Routing-Tasks/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -398,7 +389,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/09/Javascript/Scope%20&%20Closures/10-The-Module-Pattern/" class="post-title-link" itemprop="url">You Don't Know JavaScript [Scope & Closures] - The Module Pattern</a>
+            <a href="/2021/09/23/Angular/Day21-Common-Routing-Tasks/" class="post-title-link" itemprop="url">Day21. Common Routing Tasks (一)</a>
         </h2>
 
         <div class="post-meta">
@@ -407,23 +398,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-09-09 10:40:16" itemprop="dateCreated datePublished" datetime="2021-09-09T10:40:16+08:00">2021-09-09</time>
+              <time title="Created: 2021-09-23 17:26:49 / Modified: 17:28:49" itemprop="dateCreated datePublished" datetime="2021-09-23T17:26:49+08:00">2021-09-23</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-13 17:08:00" itemprop="dateModified" datetime="2021-09-13T17:08:00+08:00">2021-09-13</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Javascript/" itemprop="url" rel="index"><span itemprop="name">Javascript</span></a>
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
                 </span>
             </span>
 
@@ -438,11 +423,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在本章節中將介紹這本書最重要的程式組織之一， <code>module</code>，module 會用到我們之前所介紹的所有觀念 (lexical scope,closure…)，我們以不同角度介紹了 lexical scope，從全域作用域到嵌套塊狀作用域，並利用 lexical scope 了解了closure，而而本章節的目標是能夠理解module如何體現這些特性的重要性。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210909/20124767HKbh1RgaIr.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210909/20124767HKbh1RgaIr.jpg"></p>
+          <p>上一張介紹完什麼是 router 與他的基本用法之後，接著要來繼續介紹 Angular router 的其他一些比較詳細的細節與用法，那就接著看下去吧！</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210819/20124767pIY0V2tSzX.png" alt="https://ithelp.ithome.com.tw/upload/images/20210819/20124767pIY0V2tSzX.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/09/Javascript/Scope%20&%20Closures/10-The-Module-Pattern/#more" rel="contents">
+              <a class="btn" href="/2021/09/23/Angular/Day21-Common-Routing-Tasks/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -466,7 +451,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/09/Javascript/Scope%20&%20Closures/9.%20Using-Closures/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Typescript/get-started/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -480,7 +465,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/09/Javascript/Scope%20&%20Closures/9.%20Using-Closures/" class="post-title-link" itemprop="url">You Don't Know JavaScript [Scope & Closures] - Using Closures?</a>
+            <a href="/2021/09/13/Typescript/get-started/" class="post-title-link" itemprop="url">TypeScript - Get started</a>
         </h2>
 
         <div class="post-meta">
@@ -489,23 +474,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-09-09 10:21:41" itemprop="dateCreated datePublished" datetime="2021-09-09T10:21:41+08:00">2021-09-09</time>
+              <time title="Created: 2021-09-13 15:50:31 / Modified: 17:40:36" itemprop="dateCreated datePublished" datetime="2021-09-13T15:50:31+08:00">2021-09-13</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-13 17:07:53" itemprop="dateModified" datetime="2021-09-13T17:07:53+08:00">2021-09-13</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Javascript/" itemprop="url" rel="index"><span itemprop="name">Javascript</span></a>
+                  <a href="/categories/Typescript/" itemprop="url" rel="index"><span itemprop="name">Typescript</span></a>
                 </span>
             </span>
 
@@ -520,12 +499,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前為止我們都專注在解釋辭法範圍，以及他會對程式中的變量與使用產生什麼影響，本章節會將角度轉移到 <code>closure</code>，回顧一下<a href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/8.%20Limiting-Scope-Exposure/">Limiting Scope Exposure ?</a> 中所提到的POLE原則，我們應該使用塊狀作用域（或函式作用域）來減少變量的洩露，這有助於程式的安全性與可維護性並可以避免命名衝突等等的錯誤，而closure就是建立在這個觀念之上，可以將變量<code>封裝不讓他們洩露到外部／全域中，並且保留內部函式的訪問權限</code>，函式會通過closure記住引用的作用域變量。</p>
-<p>而在 <a href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/8.%20Limiting-Scope-Exposure/">Limiting Scope Exposure ?</a> 提到的範例中（factorial(…)），我們嘗試了在自身作用域中訪問了外部的 callback function這 就是 closure，closure 是對於編成發明中重要的特徵之一，他是主要編成範例的基礎，它包含 <code>function programming(FP)</code> , <code>module</code> , <code>class-oriented design</code></p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210909/20124767uZezgUx6mE.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210909/20124767uZezgUx6mE.jpg"></p>
+          <p>在去年轉職成為前端工程師後就開始使用了 Angular 這個框架，這個框架與其他兩個主流框架最大的不同點在於他預設就是使用 <code>Typescript</code> 作為開發語言，雖然在進公司前完全沒有聽過這個是什麼東西，不過隨著時間的推移漸漸發現 Typescript 的魅力，可以很好的避免很多 Javascript 的地雷，尤其是對於 Javascript 這個<code>弱型別</code>的語言來說，常常會出一些非常奇怪的錯誤，所以在編寫程式的時候要時常注意有沒有冒犯到 Javascript 的逆鱗導致錯誤，不過有了 Typescript 後就可以有效的避免一些奇怪的錯誤，它賦予了 Javascript <code>型別</code>並可以對變量的內容進行檢查，從而使變量的內容更加明確與可追蹤，不過我也是使用了這麼久也沒有仔細的看 Typescript 的官方文檔，趁著最近專案比較輕鬆來從投讀一次官分文檔並做個紀錄，希望可幫助到剛接觸到 Typescript 的夥伴。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210913/201247671I0G1XJIk4.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210913/201247671I0G1XJIk4.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/09/Javascript/Scope%20&%20Closures/9.%20Using-Closures/#more" rel="contents">
+              <a class="btn" href="/2021/09/13/Typescript/get-started/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -549,7 +527,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/8.%20Limiting-Scope-Exposure/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day20-Angular-Routing/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -563,7 +541,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/08/Javascript/Scope%20&%20Closures/8.%20Limiting-Scope-Exposure/" class="post-title-link" itemprop="url">You Don't Know JavaScript [Scope & Closures] - Limiting Scope Exposure ?</a>
+            <a href="/2021/09/13/Angular/Day20-Angular-Routing/" class="post-title-link" itemprop="url">Day20. Angular Routing</a>
         </h2>
 
         <div class="post-meta">
@@ -572,23 +550,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-09-08 16:09:21" itemprop="dateCreated datePublished" datetime="2021-09-08T16:09:21+08:00">2021-09-08</time>
+              <time title="Created: 2021-09-13 15:35:39 / Modified: 15:36:45" itemprop="dateCreated datePublished" datetime="2021-09-13T15:35:39+08:00">2021-09-13</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-13 17:07:48" itemprop="dateModified" datetime="2021-09-13T17:07:48+08:00">2021-09-13</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Javascript/" itemprop="url" rel="index"><span itemprop="name">Javascript</span></a>
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
                 </span>
             </span>
 
@@ -603,11 +575,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前為止我們都著重在解釋作用域與變量的工作機制，有了這些基礎後將進到下一步，首先我們要先探討不同級別的作用域來組織宣告的變量，特別是<code>減少作用域的過度暴露</code>。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210908/20124767XB28uXLnJ8.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210908/20124767XB28uXLnJ8.jpg"></p>
+          <p>在現代網頁中常會使用一種稱為 <code>single page application（SPA）</code>的技術，可以通過顯示或隱藏特定的 component 來更改用戶看到的畫面，而不是像伺服器重新請求整個頁面的數據對其重新加載，可以使用 <code>Angular router</code> 來處理當你需要處理從一個畫面到另一個畫面的任務，Router 通過將瀏覽器的 URL 解析為更改畫面的指令，將使用者導航到指定的畫面。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767VAxO4x8GEi.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767VAxO4x8GEi.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/08/Javascript/Scope%20&%20Closures/8.%20Limiting-Scope-Exposure/#more" rel="contents">
+              <a class="btn" href="/2021/09/13/Angular/Day20-Angular-Routing/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -631,7 +603,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/7.%20The-Secret-Lifecycle-of-Variables/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day19-Dependency-providers/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -645,7 +617,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/08/Javascript/Scope%20&%20Closures/7.%20The-Secret-Lifecycle-of-Variables/" class="post-title-link" itemprop="url">You Don't Know JavaScript [Scope & Closures] - The (Not So) Secret Lifecycle of Variables</a>
+            <a href="/2021/09/13/Angular/Day19-Dependency-providers/" class="post-title-link" itemprop="url">Day19. Dependency providers</a>
         </h2>
 
         <div class="post-meta">
@@ -654,23 +626,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-09-08 15:54:33" itemprop="dateCreated datePublished" datetime="2021-09-08T15:54:33+08:00">2021-09-08</time>
+              <time title="Created: 2021-09-13 15:34:15 / Modified: 15:35:18" itemprop="dateCreated datePublished" datetime="2021-09-13T15:34:15+08:00">2021-09-13</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-13 17:07:31" itemprop="dateModified" datetime="2021-09-13T17:07:31+08:00">2021-09-13</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Javascript/" itemprop="url" rel="index"><span itemprop="name">Javascript</span></a>
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
                 </span>
             </span>
 
@@ -685,11 +651,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>經由前幾篇文中應該對於全域作用域或嵌套全域作用域有一定的了解，但這僅僅只知道這麼變量是在哪一個作用域中宣告而已，若是我們在宣告這個變數之前就使用它會發生什麼事？又或是我們在同一個作用域中對同一個變數宣告兩次會發生什麼事？</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210908/20124767h5chIQA1th.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210908/20124767h5chIQA1th.jpg"></p>
+          <p>在上一篇中提到了如何建立與使用一個 Service，也大概介紹了什麼是 Dependency Injection，在介紹使用 @Injectable() 裝飾 service 的 class 的時候提到了要在他的 metadata 中設定 <code>providedIn</code>，如果將它設定為 <code>root</code> 的話代表這個 service 在整個專案中都是可被使用的，但如果沒有設定這個 property，則要在 component 中注入這個 service 時需要在 @Component() 的 metadata 中設定 providers ，將要注入的 service 放進去，在上一章中的用法是 <code>providers: [ProductService]</code>，這其實是一個縮寫，本篇就是要來詳細的介紹他，那我們就繼續往下看吧！</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ZpsjOVE7SU.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767ZpsjOVE7SU.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/08/Javascript/Scope%20&%20Closures/7.%20The-Secret-Lifecycle-of-Variables/#more" rel="contents">
+              <a class="btn" href="/2021/09/13/Angular/Day19-Dependency-providers/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -713,7 +679,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/6.%20Around-the-Global-Scope/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day18-Introduction-to-services-and-dependency-injection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -727,7 +693,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/08/Javascript/Scope%20&%20Closures/6.%20Around-the-Global-Scope/" class="post-title-link" itemprop="url">You Don't Know JavaScript [Scope & Closures] - Around the Global Scope ?</a>
+            <a href="/2021/09/13/Angular/Day18-Introduction-to-services-and-dependency-injection/" class="post-title-link" itemprop="url">Day18. Introduction to services and dependency injection</a>
         </h2>
 
         <div class="post-meta">
@@ -736,23 +702,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-09-08 14:54:20" itemprop="dateCreated datePublished" datetime="2021-09-08T14:54:20+08:00">2021-09-08</time>
+              <time title="Created: 2021-09-13 15:32:32 / Modified: 15:33:37" itemprop="dateCreated datePublished" datetime="2021-09-13T15:32:32+08:00">2021-09-13</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-13 17:07:35" itemprop="dateModified" datetime="2021-09-13T17:07:35+08:00">2021-09-13</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Javascript/" itemprop="url" rel="index"><span itemprop="name">Javascript</span></a>
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
                 </span>
             </span>
 
@@ -767,12 +727,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我們在 <a href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/5.%20The-Scope-Chain/">The Scope Chain</a> 不斷地提到<code>全域作用域</code>，可能會疑問為什麼最外層的作用域是全域作用域？而為什麼對於JS來說會是最重要的？僅<code>避免使用全域範圍</code>就足夠了嗎？</p>
-<p>對於JS來說，全域是一個很複雜的環節，他非常的實用但細節也非常多，本章節將會對這些問題做一些解釋。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210908/2012476754qJcPO76o.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210908/2012476754qJcPO76o.jpg"></p>
+          <p>在開發專案時你一定會使用到 <code>Service</code> 的技巧，Service 是一個廣泛的類別，包括 app 所需要的任何功能、數據或特性，而通常一個 service 是一個具有狹窄且明確定義目的的 class，簡單來説可以想像成一個 service 只會對一個明確的目的提供所以有服務。</p>
+<p>Angular 將 component 與 service 拆分開以增加模塊化與可重用性，將處理 component view 的功能與其他類型的功能拆發開來可以讓你在開發 component 時更精簡高效，所以理想的情況下 component 中的邏輯只用來處理使用者的操作，component 應該提供 property binding 的 property 與 event binding 的 method 僅此而已。</p>
+<p>而較為複雜的邏輯任務就應該委託給 service，比如<code>從 server 中獲取數據</code>、<code>驗證用戶輸入</code>或<code>直接登陸到控制台</code>等等複雜的邏輯處理都應該在 service 中處理掉，將這些複雜的邏輯寫在 service 中就可以讓他們被任何 component 使用。</p>
+<p>不過說了這麼多，其實 Angular 是不強制你做這些動作的，不過建議再開發大型專案時還是將複雜的邏輯從 component 中移到 service 中，保持你的 component 單純乾淨也讓 service 可以透過 inject 提供給其他 component 使用。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210813/20124767bKqlcXTE3g.png" alt="https://ithelp.ithome.com.tw/upload/images/20210813/20124767bKqlcXTE3g.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/08/Javascript/Scope%20&%20Closures/6.%20Around-the-Global-Scope/#more" rel="contents">
+              <a class="btn" href="/2021/09/13/Angular/Day18-Introduction-to-services-and-dependency-injection/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -796,7 +758,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/5.%20The-Scope-Chain/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day17-Dynamic-component-loader/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -810,7 +772,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/08/Javascript/Scope%20&%20Closures/5.%20The-Scope-Chain/" class="post-title-link" itemprop="url">You Don't Know JavaScript [Scope & Closures] - The Scope Chain</a>
+            <a href="/2021/09/13/Angular/Day17-Dynamic-component-loader/" class="post-title-link" itemprop="url">Day17. Dynamic component loader</a>
         </h2>
 
         <div class="post-meta">
@@ -819,23 +781,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-09-08 11:12:56" itemprop="dateCreated datePublished" datetime="2021-09-08T11:12:56+08:00">2021-09-08</time>
+              <time title="Created: 2021-09-13 15:30:08 / Modified: 15:31:49" itemprop="dateCreated datePublished" datetime="2021-09-13T15:30:08+08:00">2021-09-13</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-13 17:07:37" itemprop="dateModified" datetime="2021-09-13T17:07:37+08:00">2021-09-13</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Javascript/" itemprop="url" rel="index"><span itemprop="name">Javascript</span></a>
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
                 </span>
             </span>
 
@@ -850,11 +806,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在 <a target="_blank" rel="noopener" href="http://localhost:4000/2021/09/08/Javascript/Scope%20&%20Closures/3.%20What-is-Scope/">What is Scope</a> 與 <a href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/4.%20Lexical-Scope/">Lexical Scope</a> 對辭法範圍做具體的定義與基本概念介紹，也了解作用域的嵌套與找尋變量的像上搜尋，在本章節中將介紹什麼是<code>作用域鏈</code>，可以把它想像為是<code>連接著嵌套作用域之間的通道</code>，而這個作用域鏈是固定方向的，它意味著變量的查詢只能往上/外層作用域移動。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210908/20124767pVroHhcMPA.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210908/20124767pVroHhcMPA.jpg"></p>
+          <p>介紹完什麼是 template 與 structural directive 後，接著回來介紹 component 中被跳過的章節，那就是動態仔入 component，再開發專案時可能會遇到 component template 需要被動態載入的情況，比如說常見的網頁廣告或是當捲軸轉到某個地方時才會顯示出只定 component 的 template，那麼就繼續看下去吧。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210818/20124767jPdUbmDQQh.png" alt="https://ithelp.ithome.com.tw/upload/images/20210818/20124767jPdUbmDQQh.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/08/Javascript/Scope%20&%20Closures/5.%20The-Scope-Chain/#more" rel="contents">
+              <a class="btn" href="/2021/09/13/Angular/Day17-Dynamic-component-loader/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -878,7 +834,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/08/Javascript/Scope%20&%20Closures/4.%20Lexical-Scope/">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/13/Angular/Day16-Writing-structural-directives/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -892,7 +848,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/08/Javascript/Scope%20&%20Closures/4.%20Lexical-Scope/" class="post-title-link" itemprop="url">You Don't Know JavaScript [Scope & Closures] - Lexical Scope</a>
+            <a href="/2021/09/13/Angular/Day16-Writing-structural-directives/" class="post-title-link" itemprop="url">Day16. Writing structural directives</a>
         </h2>
 
         <div class="post-meta">
@@ -901,23 +857,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-09-08 11:07:22" itemprop="dateCreated datePublished" datetime="2021-09-08T11:07:22+08:00">2021-09-08</time>
+              <time title="Created: 2021-09-13 15:28:56 / Modified: 15:29:43" itemprop="dateCreated datePublished" datetime="2021-09-13T15:28:56+08:00">2021-09-13</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-13 17:07:39" itemprop="dateModified" datetime="2021-09-13T17:07:39+08:00">2021-09-13</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Javascript/" itemprop="url" rel="index"><span itemprop="name">Javascript</span></a>
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
                 </span>
             </span>
 
@@ -932,13 +882,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在<a target="_blank" rel="noopener" href="http://localhost:4000/2021/09/08/Javascript/Scope%20&%20Closures/3.%20What-is-Scope/">上一章</a>中提到了作用域的定義與規則，它主宰著JS引擎該如何在作用域或包含它的任意嵌套作用域中查詢一個變量，我們也證明了JS的scope是在編譯時決定的，而這種範圍的術語稱為 <code>Lexical Scope</code>。</p>
-<p>Lexical Scope的關鍵思想就是它完全由 <code>function</code>，<code>block</code>，<code>變量宣告</code> 的放置位置來控制，如果你的宣告變數放置在function中，則編譯器在解析的時候會將該變數與function的範圍作連接;若是放置在block(let/const)，則它會與最近的封閉block<code>&#123;...&#125;</code> 相連。</p>
-<p>必須將變量定義在可以引用的範圍之一，否則它會被定義為 <code>undefined</code>，如果在當前作用域中沒有找到這個變量則會往下一個(外部)的作用域去尋找，持續找到匹配的變量或是退到全域作用域，若到全域作用域都沒有找得則會值出一個錯誤。</p>
-<p><img src="https://ithelp.ithome.com.tw/upload/images/20210908/20124767Lz95BmaVHU.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210908/20124767Lz95BmaVHU.jpg"></p>
+          <p>在上一章中介紹了如何建立客製化的 attribute directive 與使用，而本章將會介紹如何建立 structural directives，那就接著往下看吧！</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210821/20124767xY1I5d66k3.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210821/20124767xY1I5d66k3.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/09/08/Javascript/Scope%20&%20Closures/4.%20Lexical-Scope/#more" rel="contents">
+              <a class="btn" href="/2021/09/13/Angular/Day16-Writing-structural-directives/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -961,7 +909,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1027,7 +975,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="上一篇中介紹完 Template-driven forms 後，接著再介紹 Angular 的另一種 form，那就是 Reactive forms，它提供了一種 model-driven 的方法來處理隨時間變化的表單輸入，本章中會介紹如何創建本章中會介紹如何創建和更新基本的表單控制元件、如何在 component 中使用多個控制元件、驗證表單的值以及創建動態表單，隨著需求新增換刪除控制元件。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day25. Reactive forms (一)">
+<meta property="og:url" content="https://fandix.github.io/2021/09/23/Angular/Day25-Reactive-forms-1/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="上一篇中介紹完 Template-driven forms 後，接著再介紹 Angular 的另一種 form，那就是 Reactive forms，它提供了一種 model-driven 的方法來處理隨時間變化的表單輸入，本章中會介紹如何創建本章中會介紹如何創建和更新基本的表單控制元件、如何在 component 中使用多個控制元件、驗證表單的值以及創建動態表單，隨著需求新增換刪除控制元件。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210824/20124767y8s0ESM8UR.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210824/20124767VosFgACSQG.png">
+<meta property="og:image" content="https://i.imgur.com/cRN4Q5z.gif">
+<meta property="og:image" content="https://i.imgur.com/rfcbRxx.gif">
+<meta property="og:image" content="https://i.imgur.com/68oWBs3.gif">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210824/20124767HBMP0iFFQX.png">
+<meta property="og:image" content="https://i.imgur.com/cSlKpRo.gif">
+<meta property="og:image" content="https://i.imgur.com/1qPLQNo.gif">
+<meta property="og:image" content="https://i.imgur.com/wB8SB7O.gif">
+<meta property="article:published_time" content="2021-09-23T09:33:20.000Z">
+<meta property="article:modified_time" content="2021-09-23T09:34:26.386Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210824/20124767y8s0ESM8UR.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/23/Angular/Day25-Reactive-forms-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day25. Reactive forms (一) | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day25-Reactive-forms-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day25. Reactive forms (一)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-23 17:33:20 / Modified: 17:34:26" itemprop="dateCreated datePublished" datetime="2021-09-23T17:33:20+08:00">2021-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>上一篇中介紹完 Template-driven forms 後，接著再介紹 Angular 的另一種 form，那就是 <code>Reactive forms</code>，它提供了一種 <code>model-driven</code> 的方法來處理隨時間變化的表單輸入，本章中會介紹如何創建本章中會介紹如何創建和更新基本的表單控制元件、如何在 component 中使用多個控制元件、驗證表單的值以及創建動態表單，隨著需求新增換刪除控制元件。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210824/20124767y8s0ESM8UR.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210824/20124767y8s0ESM8UR.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Overview-of-reactive-forms"><a href="#Overview-of-reactive-forms" class="headerlink" title="Overview of reactive forms"></a>Overview of reactive forms</h1><p>reactive forms 使用<code>顯示且不可變的</code>方法來管理表單在某個時間點的狀態，表單狀態在每次更新都會返回一個<code>新的</code>狀態，從而保持模型在每次更改間都保持完整，reactive forms 是圍繞著 <code>observable</code> 構建的，所以可以進行同步的訪問。</p>
+<p>reactive forms 還提供了簡易的測試路徑，因為可以確保數據在請求時是一致且可預測的，數據流中的任何操作者都可以安全的操作數據，與 template-driven forms 不同的點在於他提供對數據模型的<code>同步訪問</code>、<code>不變的 observable operator</code> 以及<code>可觀察數據流變化的跟蹤</code>。</p>
+<hr>
+<h1 id="Adding-a-basic-form-control"><a href="#Adding-a-basic-form-control" class="headerlink" title="Adding a basic form control"></a>Adding a basic form control</h1><p>要使用 reactive forms 的表單控制元件分為三個步驟：</p>
+<ol>
+<li>在 app.module.ts 中引入 <code>ReactiveFormsModule</code></li>
+<li>在 component 中創建一個 <code>FormControl</code> 實例</li>
+<li>在 template 中註冊 <code>FormControl</code></li>
+</ol>
+<p>一樣舉個例子，將建立一個使用者將他們姓名填入畫面中的輸入框，透過 FormControl 捕獲到輸入的值並將它顯示出來。</p>
+<ol>
+<li><p>從 <code>@angular/form</code> 中引入 <code>ReactiveFormsModule</code> 並將它添加到 ngModule 的 imports 中</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ReactiveFormsModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    <span class="comment">// other imports ...</span></span><br><span class="line">    ReactiveFormsModule</span><br><span class="line">  ],</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>使用 Angular CLI 建立一個 component</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate component NameEditor</span><br></pre></td></tr></table></figure></li>
+<li><p>在 name-editer.component.ts 中新增 FormControl</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormControl &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;                     <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-name-editor&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./name-editor.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./name-editor.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">NameEditorComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  name = <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>);                                     <span class="comment">// (2)</span></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 從 <code>@angular/forms</code> 中引入 <code>FormControl</code></li>
+<li>(2): 給予 <code>FormControl</code> 一個參數（空字串）做為預設值並將它實例化</li>
+</ul>
+</li>
+<li><p>在 name-editer.component.html 中綁定 FormControl</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formGroup&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;name&quot;</span>&gt;</span>Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> [<span class="attr">formControl</span>]=<span class="string">&quot;name&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210824/20124767VosFgACSQG.png" alt="https://ithelp.ithome.com.tw/upload/images/20210824/20124767VosFgACSQG.png"></p>
+<h2 id="Displaying-a-form-control-value"><a href="#Displaying-a-form-control-value" class="headerlink" title="Displaying a form control value"></a>Displaying a form control value</h2><p>要顯示使用者輸入的值可以透過以下的方式：</p>
+<ul>
+<li>通過 <code>valueChanges observable</code> 可以在使用 AsyncPipe 的 template 或使用 <code>subscribe()</code> method 在 component 中監聽表單中值的變化</li>
+<li>使用 <code>value</code> property 他可以提供當前值的快照</li>
+</ul>
+<p>先介紹如何使用 <code>value</code> 取得當前值的快照</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formGroup&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;name&quot;</span>&gt;</span>Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> [<span class="attr">formControl</span>]=<span class="string">&quot;name&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Value: &#123;&#123; name.value &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>使用 property binding 將 FormControl 的實例綁定在 template 中</p>
+<p><img src="https://i.imgur.com/cRN4Q5z.gif" alt="img"></p>
+<p>再來介紹可以在 component 中使用 <code>subscribe()</code> 監聽表單中值的變化</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormControl &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-name-editor&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./name-editor.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./name-editor.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">NameEditorComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  name = <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.name.valueChanges.subscribe(<span class="function"><span class="params">v</span> =&gt;</span> <span class="built_in">console</span>.log(v));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Replacing-a-form-control-value"><a href="#Replacing-a-form-control-value" class="headerlink" title="Replacing a form control value"></a>Replacing a form control value</h2><p>reactive forms 可以以編成的方式更改控制元件的內容，可以讓你更靈活的更新值而無需與使用者交互，FormControl 實例提供了一個 <code>setValue()</code> method，可以更新表單控制元件的值並根據控制元件的結構驗證所提供值的結構，簡單來說如果你要更改的值的結構與控制元件的結構不相符的話會出錯，這個方法可以用在比如點擊編輯一個產品，透過 API 獲得當前產品的信息並將這些信息顯示在畫面中的每一個輸入元素上，下面舉一個簡單的例子：</p>
+<ol>
+<li><p>在 name-editor.component.ts 中新增一個 method 當使用者點擊畫面按鈕時觸發</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormControl &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-name-editor&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./name-editor.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./name-editor.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">NameEditorComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  name = <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">updateName</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.name.setValue(<span class="string">&#x27;Nancy&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在 name-editor.component.html 中新增一個 <code>&lt;button&gt;</code> 並綁定剛剛寫的 method</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formGroup&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;name&quot;</span>&gt;</span>Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> [<span class="attr">formControl</span>]=<span class="string">&quot;name&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;updateName()&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-success&quot;</span>&gt;</span>Update Name<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/rfcbRxx.gif" alt="img"></p>
+<p>當點擊畫面中的按鈕後，會利用 FormControl 實例提供的 <code>serValue()</code> method 將控制元件的值更新。</p>
+<hr>
+<h1 id="Grouping-form-controls"><a href="#Grouping-form-controls" class="headerlink" title="Grouping form controls"></a>Grouping form controls</h1><p>一個表單通常會包含幾個相關的控制元件，reactive forms 提供了兩種將多個相關控制元件分組到單個輸入表單的方法：</p>
+<ol>
+<li>form group 定義了一個帶有一組固定控制元件的表單，可以一起管理這些控制元件，也可進行嵌套以創建更複雜的表單</li>
+<li>form array 定義了一個<code>動態</code>的表單，可以在其中添加或刪除運行時的控制元件，也可以嵌套已進行更複雜的表單</li>
+</ol>
+<p>就像 FormControl  可以讓你控制單個輸入一樣，FormGroup 可以讓你跟蹤一組表單控制元件的表單狀態，在創建表單時 group 中的每一個控制元件都按<code>名稱</code>進行跟蹤，舉個例子</p>
+<ol>
+<li><p>使用 Angular CLI 建立一個新的 Component</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate component ProfileEditor</span><br></pre></td></tr></table></figure></li>
+<li><p>在 profile-editor.component.ts 中創建 FormGroup 實例</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormControl, FormGroup &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;              <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-profile-editor&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./profile-editor.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./profile-editor.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ProfileEditorComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  profileForm = <span class="keyword">new</span> FormGroup(&#123;                                       <span class="comment">// (2)</span></span><br><span class="line">    <span class="attr">firstName</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>),</span><br><span class="line">    <span class="attr">lastName</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>),</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 從 ‘@angular/forms’ 中引入 <code>FormControl</code> 與 <code>FormGroup</code></li>
+<li>(2): 創建 <code>FormGroup</code> 的實例，一樣使用 <code>new</code> 關鍵字，將帶有 FormControl 的 object 傳入做為參數（初始值）</li>
+</ul>
+</li>
+<li><p>在 profile-editor.component.html 中綁定 FormGroup 和 FormControl</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;profileForm&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;first-name&quot;</span>&gt;</span>First Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;first-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;firstName&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;last-name&quot;</span>&gt;</span>Last Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;last-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;lastName&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p> 使用 <code>[formGroup]</code> directive 綁定 component 中的 FormGroup 實例，這樣會在 model 和表單輸入框之間建立一個通信層，FormControlName directive 提供的 <code>formControlName</code> 將每個單獨的輸入綁定到 FormGroup 中定義的 FormControl，FormControl 與各自綁定的輸入元素進行通信，他們之間的通信與單獨使用一個 FormControl 一樣。</p>
+</li>
+</ol>
+<h2 id="Save-form-data"><a href="#Save-form-data" class="headerlink" title="Save form data"></a>Save form data</h2><p>reactive forms 和 tempate-driven forms 一樣可以使用 <code>ngSubmit</code> 提交整個表單，舉個例子</p>
+<ol>
+<li><p>在 profile-editor.component.ts 中添加一個 method 當使用者點擊 submit 後觸發</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormControl, FormGroup &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-profile-editor&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./profile-editor.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./profile-editor.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ProfileEditorComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  <span class="attr">formValue</span>: <span class="built_in">any</span>;                                         <span class="comment">// (1)</span></span><br><span class="line">  profileForm = <span class="keyword">new</span> FormGroup(&#123;</span><br><span class="line">    <span class="attr">firstName</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>),</span><br><span class="line">    <span class="attr">lastName</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>),</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onSubmit</span>(<span class="params"></span>)</span> &#123;                                            <span class="comment">// (2)</span></span><br><span class="line">    <span class="built_in">this</span>.formValue = <span class="built_in">this</span>.profileForm.value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>(1): 新增一個 property 用於儲存 form 的資料與顯示在畫面中</li>
+<li>(2): 將 formGroup 的數據賦予 formValue</li>
+</ul>
+</li>
+<li><p>在 profile-editor.component.html 中新增一個 <code>&lt;button&gt;</code> 並在 <code>&lt;form&gt;</code> 上綁定一個 event</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;profileForm&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span> (<span class="attr">ngSubmit</span>)=<span class="string">&quot;onSubmit()&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;first-name&quot;</span>&gt;</span>First Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;first-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;firstName&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;last-name&quot;</span>&gt;</span>Last Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;last-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;lastName&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-success&quot;</span>&gt;</span>Submit<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h3</span>&gt;</span>Form Value: &#123;&#123; formValue | json &#125;&#125;<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://i.imgur.com/68oWBs3.gif" alt="img"></p>
+<h2 id="Creating-nested-form-groups"><a href="#Creating-nested-form-groups" class="headerlink" title="Creating nested form groups"></a>Creating nested form groups</h2><p>FormGroup 除了可以接收含有 FormControl 的 object 之外，還可以接收 object 裡面包涵另一個 FormGroup 的嵌套結構，這樣可以將複雜的表單組合成同一個 FormGroup 更利於維護，將大型的表單分解為幾個更小且更易於管理的 group 最後再合併再一起，舉個例子吧</p>
+<ol>
+<li><p>在 profile-editor.component.ts 中將原本的 FormGroup 中多添加一組 FormGroup</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormControl, FormGroup &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-profile-editor&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./profile-editor.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./profile-editor.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ProfileEditorComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  <span class="attr">formValue</span>: <span class="built_in">any</span>;</span><br><span class="line">  profileForm = <span class="keyword">new</span> FormGroup(&#123;</span><br><span class="line">    <span class="attr">firstName</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>),</span><br><span class="line">    <span class="attr">lastName</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>),</span><br><span class="line">    <span class="attr">address</span>: <span class="keyword">new</span> FormGroup(&#123;</span><br><span class="line">      <span class="attr">street</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>),</span><br><span class="line">      <span class="attr">city</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>),</span><br><span class="line">      <span class="attr">state</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>),</span><br><span class="line">      <span class="attr">zip</span>: <span class="keyword">new</span> FormControl(<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onSubmit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.formValue = <span class="built_in">this</span>.profileForm.value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>在  profile-editor.component.html 中添加輸入元素並將它綁定下一層的 FormGroup 和 FormControl</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> [<span class="attr">formGroup</span>]=<span class="string">&quot;profileForm&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span> (<span class="attr">ngSubmit</span>)=<span class="string">&quot;onSubmit()&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;first-name&quot;</span>&gt;</span>First Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;first-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;firstName&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;last-name&quot;</span>&gt;</span>Last Name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;last-name&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;lastName&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">formGroupName</span>=<span class="string">&quot;address&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h2</span>&gt;</span>Address<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;street&quot;</span>&gt;</span>Street: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;street&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;street&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;city&quot;</span>&gt;</span>City: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;city&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;city&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;state&quot;</span>&gt;</span>State: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;state&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;state&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;zip&quot;</span>&gt;</span>Zip Code: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;zip&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">formControlName</span>=<span class="string">&quot;zip&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-success&quot;</span>&gt;</span>Submit<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h3</span>&gt;</span>Form Value: &#123;&#123; formValue | json &#125;&#125;<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210824/20124767HBMP0iFFQX.png" alt="https://ithelp.ithome.com.tw/upload/images/20210824/20124767HBMP0iFFQX.png"></p>
+<p>可以測試一下當把每一個輸入框都輸入數據後點擊 submit 看看輸出的結果會是如何。</p>
+<h2 id="Updating-parts-of-the-data-model"><a href="#Updating-parts-of-the-data-model" class="headerlink" title="Updating parts of the data model"></a>Updating parts of the data model</h2><p>在介紹 FormControl 的 setValue() 時有提到當要設定的數據模型如果跟 FormGroup 的格式不同的話則會發生錯誤，這邊要來仔細講解一下，對於更新 FormGroup 中 FormControl 的值有三種方式：</p>
+<ol>
+<li>使用 <code>setValue()</code> method 為單個 FormControl 設置新的值，但是如果使用 setValue() 的話必須嚴格遵守 FormGorup 的結構一次替換就要換掉整組，但是面對複雜的嵌套表單而言嚴格的檢查可以避免錯誤。</li>
+<li>使用 <code>patchValue()</code> method 替換掉表單中的任何 FormControl 的內容，使用這個方法就可以不用遵守 FormGroup 的格式，可以做到只更新某一個部分的值，但是在面對複雜的表單時，就算發生錯誤時<code>不會提醒</code>只會默默地失敗。</li>
+<li>使用 FormGroup 的 property <code>get</code>，用於獲得 FormGroup 中單個 FormControl 的實例，在對這個實力使用 <code>setValue()</code> 就可以只更改單一個 FormControl 的值</li>
+</ol>
+<p>先在 profile-editor.component.html 中新增一個 <code>&lt;button&gt;</code> 並綁掉更新數據個 event</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;onUpdate()&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-success&quot;</span>&gt;</span>Update<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>接著來介紹如何使用三種方式更新畫面中輸入框的內容</p>
+<ol>
+<li><p>使用 setValue() 更改數據</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">onUpdate</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.profileForm.setValue(&#123;</span><br><span class="line">      <span class="attr">firstName</span>: <span class="string">&#x27;Fandix&#x27;</span>,</span><br><span class="line">      <span class="attr">lastName</span>: <span class="string">&#x27;Huang&#x27;</span>,</span><br><span class="line">      <span class="attr">address</span>: &#123;</span><br><span class="line">        <span class="attr">street</span>: <span class="string">&#x27;Queen&#x27;</span>,</span><br><span class="line">        <span class="attr">city</span>: <span class="string">&#x27;New York&#x27;</span>,</span><br><span class="line">        <span class="attr">state</span>: <span class="string">&#x27;New York&#x27;</span>,</span><br><span class="line">        <span class="attr">zip</span>: <span class="string">&#x27;123&#x27;</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p> <img src="https://i.imgur.com/cSlKpRo.gif" alt="img"></p>
+</li>
+<li><p>使用 patchValue() 更改部分 FormControl 的內容</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">onUpdate</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.profileForm.patchValue(&#123;</span><br><span class="line">      <span class="attr">firstName</span>: <span class="string">&#x27;Fandix&#x27;</span>,</span><br><span class="line">      <span class="attr">lastName</span>: <span class="string">&#x27;Huang&#x27;</span>,</span><br><span class="line">      <span class="attr">address</span>: &#123;</span><br><span class="line">        <span class="attr">street</span>: <span class="string">&#x27;Queen&#x27;</span>,</span><br><span class="line">        <span class="attr">zip</span>: <span class="string">&#x27;123&#x27;</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p> <img src="https://i.imgur.com/1qPLQNo.gif" alt="img"></p>
+</li>
+<li><p>使用 <code>get</code> 獲得單一 FomControl 並使用 setValue() 更新內容</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">onUpdate</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>.profileForm.get(<span class="string">&#x27;firstName&#x27;</span>)?.setValue(<span class="string">&#x27;Fandix&#x27;</span>);</span><br><span class="line">  <span class="built_in">this</span>.profileForm.get(<span class="string">&#x27;address&#x27;</span>)?.get(<span class="string">&#x27;city&#x27;</span>)?.setValue(<span class="string">&#x27;New York&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 使用 <code>get</code> 獲得 <code>address</code> 的實例時，要記得獲得的還是 <code>FormGroup</code>，所以要獲得 <code>city</code> 的實例需要在調用一次 <code>get</code> 才能獲得下一層</p>
+<p> <img src="https://i.imgur.com/wB8SB7O.gif" alt="img"></p>
+</li>
+</ol>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章中介紹了如何使用 <code>FormControl</code> 建立單一個表單控制元件，可以使用 FormControl 實例提供的 property <code>value</code> 獲得使用者輸入的數據，也可以使用 <code>subscribe()</code> 獲得表單的快照，而 reactive forms 的另一個特色就是可以利用編成的方式更改表單的內容，所以可以使用 <code>setValue()</code> 做到這個功能。</p>
+<p>也介紹了如何使用 <code>FormGroup</code> 將多個相關控制元件分組到單個輸入表單中，獲得表單數據的方法也是使用 FormGroup 實例提供的 value property，也可以使用 <code>subscribe()</code> 獲得表單的快照，至於設定表單內容的話可以使用 <code>setValue()</code>、<code>patchValue()</code> 兩種方式設定，但要注意的是使用 <code>setValue()</code> 需要注意填入的格式需要與 FormGroup 的格式相同不然會出錯，這對於複雜的嵌套表單而言可以起到很好的檢查作用，而使用 <code>patchValue()</code> 雖然不用滿足 FormGroup 的格式，的是在面對複雜的表單時，就算出錯他也<code>不會提醒</code>而會默默的設定失敗，所以要特別注意，最後可以使用 FormGroup 實例提供的 <code>get</code> property 可以獲得單獨的 FormControl 實例。</p>
+<p>由於 reactive forms 的篇章比較長，所以一樣分成兩篇講解，下一篇將會介紹如何使用 <code>FormBuilder</code> 利用比較簡單的方式建立 FormGroup 和 FormControl，也會介紹如何使用 FormArray 建立動態的表單，詳細的內容就明天再介紹吧，那麼明天見吧。</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/reactive-forms">Angular.io - Reactive forms</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day24-Template-driven-forms/" rel="prev" title="Day24. Template-driven forms">
+      <i class="fa fa-chevron-left"></i> Day24. Template-driven forms
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day26-Reactive-forms-2/" rel="next" title="Day26. Reactive forms (二)">
+      Day26. Reactive forms (二) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Overview-of-reactive-forms"><span class="nav-number">1.</span> <span class="nav-text">Overview of reactive forms</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Adding-a-basic-form-control"><span class="nav-number">2.</span> <span class="nav-text">Adding a basic form control</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Displaying-a-form-control-value"><span class="nav-number">2.1.</span> <span class="nav-text">Displaying a form control value</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Replacing-a-form-control-value"><span class="nav-number">2.2.</span> <span class="nav-text">Replacing a form control value</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Grouping-form-controls"><span class="nav-number">3.</span> <span class="nav-text">Grouping form controls</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Save-form-data"><span class="nav-number">3.1.</span> <span class="nav-text">Save form data</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-nested-form-groups"><span class="nav-number">3.2.</span> <span class="nav-text">Creating nested form groups</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Updating-parts-of-the-data-model"><span class="nav-number">3.3.</span> <span class="nav-text">Updating parts of the data model</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

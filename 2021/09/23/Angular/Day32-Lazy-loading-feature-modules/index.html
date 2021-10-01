@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在默認情況下 NgModules 都是急切加載的，這意味著一但應用程式加載，所有的 NgModules 無論是否需要都會被載入，但對於許多大型的應用程式而言可以考慮使用延遲加載功能，他是一種根據需要才加載 NgModules 的設計模式，延遲加載有助於讓初始化的檔案保持為較小的大小，從而減少加載的時間，下面就來介紹該如何使用延遲加載模式吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Day32. Lazy-loading feature modules">
+<meta property="og:url" content="https://fandix.github.io/2021/09/23/Angular/Day32-Lazy-loading-feature-modules/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在默認情況下 NgModules 都是急切加載的，這意味著一但應用程式加載，所有的 NgModules 無論是否需要都會被載入，但對於許多大型的應用程式而言可以考慮使用延遲加載功能，他是一種根據需要才加載 NgModules 的設計模式，延遲加載有助於讓初始化的檔案保持為較小的大小，從而減少加載的時間，下面就來介紹該如何使用延遲加載模式吧。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/201247675kZ9WQlQIh.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767Ws1vG3NoVD.png">
+<meta property="og:image" content="https://i.imgur.com/3NtPEj5.gif">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767YrfNPAxGVj.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/20124767GKOxZkfphj.png">
+<meta property="article:published_time" content="2021-09-23T09:47:30.000Z">
+<meta property="article:modified_time" content="2021-09-23T09:49:32.075Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20210905/201247675kZ9WQlQIh.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/09/23/Angular/Day32-Lazy-loading-feature-modules/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Day32. Lazy-loading feature modules | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/09/23/Angular/Day32-Lazy-loading-feature-modules/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Day32. Lazy-loading feature modules
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-23 17:47:30 / Modified: 17:49:32" itemprop="dateCreated datePublished" datetime="2021-09-23T17:47:30+08:00">2021-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Angular/" itemprop="url" rel="index"><span itemprop="name">Angular</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在默認情況下 NgModules 都是<code>急切加載</code>的，這意味著一但應用程式加載，所有的 NgModules 無論是否需要都會被載入，但對於許多大型的應用程式而言可以考慮使用<code>延遲加載</code>功能，他是一種根據<code>需要才加載</code> NgModules 的設計模式，延遲加載有助於讓初始化的檔案保持為較小的大小，從而<code>減少加載的時間</code>，下面就來介紹該如何使用延遲加載模式吧。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/201247675kZ9WQlQIh.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20210905/201247675kZ9WQlQIh.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Step-by-step-setup"><a href="#Step-by-step-setup" class="headerlink" title="Step-by-step setup"></a>Step-by-step setup</h1><p>要設置延遲加載的 feature module 主要有兩個步驟：</p>
+<ol>
+<li>使用 <code>--route</code> 通過 Angular CLI 創建 feature module</li>
+<li>配置 routes</li>
+</ol>
+<p>接著來看看該怎麼創建一個新的延遲載入的 feature module 吧</p>
+<h2 id="Create-a-feature-module-with-routing"><a href="#Create-a-feature-module-with-routing" class="headerlink" title="Create a feature module with routing"></a>Create a feature module with routing</h2><p>首先需要創建一個帶有 <code>route</code> 功能的 feature module，並這個 route 的路徑要指定到 feature module 宣告的某一個 component，可以使用 Angular CLI 一次就完成所有動作，所以是不是很需要 Angular CLI 呢（ gif</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng generate module customers --route customers --module app.module</span><br></pre></td></tr></table></figure>
+
+<p>上面的 CLI Command 會創建一個名為 customers 的文件夾，其中的 customers.module.ts 中會定義一個延遲載入的 feature module 名為 <code>CustomersModule</code>，還會創建一個用於定義 route 的 route module 名為 <code>CustomersRoutingModule</code>，除此之外還會建立一個 CustomerComponent 並自動導入到 CustomersRoutingModule 的 <code>declarations</code> 中。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CommonModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; CustomersRoutingModule &#125; <span class="keyword">from</span> <span class="string">&#x27;./customers-routing.module&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CustomersComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./customers.component&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    CustomersComponent</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    CommonModule,</span><br><span class="line">    CustomersRoutingModule</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomersModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; RouterModule, Routes &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/router&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CustomersComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./customers.component&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> routes: Routes = [&#123; <span class="attr">path</span>: <span class="string">&#x27;&#x27;</span>, <span class="attr">component</span>: CustomersComponent &#125;];</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">imports</span>: [RouterModule.forChild(routes)],</span><br><span class="line">  <span class="attr">exports</span>: [RouterModule]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomersRoutingModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>由於這個新的 feature module 是延遲加載的所以這個 Command 不會在 root module 中添加對這個 feature module 的引用，因為如果將它加入到 root module 的 imports 的話就會變成<code>立即加載</code>，相反的他會將這個 feature module 添加到 route 中</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; RouterModule, Routes &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/router&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> routes: Routes = [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">path</span>: <span class="string">&#x27;customers&#x27;</span>,</span><br><span class="line">    <span class="attr">loadChildren</span>: <span class="function">() =&gt;</span></span><br><span class="line">      <span class="keyword">import</span>(<span class="string">&#x27;./customers/customers.module&#x27;</span>).then(<span class="function">(<span class="params">m</span>) =&gt;</span> m.CustomersModule),</span><br><span class="line">  &#125;,</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">imports</span>: [RouterModule.forRoot(routes)],</span><br><span class="line">  <span class="attr">exports</span>: [RouterModule],</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppRoutingModule</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意 <code>loadChildren</code> 的用法，他後面需要加一個函數，這個函數會使用瀏覽器內置的 <code>import()</code> 語法進行動態導入，導入 module 的路徑是<code>相對路徑</code>。</p>
+<h2 id="Set-up-the-UI"><a href="#Set-up-the-UI" class="headerlink" title="Set up the UI"></a>Set up the UI</h2><p>設定完延遲載入的 module 後，接著來設定一下 UI 畫面讓我們等等可以測試這個延遲載入是否成功，在 app.component.html 中設定按鈕並加上 <code>&lt;router-outlet&gt;</code> 用於顯示 route 的 component</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;&#123;title&#125;&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-primary&quot;</span> <span class="attr">routerLink</span>=<span class="string">&quot;/customers&quot;</span>&gt;</span>Customers<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-success&quot;</span> <span class="attr">routerLink</span>=<span class="string">&quot;&quot;</span>&gt;</span>Home<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">router-outlet</span>&gt;</span><span class="tag">&lt;/<span class="name">router-outlet</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767Ws1vG3NoVD.png" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767Ws1vG3NoVD.png"></p>
+<p>接著來測試一下會不會當點擊 Customers 按鈕後才會加載 feature module 吧，首先先先打開瀏覽器的開發者頁面並選到 Network 頁面，可以將前面載入的資訊先去除以便比較清楚的看到加載過程</p>
+<p><img src="https://i.imgur.com/3NtPEj5.gif" alt="img"></p>
+<p>可以看到當我們點擊了 Customers 按鈕後才會載入延遲載入的 feature module。</p>
+<hr>
+<h1 id="forRoot-and-forChild"><a href="#forRoot-and-forChild" class="headerlink" title="forRoot() and forChild()"></a>forRoot() and forChild()</h1><p>如果使用 Angular CLI 創建一個 root module 的話，你會看到他將 <code>RouterModule.forRoot(route)</code> 添加到 AppRoutingModule 的 <code>imports</code> 中，這會讓 Angular 知道 AppRoutingModule 是一個 route module，而 forRoot() 指定這是 <code>root route module</code>，他會配置傳遞給他的所有 route 讓你可以訪問 route directive 並註冊 route service，在整個應用程式中 AppRoutingModule 只會使用 forRoot() 一次。</p>
+<p>Angular CLI 還會將 RouterModule.forChild(routes) 添加到 feature module 的 <code>imports</code> 中，這樣 Angular 就會知道這個只是負責提供額外的 route，並是針對 feature module 的，所以你可以在多個 route modules 中使用 forChild()。</p>
+<hr>
+<h1 id="Provider-service-in-lazy-loading-modules"><a href="#Provider-service-in-lazy-loading-modules" class="headerlink" title="Provider service in lazy-loading modules"></a>Provider service in lazy-loading modules</h1><p>在前幾篇中提到了如果在 root module 中提供 service 時 Angular 會將它建立成一個<code>單一的</code>、<code>共享的</code> service 實例，所以將 service provider 添加到 root module 後，代表所有地方都可以將它注入並且使用。</p>
+<p>但是如果是將 service provider 到 lazy-loading 的 module 時，由於 lazy-loading 的特性，因為這個 module 還沒被載入所以這個 lazy-loading 中添加的 service 就無法在還沒被載入的時候被其他地方的 module 使用，舉個例子</p>
+<ol>
+<li><p>先新增一個 service 並添加一個簡單的 method</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Injectable &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CustomersModule &#125; <span class="keyword">from</span> <span class="string">&#x27;./customers.module&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Injectable</span>()</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomersService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">getName</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Fandix Huang&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>接著在 CustomersModule 的 providers 添加 CustomersService</p>
+ <figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CommonModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/common&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; CustomersRoutingModule &#125; <span class="keyword">from</span> <span class="string">&#x27;./customers-routing.module&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CustomersComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./customers.component&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CustomersService &#125; <span class="keyword">from</span> <span class="string">&#x27;./customers.service&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    CustomersComponent</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    CommonModule,</span><br><span class="line">    CustomersRoutingModule</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [CustomersService]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomersModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>這時候如果在 app.component.ts 中注入這個 service 的話就會出錯，因為他被 provide 在 lazy-loading 的  module 中，所以還沒被載入的話大家都不知道這個 service 是什麼</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CustomersService &#125; <span class="keyword">from</span> <span class="string">&#x27;./customers/customers.service&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./app.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  title = <span class="string">&#x27;Angular blog&#x27;</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> customersService: CustomersService</span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">ngOnInit</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.customersService.getName())</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767YrfNPAxGVj.png" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767YrfNPAxGVj.png"></p>
+<p>但是如果是注入在 CustomersModule 中 declarations 的 component 中的話就可以正常使用</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; CustomersService &#125; <span class="keyword">from</span> <span class="string">&#x27;./customers.service&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-customers&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./customers.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./customers.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomersComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"><span class="keyword">private</span> customerService: CustomersService</span>)</span> &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">this</span>.customerService.getName())</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20210905/20124767GKOxZkfphj.png" alt="https://ithelp.ithome.com.tw/upload/images/20210905/20124767GKOxZkfphj.png"></p>
+<hr>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>本章中介紹了如何建立與使用延遲載入的 module，雖然在中小專案中可以讓所有 module 都是立即載入的，但隨著專案變大這樣所有 module 都是立即載入的話就會讓初始檔案變得非常大，因為應用程式一開始就要載入全部的 module，會讓整個應用程式的載入變得非常慢，這時候就需要使用延遲載入的功能，當有需要才載入對應的 module 這樣可以讓一開始的專案維持在比較小的大小，從而加快應用程式的載入速度。</p>
+<p>本章是介紹 module 的最後一張，下一章將會介紹也是常重要的一個部分，在現代的網頁中都會需要串接後端的 API 以獲得數據或是儲存數據到 database，這些操作都需要與後端溝通，Angular 提供了一個方式讓我們可以與後端進行溝通，那就是 <code>HttpClient</code> 詳細的內容就留到明天講解吧，那就明天見</p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://angular.io/guide/lazy-loading-ngmodules">Angular.io - Lazy-loading feature modules</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day31-Angular-Module-2/" rel="prev" title="Day31. Angular Module（二）">
+      <i class="fa fa-chevron-left"></i> Day31. Angular Module（二）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/23/Angular/Day33-Communicating-with-backend-services-using-HTTP/" rel="next" title="Day33. Communicating with backend services using HTTP">
+      Day33. Communicating with backend services using HTTP <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Step-by-step-setup"><span class="nav-number">1.</span> <span class="nav-text">Step-by-step setup</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Create-a-feature-module-with-routing"><span class="nav-number">1.1.</span> <span class="nav-text">Create a feature module with routing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Set-up-the-UI"><span class="nav-number">1.2.</span> <span class="nav-text">Set up the UI</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#forRoot-and-forChild"><span class="nav-number">2.</span> <span class="nav-text">forRoot() and forChild()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Provider-service-in-lazy-loading-modules"><span class="nav-number">3.</span> <span class="nav-text">Provider service in lazy-loading modules</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
