@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"fandix.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在現代網頁中對於數據的處理絕大部分都是透過 API (Application Programming Interface) 讓前後端進行交流與溝通，在這樣的環境下驗證是誰透過 API 進行溝通就是一件很重要的事，在我們建立專案時都會希望 back-end 中的數據可以開放給我們寫的 front-end，但是又不希望別人可以利用這個 API 從別的地方獲得我的數據，所以在設計 Web API 時就需">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jwt (JSON Web Token)">
+<meta property="og:url" content="https://fandix.github.io/2021/10/25/Oher%20front-end%20technology/jwt/index.html">
+<meta property="og:site_name" content="Fandix Technology Blog">
+<meta property="og:description" content="在現代網頁中對於數據的處理絕大部分都是透過 API (Application Programming Interface) 讓前後端進行交流與溝通，在這樣的環境下驗證是誰透過 API 進行溝通就是一件很重要的事，在我們建立專案時都會希望 back-end 中的數據可以開放給我們寫的 front-end，但是又不希望別人可以利用這個 API 從別的地方獲得我的數據，所以在設計 Web API 時就需">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20211025/20124767gjG3f5l1nM.jpg">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20211025/20124767Fe4WTMSgye.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20211025/2012476786lUUzfxg3.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20211025/20124767WjuDmsfgRn.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20211025/20124767sAQXX2s5Nr.png">
+<meta property="og:image" content="https://ithelp.ithome.com.tw/upload/images/20211025/20124767ZVGytxhYHi.png">
+<meta property="article:published_time" content="2021-10-25T06:58:26.000Z">
+<meta property="article:modified_time" content="2021-10-26T01:31:18.491Z">
+<meta property="article:author" content="Fandix Huang">
+<meta property="article:tag" content="verify">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ithelp.ithome.com.tw/upload/images/20211025/20124767gjG3f5l1nM.jpg">
+
+<link rel="canonical" href="https://fandix.github.io/2021/10/25/Oher%20front-end%20technology/jwt/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>jwt (JSON Web Token) | Fandix Technology Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fandix Technology Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">It’s my own thing after I sort it out</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://fandix.github.io/2021/10/25/Oher%20front-end%20technology/jwt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Fandix Huang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fandix Technology Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          jwt (JSON Web Token)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-10-25 14:58:26" itemprop="dateCreated datePublished" datetime="2021-10-25T14:58:26+08:00">2021-10-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-10-26 09:31:18" itemprop="dateModified" datetime="2021-10-26T09:31:18+08:00">2021-10-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Back-end/" itemprop="url" rel="index"><span itemprop="name">Back-end</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在現代網頁中對於數據的處理絕大部分都是透過 API (Application Programming Interface) 讓前後端進行交流與溝通，在這樣的環境下驗證是誰透過 API 進行溝通就是一件很重要的事，在我們建立專案時都會希望 back-end 中的數據可以開放給我們寫的 front-end，但是又不希望別人可以利用這個 API 從別的地方獲得我的數據，所以在設計 Web API 時就需要考慮到授權跟驗證的問題，通過了驗證的 request 才能獲得數據以提高數據的安全。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20211025/20124767gjG3f5l1nM.jpg" alt="https://ithelp.ithome.com.tw/upload/images/20211025/20124767gjG3f5l1nM.jpg"></p>
+<span id="more"></span>
+
+<hr>
+<h1 id="What-is-JSON-Web-Token-JWT"><a href="#What-is-JSON-Web-Token-JWT" class="headerlink" title="What is JSON Web Token (JWT)"></a>What is JSON Web Token (JWT)</h1><p>JSON Web Token (JWT) 是一種基於 JSON 的開放標準（RFC-7519），用於在各方之間安全地將要保護的信息利用 <code>JSON Object</code> 的形式進行傳遞，可以使用 <code>secret (HMAC 演算法)</code> 或 <code>RSA</code> 或 <code>ECDSA</code> 的 public/private key 對 JWT 進行簽章，就由於這個簽章的存在讓 JWT 是可以被驗證與信任的。</p>
+<h2 id="When-should-you-use-JSON-Web-Tokens"><a href="#When-should-you-use-JSON-Web-Tokens" class="headerlink" title="When should you use JSON Web Tokens?"></a>When should you use JSON Web Tokens?</h2><ul>
+<li><strong>Authorization</strong>: 最常見的使用場境就是用在 <code>Authorization</code> 上面，當使用者完成登錄後，往後的每個對於 back-end 的 request 都會帶著 JWT ，而 back-end 會利用 request 中夾帶的 JWT 來驗證這個 API 的 request 是否是經過驗證的，如果是經過驗證的才能夠提供 routes, service 或 resource; <code>Single Sign On (SSO)</code> 是目前廣泛使用 JWT 的功能，因為開發成本很小所以可以輕鬆在不同的 domain 中使用。<blockquote>
+<p>Single sign-on (SSO) 是一種身份驗證的方案，簡單來說可以允許單個 ID 與密碼登錄多個相關但獨立的系統中。</p>
+</blockquote>
+</li>
+<li><strong>Information Exchange</strong>: JWT 可以透過 <code>public/private key</code> 來做簽章，這可以讓我們知道是誰發送了 JWT，此外簽章是使用 <code>header</code> 與 <code>payload</code> 所建立的，所以可以驗證傳遞的內容是否有被修改，通過這兩個功能可以讓 JWT 成為在各方之間傳遞訊息的安全好方法。</li>
+</ul>
+<hr>
+<h1 id="What-is-the-JSON-Web-Token-structure"><a href="#What-is-the-JSON-Web-Token-structure" class="headerlink" title="What is the JSON Web Token structure?"></a>What is the JSON Web Token structure?</h1><p>JSON Web Token 由三個部分組成，分別是 <code>Header</code>, <code>Payload</code> 與 <code>Signature</code>，他們三個會利用<code>點（.）</code>將其分格，因此會長得像 <code>xxxxxx.yyyyyy.zzzzzz</code> 這種形態，下面來詳細介紹他們三個</p>
+<h2 id="Header"><a href="#Header" class="headerlink" title="Header"></a>Header</h2><p>Header 通常由兩部分組成，分別是 <code>token 的類型</code>以及<code>正在使用的演算法(HMAC, SHA256, RSA ...)</code>，而 header 中包含了</p>
+<ol>
+<li><strong>必要欄位</strong></li>
+</ol>
+<ul>
+<li><strong>alg</strong>: 對這個 JWT 進行簽章或解密的演算法類型，如果要使用<code>雜湊演算法</code>則要設定為 <code>HS256</code> 如果要代表這個 JWT 是未加密的則將它設置為 <code>none</code> 即可</li>
+</ul>
+<ol start="2">
+<li><strong>非必要欄位</strong></li>
+</ol>
+<ul>
+<li><strong>typ</strong>: 當不是 JWT 的值卻包含了 JWT Object 的數據結構時，可以利用這個設定來消除不同類型之間的衝突，但是當知道了傳來的是 JWT 的話通常這個欄位會被忽略，所以可以將直設定為 <code>JWT</code> 以表示傳來的 object 是 JWT 格式。</li>
+<li><strong>cty</strong>: 在不使用嵌套簽名或加密操作的情況下不推薦使用此參數，反之如果有使用的話這個設定就必須存在且值必須是 <code>JWT</code> 表示要處理巢狀結構的 JWT。</li>
+</ul>
+<p>所以一個未加密的 JWT 他的 header 設定會是</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;alg&quot;</span>: <span class="string">&quot;none&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>經過 Base64 編碼後會變成 <code>eyJhbGciOiJub25lIn0</code> 成為 JWT 的第一部分。</p>
+<h2 id="Payload"><a href="#Payload" class="headerlink" title="Payload"></a>Payload</h2><p>Payload 是第二部分的內容他也是 JSON 的資料結構，主要是有關<code>用戶數據</code>和<code>附加數據</code>的聲明，有三種類型的 claims: <code>registered</code>, <code>public</code>, 和 <code>private</code> claims</p>
+<ul>
+<li><p><strong>Registered claims</strong>: 具有富含特定意義的權利 request 被稱為 <code>registered claims</code>，它包含了:</p>
+<ul>
+<li><strong>iss(Issuer)</strong>: 利用<code>字串(case-sensitive)</code> 或 <code>URL</code> 標示發送 JWT 的委託人。</li>
+<li><strong>sub(Subject)</strong>: 利用<code>字串(case-sensitive)</code> 或 <code>URL</code> 標示這個 JWT 的主體，也可以稱為唯一識別的訊息。</li>
+<li><strong>aud(audience)</strong>: 用<code>單字串(case-sensitive)</code> 或 <code>URI</code> 或<code>陣列</code>表示這個 JWT 唯一識別的預期接收者，如果負責處理 JWT 的地方沒有在 aud 欄位中找到自己，則代表這個 JWT 不屬於我來處理，則無視掉 JWT 中的數據，反之如果找到的自己則代表這個 JWT 是專屬於我來處理的。</li>
+<li><strong>exp(Expiration Time)</strong>: 設置了該 JWT 被視為無效的確切時間，簡單來說就是能夠處理 JWT 的有效時間。</li>
+<li><strong>nbf(not before)</strong>: 與 <code>exp</code> 相反，此設置設置了<code>不能</code>處理 JWT 的時間。</li>
+<li><strong>iat(issued at)</strong>: 標示了 JWT 的發佈時間，可以用於確定 JWT 的存在時間。</li>
+<li><strong>jti (JWT ID)</strong>: 聲明了 JWT 的 ID 而此 ID 為唯一的標示符，可用於區分具有其他相似內容的 JWT 以確保唯一性。</li>
+</ul>
+</li>
+<li><p><strong>Public claims</strong>: 可以由使用 JWT 的人隨意定義，但要注意名稱衝突</p>
+</li>
+<li><p><strong>Private claims</strong>: 在同意使用他們的各方之間共享信息所創建的自定義聲明。</p>
+</li>
+</ul>
+<p>一個簡單的 Payload 會長成</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;sub&quot;</span>: <span class="string">&quot;123456789&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Fandix Huang&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;admin&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkZhbmRpeCBIdWFuZyIsImlhdCI6MTUxNjIzOTAyMn0</code> 作為第二部分。</p>
+<h2 id="Signature"><a href="#Signature" class="headerlink" title="Signature"></a>Signature</h2><p>要創建 signature 需要獲得 <code>header</code>, <code>payload</code>, <code>secret</code> 和 <code>header 中指定的演算法</code>才能組成 signature，signature 用於驗證消息在傳輸的過程中有沒有被更改，在使用 private key 的 token 情況下還可以驗證 JWT 的發送人是否準確，他的輸出是三個由<code>點(.)</code>分割的 <code>Base64-URL 字符串</code>，可以在 HTML 與 HTTP 環境中傳遞，他比 XML 的標準更緊湊。</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20211025/20124767Fe4WTMSgye.png" alt="https://ithelp.ithome.com.tw/upload/images/20211025/20124767Fe4WTMSgye.png"></p>
+<hr>
+<h1 id="實作-JWT-功能"><a href="#實作-JWT-功能" class="headerlink" title="實作 JWT 功能"></a>實作 JWT 功能</h1><p>上面介紹了許多 JWT 的介紹大致上了解了 JWT 的功用，主要就是要讓傳遞給後端的 request 中夾帶著符合規格的 JWT，當 back-end 收到正確的 JWT 並進行驗證完成後，就會將服務或資源發送給發出 request 的人，反之如果驗證失敗則代表這個發出 request 的人不在我的授權內，可以有效地保護資料，那麼接下來做一個簡單的 back-end 用使用 JWT 來管理資料的權限。</p>
+<h2 id="install-npm-package"><a href="#install-npm-package" class="headerlink" title="install npm package"></a>install npm package</h2><ol>
+<li>創建一個新的資料夾用於本次的專案<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir jwt-project</span><br><span class="line"><span class="built_in">cd</span> jwt-project</span><br></pre></td></tr></table></figure></li>
+<li>npm init<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm init</span><br></pre></td></tr></table></figure></li>
+<li>install express.js<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install express --save</span><br></pre></td></tr></table></figure></li>
+<li>install nodemon<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install nodemon</span><br></pre></td></tr></table></figure></li>
+<li>install jsonwebtoken<br>這邊使用的是 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/jsonwebtoken">jsonwebtoken</a> 可以透過這個套件更方便的創建或完成驗證 JWT<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install jsonwebtoken</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="建立-index-js-將環境搭建好並將-jsonwebtoken-載入"><a href="#建立-index-js-將環境搭建好並將-jsonwebtoken-載入" class="headerlink" title="建立 index.js 將環境搭建好並將 jsonwebtoken 載入"></a>建立 index.js 將環境搭建好並將 jsonwebtoken 載入</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> express = <span class="built_in">require</span>(<span class="string">&#x27;express&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> jwt = <span class="built_in">require</span>(<span class="string">&#x27;jsonwebtoken&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> app = express();</span><br><span class="line"></span><br><span class="line">app.get(<span class="string">&#x27;/&#x27;</span>, <span class="function">(<span class="params">req, res, next</span>) =&gt;</span> &#123;</span><br><span class="line">    res.send(<span class="string">&#x27;Hello world!&#x27;</span>);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">app.listen(<span class="number">3000</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;Server listening at port 3000&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20211025/2012476786lUUzfxg3.png" alt="https://ithelp.ithome.com.tw/upload/images/20211025/2012476786lUUzfxg3.png"></p>
+<h2 id="產生-JWT"><a href="#產生-JWT" class="headerlink" title="產生 JWT"></a>產生 JWT</h2><p>透過套件中的 <code>sign()</code> method 可以產生一組 JWT 產生時需要將存放在 Token 當中的數據放入 payload 參數中，密鑰則帶入自定義的參數</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jwt.sign(payload, secretOrPrivateKey, [options, callback])</span><br></pre></td></tr></table></figure>
+<p>options 為可選的參數，透過帶入 options 中的 property 進行更多設定，例如：</p>
+<ul>
+<li>algorithm: 產生 signature 所使用的演算法，預設為雜湊演算法（HS256）</li>
+<li>expiresIn: 可以處理 JWT 的時間</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> SECRET = <span class="string">&#x27;thisIsMyNewProject&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> token = jwt.sign(&#123; <span class="attr">id</span>: <span class="string">&#x27;0&#x27;</span> &#125;, SECRET, &#123; <span class="attr">expiresIn</span>: <span class="string">&#x27;1 day&#x27;</span> &#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="驗證-JWT"><a href="#驗證-JWT" class="headerlink" title="驗證 JWT"></a>驗證 JWT</h2><p>在產生 JWT 並發送給前端後，前端的每一個 Request 中都會夾帶著一開始所產生的 JWT，當後端收到前端的 request 後會檢查 JWT 中的密鑰是否符合一開始發送的，如果相同則將服務或資源發送給前端，反之則不作反應，可以使用模組中的 <code>verify()</code> method 對 JWT 進行驗證，他將會回傳解碼後的 <code>payload</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jwt.verify(token, secretOrPublicKey, [options, callback])</span><br></pre></td></tr></table></figure>
+<p>可以寫個簡單的 get method，他收到來自前端的 request 後會先驗證 JWT 是否正確，判斷完後才決定是否要發送服務或資源</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">app.get(<span class="string">&#x27;/products&#x27;</span>, <span class="function">(<span class="params">req, res, next</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> token = req.header(<span class="string">&#x27;Authorization&#x27;</span>).replace(<span class="string">&#x27;Bearer &#x27;</span>, <span class="string">&#x27;&#x27;</span>);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> decoded = jwt.verify(token, SECRET)</span><br><span class="line">        res.send(<span class="string">&#x27;verify successful!&#x27;</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">        res.send(<span class="string">&#x27;Fail&#x27;</span>);        </span><br><span class="line">        <span class="built_in">console</span>.log(err);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>當前端的 request 挾帶的 JWT 正確時，會返回 back-end 的服務與資源（這邊用發送 verify successful! 代替服務與資源）<br><img src="https://ithelp.ithome.com.tw/upload/images/20211025/20124767WjuDmsfgRn.png" alt="https://ithelp.ithome.com.tw/upload/images/20211025/20124767WjuDmsfgRn.png"></p>
+<p>當挾帶的 JWT 不正確的話代表發出 request 的人並不在授權中，這邊是 console 出錯誤並發送 <code>Fail</code>，至於真正開發遇到驗證不正確時的處理每個人有不同的處理方式，這邊就不探討了<br><img src="https://ithelp.ithome.com.tw/upload/images/20211025/20124767sAQXX2s5Nr.png" alt="https://ithelp.ithome.com.tw/upload/images/20211025/20124767sAQXX2s5Nr.png"></p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20211025/20124767ZVGytxhYHi.png" alt="https://ithelp.ithome.com.tw/upload/images/20211025/20124767ZVGytxhYHi.png"></p>
+<hr>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://jwt.io/#debugger-io">Introduction to JSON Web Tokens</a></li>
+<li><a target="_blank" rel="noopener" href="https://5xruby.tw/posts/what-is-jwt">是誰在敲打我窗？什麼是 JWT ？</a></li>
+<li><a target="_blank" rel="noopener" href="https://medium.com/%E9%BA%A5%E5%85%8B%E7%9A%84%E5%8D%8A%E8%B7%AF%E5%87%BA%E5%AE%B6%E7%AD%86%E8%A8%98/%E7%AD%86%E8%A8%98-%E9%80%8F%E9%81%8E-jwt-%E5%AF%A6%E4%BD%9C%E9%A9%97%E8%AD%89%E6%A9%9F%E5%88%B6-2e64d72594f8">透過 JWT 實作驗證機制</a></li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc7519">rfc7519 - IETF Tools</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/verify/" rel="tag"># verify</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/24/Typescript/The-Basics/" rel="prev" title="TypeScript - Narrowing">
+      <i class="fa fa-chevron-left"></i> TypeScript - Narrowing
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-JSON-Web-Token-JWT"><span class="nav-number">1.</span> <span class="nav-text">What is JSON Web Token (JWT)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#When-should-you-use-JSON-Web-Tokens"><span class="nav-number">1.1.</span> <span class="nav-text">When should you use JSON Web Tokens?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-the-JSON-Web-Token-structure"><span class="nav-number">2.</span> <span class="nav-text">What is the JSON Web Token structure?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Header"><span class="nav-number">2.1.</span> <span class="nav-text">Header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Payload"><span class="nav-number">2.2.</span> <span class="nav-text">Payload</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Signature"><span class="nav-number">2.3.</span> <span class="nav-text">Signature</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%A6%E4%BD%9C-JWT-%E5%8A%9F%E8%83%BD"><span class="nav-number">3.</span> <span class="nav-text">實作 JWT 功能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#install-npm-package"><span class="nav-number">3.1.</span> <span class="nav-text">install npm package</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B-index-js-%E5%B0%87%E7%92%B0%E5%A2%83%E6%90%AD%E5%BB%BA%E5%A5%BD%E4%B8%A6%E5%B0%87-jsonwebtoken-%E8%BC%89%E5%85%A5"><span class="nav-number">3.2.</span> <span class="nav-text">建立 index.js 將環境搭建好並將 jsonwebtoken 載入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A2%E7%94%9F-JWT"><span class="nav-number">3.3.</span> <span class="nav-text">產生 JWT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A9%97%E8%AD%89-JWT"><span class="nav-number">3.4.</span> <span class="nav-text">驗證 JWT</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Fandix Huang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">47</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fandix Huang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
